@@ -1,5 +1,5 @@
 /*
- *    This file is part of genefunnel.
+ *    This file is part of GeneFunnel.
  *    Copyright (C) 2025  Emir Turkes, UK DRI at UCL
  *
  *    This program is free software: you can redistribute it and/or modify
