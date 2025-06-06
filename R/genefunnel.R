@@ -31,26 +31,48 @@
 #' @importFrom Rcpp sourceCpp
 
 genefunnel <- function(mat, gene_sets, BPPARAM = bpparam()) {
-  if (!inherits(mat, "sparseMatrix")) {
-    mat <- as.matrix(mat)
-    storage.mode(mat) <- "numeric"
-    mat <- Matrix(mat, sparse = TRUE)
+
+  if (!is.matrix(mat) && !inherits(mat, "sparseMatrix")) {
+    stop("Input 'mat' must be a matrix or a sparseMatrix.")
   }
+
+  mat <- as.matrix(mat)
+  storage.mode(mat) <- "numeric"
 
   if (any(mat < 0, na.rm = TRUE)) {
     stop("Input matrix contains negative values. genefunnel() expects all values to be non-negative.")
   }
 
-  result <- bplapply(
+  mat <- Matrix::Matrix(mat, sparse = TRUE)
+
+  if (!is.list(gene_sets)) {
+    stop("Input 'gene_sets' must be a list.")
+  }
+
+  if (is.null(names(gene_sets)) || any(names(gene_sets) == "")) {
+    stop("Each gene set in the list must be named.")
+  }
+
+  if (!all(vapply(gene_sets, is.character, logical(1)))) {
+    stop("Each gene set must be a character vector of gene names.")
+  }
+
+  valid_sets <- gene_sets[sapply(gene_sets, function(g) sum(g %in% rownames(mat)) >= 2)]
+
+  if (length(valid_sets) == 0) {
+    stop("None of the gene sets have at least 2 genes present in the input matrix.")
+  }
+
+  result <- BiocParallel::bplapply(
     seq_len(ncol(mat)),
     function(i) {
-      calculateScores(mat[, i, drop = FALSE], rownames(mat), gene_sets)
+      calculateScores(mat[, i, drop = FALSE], rownames(mat), valid_sets)
     },
     BPPARAM = BPPARAM
   )
 
   scores <- do.call(cbind, result)
-  rownames(scores) <- names(gene_sets)
+  rownames(scores) <- names(valid_sets)
   colnames(scores) <- colnames(mat)
 
   return(scores)
