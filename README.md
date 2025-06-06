@@ -28,5 +28,7 @@ Emir Turkes can be contacted at emir.turkes@eturkes.com
 GeneFunnel is currently in development. You can install the development version from GitHub using:
 
 ```
-devtools::install_github("eturkes/genefunnel")
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("eturkes/genefunnel")
 ```
