@@ -37,6 +37,10 @@ genefunnel <- function(mat, gene_sets, BPPARAM = bpparam()) {
     mat <- Matrix(mat, sparse = TRUE)
   }
 
+  if (any(mat < 0, na.rm = TRUE)) {
+    stop("Input matrix contains negative values. genefunnel() expects all values to be non-negative.")
+  }
+
   result <- bplapply(
     seq_len(ncol(mat)),
     function(i) {
