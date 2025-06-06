@@ -31,8 +31,9 @@
 #' @importFrom Rcpp sourceCpp
 
 genefunnel <- function(mat, gene_sets, BPPARAM = bpparam()) {
-
   if (!inherits(mat, "sparseMatrix")) {
+    mat <- as.matrix(mat)
+    storage.mode(mat) <- "numeric"
     mat <- Matrix(mat, sparse = TRUE)
   }
 
