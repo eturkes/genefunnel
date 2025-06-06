@@ -32,12 +32,18 @@
 
 genefunnel <- function(mat, gene_sets, BPPARAM = bpparam()) {
 
-  if (!is.matrix(mat) && !inherits(mat, "sparseMatrix")) {
-    stop("Input 'mat' must be a matrix or a sparseMatrix.")
+  if (!inherits(mat, "matrix") && !inherits(mat, "sparseMatrix")) {
+    mat <- tryCatch({
+      m <- as.matrix(mat)
+      storage.mode(m) <- "numeric"
+      m
+    }, error = function(e) {
+      stop("Input 'mat' must be coercible to a numeric matrix: ", e$message)
+    })
+  } else {
+    mat <- as.matrix(mat)
+    storage.mode(mat) <- "numeric"
   }
-
-  mat <- as.matrix(mat)
-  storage.mode(mat) <- "numeric"
 
   if (any(mat < 0, na.rm = TRUE)) {
     stop("Input matrix contains negative values. genefunnel() expects all values to be non-negative.")
