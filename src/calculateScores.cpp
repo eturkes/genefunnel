@@ -51,6 +51,11 @@ NumericMatrix calculateScores(
         }
       }
 
+      if (indices.size() < 2) {
+        mat(i, j) = NA_REAL;
+        continue;
+      }
+
       vec idx_values(indices.size());
       for (size_t k = 0; k < indices.size(); ++k) {
         idx_values[k] = orig_mat(indices[k], j);
