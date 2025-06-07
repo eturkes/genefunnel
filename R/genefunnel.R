@@ -63,10 +63,10 @@ genefunnel <- function(mat, gene_sets, BPPARAM = bpparam()) {
     stop("Each gene set must be a character vector of gene names.")
   }
 
-  valid_sets <- gene_sets[sapply(gene_sets, function(g) sum(g %in% rownames(mat)) >= 2)]
+  valid_sets <- gene_sets[sapply(gene_sets, function(g) all(g %in% rownames(mat)))]
 
   if (length(valid_sets) == 0) {
-    stop("None of the gene sets have at least 2 genes present in the input matrix.")
+    stop("None of the gene sets have all their genes present in the input matrix.")
   }
 
   result <- BiocParallel::bplapply(
