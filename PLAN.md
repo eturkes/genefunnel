@@ -258,13 +258,13 @@ Session boundaries are suggested cohesive commits, not a fixed limit. Split any 
 ### Session 3 - Correct missing-value and numerical semantics
 
 - [x] Refactor native scoring to consume precomputed integer memberships rather than row names and character sets.
-- [ ] Omit `NA` and `NaN` per set/sample and recompute effective `n`.
-- [ ] Return `NA_real_` when fewer than two observed values remain in a cell.
-- [ ] Preserve explicit and implicit zeros in `n`, mean, deviation, and score.
-- [ ] Reject any infinity that escapes R validation and report useful context.
-- [ ] Replace the fixed `1e-9` zero clamp with a scale-aware numerical tolerance.
-- [ ] Detect materially negative or non-finite native results as internal errors.
-- [ ] Compare every deterministic fixture against the pure R oracle.
+- [x] Omit `NA` and `NaN` per set/sample and recompute effective `n`.
+- [x] Return `NA_real_` when fewer than two observed values remain in a cell.
+- [x] Preserve explicit and implicit zeros in `n`, mean, deviation, and score.
+- [x] Reject any infinity that escapes R validation and report useful context.
+- [x] Replace the fixed `1e-9` zero clamp with a scale-aware numerical tolerance.
+- [x] Detect materially negative or non-finite native results as internal errors.
+- [x] Compare every deterministic fixture against the pure R oracle.
 
 **Acceptance:** the canonical examples in Section 2.7 pass; `c(1, 2, NA)` equals scoring `c(1, 2)`; `c(4, NA)` returns `NA`; no missing value poisons an otherwise scoreable set.
 

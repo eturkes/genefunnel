@@ -52,3 +52,20 @@ Remaining: Session 3 - sample-specific missing omission + effective size; defens
 native infinity/result checks; scale-aware zero tolerance; oracle fixtures.
 Risks/blockers: dense inputs still route through sparse storage; scoring still uses
 one task per sample and unused OpenMP flags. Both remain explicitly scheduled.
+
+2026-07-14 | session 3 | commit `HEAD`
+Scope: sample-specific missing-value semantics + defensive native numerics.
+Changed: native cells omit `NA`/`NaN`, retain zeros, use effective observed size,
+return `NA` below two observations, preserve small positive scores, and reject
+escaped infinities/non-finite or materially negative arithmetic with context;
+canonical dense/sparse/oracle regressions cover the contract.
+Verified: testthat = 112/112 expectations; regenerated Rcpp attributes unchanged;
+source build + built-tarball `R CMD check --no-manual` = `Status: OK`.
+Decisions: an algebraically equivalent below-mean form avoids catastrophic
+subtraction while preserving the normative equation; scale-aware tolerance clamps
+negative roundoff only, never positive scores; native guards remain defensive
+behind strict R validation.
+Remaining: Session 4 - distinct dense/sparse paths, representation preservation,
+stored sparse missing equivalence, and a testable dispatch seam.
+Risks/blockers: dense inputs still route through sparse storage; scoring still uses
+one task per sample and unused OpenMP flags. All remain explicitly scheduled.

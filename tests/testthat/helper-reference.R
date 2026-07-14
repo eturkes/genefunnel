@@ -13,7 +13,12 @@ reference_score <- function(values) {
 
     total <- sum(observed)
     center <- total / n_observed
-    total -
-        n_observed / (2 * (n_observed - 1L)) *
-            sum(abs(observed - center))
+    below_center <- observed < center
+
+    # Algebraically identical to the normative subtraction, but all terms are
+    # non-negative. This avoids catastrophic cancellation for valid inputs.
+    (
+        (n_observed - 1L - sum(below_center)) * total +
+            n_observed * sum(observed[below_center])
+    ) / (n_observed - 1L)
 }

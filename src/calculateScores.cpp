@@ -19,10 +19,37 @@
  */
 
 #include <RcppArmadillo.h>
+
+#include <algorithm>
+#include <cmath>
+#include <limits>
+#include <vector>
+
 using namespace Rcpp;
 using namespace arma;
 
 // [[Rcpp::depends(RcppArmadillo)]]
+
+namespace {
+
+long double score_tolerance(
+  const std::size_t observed_size,
+  const long double scale
+) {
+  const long double operation_bound = 8.0L * observed_size + 16.0L;
+  return operation_bound * std::numeric_limits<double>::epsilon() * scale;
+}
+
+void stop_non_finite_result(const int gene_set, const int column) {
+  stop(
+    "Internal GeneFunnel arithmetic produced a non-finite result for "
+    "gene set %d, column %d.",
+    gene_set,
+    column
+  );
+}
+
+}  // namespace
 
 // [[Rcpp::export]]
 NumericMatrix calculateScores(
@@ -42,29 +69,100 @@ NumericMatrix calculateScores(
         continue;
       }
 
-      vec idx_values(indices.size());
+      std::vector<double> observed;
+      observed.reserve(indices.size());
+
       for (R_xlen_t k = 0; k < indices.size(); ++k) {
         int index = indices[k];
         if (index == NA_INTEGER || index < 1 ||
             static_cast<uword>(index) > orig_mat.n_rows) {
           stop("Internal gene-set index is invalid.");
         }
-        idx_values[k] = orig_mat(index - 1, j);
+
+        double value = orig_mat(index - 1, j);
+        if (std::isnan(value)) {
+          continue;
+        }
+        if (std::isinf(value)) {
+          stop(
+            "Internal input contains an infinite value at matrix row %d, "
+            "column %d, gene set %d.",
+            index,
+            j + 1,
+            i + 1
+          );
+        }
+
+        observed.push_back(value);
       }
 
-      double sum_values = sum(idx_values);
-      double var_values = sum(abs(idx_values - mean(idx_values)));
-
-      uword size = idx_values.size();
-      double factor = static_cast<double>(size) / (2.0 * (size - 1));
-      double score = sum_values - (var_values * factor);
-
-      double epsilon = 1e-9;
-      if (fabs(score) < epsilon) {
-        score = 0.0;
+      const std::size_t observed_size = observed.size();
+      if (observed_size < 2) {
+        mat(i, j) = NA_REAL;
+        continue;
       }
 
-      mat(i, j) = score;
+      long double sum_values = 0.0L;
+      for (const double value : observed) {
+        sum_values += static_cast<long double>(value);
+      }
+      if (!std::isfinite(sum_values)) {
+        stop_non_finite_result(i + 1, j + 1);
+      }
+
+      const long double mean_values = sum_values / observed_size;
+      std::size_t below_mean_count = 0;
+      long double below_mean_sum = 0.0L;
+      for (const double value : observed) {
+        if (static_cast<long double>(value) < mean_values) {
+          ++below_mean_count;
+          below_mean_sum += static_cast<long double>(value);
+        }
+      }
+      if (!std::isfinite(below_mean_sum) ||
+          below_mean_count >= observed_size) {
+        stop_non_finite_result(i + 1, j + 1);
+      }
+
+      // Since total absolute deviation equals twice the deviation below the
+      // mean, the normative formula is equivalently:
+      // ((n - 1 - l) * sum(x) + n * sum(x[x < mean(x)])) / (n - 1),
+      // where l is the number below the mean. For non-negative inputs every
+      // term is non-negative, avoiding catastrophic subtraction near zero.
+      const long double total_term =
+        (observed_size - 1 - below_mean_count) * sum_values;
+      const long double below_mean_term =
+        observed_size * below_mean_sum;
+      const long double score_extended =
+        (total_term + below_mean_term) / (observed_size - 1);
+      const long double scale = std::max(
+        std::fabs(total_term),
+        std::fabs(below_mean_term)
+      ) / (observed_size - 1);
+      if (!std::isfinite(score_extended) || !std::isfinite(scale)) {
+        stop_non_finite_result(i + 1, j + 1);
+      }
+
+      const long double tolerance = score_tolerance(
+        observed_size,
+        scale
+      );
+      if (score_extended < -tolerance) {
+        stop(
+          "Internal GeneFunnel arithmetic produced a materially negative "
+          "score for gene set %d, column %d.",
+          i + 1,
+          j + 1
+        );
+      }
+
+      const double score = static_cast<double>(score_extended);
+      if (!std::isfinite(score)) {
+        stop_non_finite_result(i + 1, j + 1);
+      }
+
+      // Clamp negative roundoff only. Small positive scores may be genuine.
+      mat(i, j) = score <= 0.0 ? 0.0 : score;
     }
   }
 
