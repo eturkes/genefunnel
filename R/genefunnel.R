@@ -59,19 +59,24 @@ genefunnel <- function(
 
     indices <- prepared$indices[retained]
     storage <- .matrix_storage(mat)
-    result <- BiocParallel::bplapply(
-        seq_len(ncol(mat)),
-        function(column) {
-            .score_matrix_chunk(
-                mat[, column, drop = FALSE],
-                indices,
-                storage
-            )
-        },
+    ranges <- .column_chunk_ranges(
+        ncol(mat),
+        BiocParallel::bpnworkers(BPPARAM)
+    )
+    # ITER slices on the manager; the worker function never captures `mat`.
+    chunks <- BiocParallel::bpiterate(
+        .matrix_chunk_iterator(mat, ranges),
+        .score_matrix_task,
+        gene_indices = indices,
+        storage = storage,
         BPPARAM = BPPARAM
     )
 
-    scores <- do.call(cbind, result)
+    scores <- .assemble_score_chunks(
+        chunks,
+        n_gene_sets = length(indices),
+        n_columns = ncol(mat)
+    )
     rownames(scores) <- retained_names
     colnames(scores) <- colnames(mat)
     scores

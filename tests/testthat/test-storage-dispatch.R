@@ -46,10 +46,10 @@ test_that("dense and sparse inputs reach distinct native kernels", {
         storage_gene_sets(),
         BPPARAM = BiocParallel::SerialParam()
     )
-    expect_length(calls$dense, ncol(dense))
+    expect_length(calls$dense, 1L)
     expect_length(calls$sparse, 0L)
     expect_true(all(vapply(calls$dense, is.matrix, logical(1))))
-    expect_true(all(vapply(calls$dense, ncol, integer(1)) == 1L))
+    expect_identical(calls$dense[[1L]], dense)
 
     calls$dense <- list()
     genefunnel(
@@ -58,14 +58,14 @@ test_that("dense and sparse inputs reach distinct native kernels", {
         BPPARAM = BiocParallel::SerialParam()
     )
     expect_length(calls$dense, 0L)
-    expect_length(calls$sparse, ncol(sparse))
+    expect_length(calls$sparse, 1L)
     expect_true(all(vapply(
         calls$sparse,
         inherits,
         logical(1),
         what = "sparseMatrix"
     )))
-    expect_true(all(vapply(calls$sparse, ncol, integer(1)) == 1L))
+    expect_identical(calls$sparse[[1L]], sparse)
 })
 
 test_that("dense Matrix and sparse scores agree across storage semantics", {

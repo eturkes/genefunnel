@@ -282,14 +282,14 @@ Session boundaries are suggested cohesive commits, not a fixed limit. Split any 
 
 ### Session 5 - Make parallel execution deterministic and scalable
 
-- [ ] Profile the baseline one-task-per-column design and select a bounded chunking/iteration strategy compatible with BiocParallel.
-- [ ] Precompute memberships once and reuse them in every chunk.
-- [ ] Avoid capturing/serializing the full matrix once per column or task, especially under SOCK/Snow backends.
-- [ ] Preserve exact output order independent of task completion order.
-- [ ] Validate `BPPARAM` and propagate worker errors with chunk/sample context.
-- [ ] Avoid nested OpenMP/BiocParallel parallelism. Remove unused OpenMP flags unless a separate measured decision justifies them.
-- [ ] Test `SerialParam()` and a small portable multi-worker backend; conditionally test platform-specific backends only where supported.
-- [ ] Test one sample, fewer samples than workers, empty worker chunks, and backend reuse.
+- [x] Profile the baseline one-task-per-column design and select a bounded chunking/iteration strategy compatible with BiocParallel.
+- [x] Precompute memberships once and reuse them in every chunk.
+- [x] Avoid capturing/serializing the full matrix once per column or task, especially under SOCK/Snow backends.
+- [x] Preserve exact output order independent of task completion order.
+- [x] Validate `BPPARAM` and propagate worker errors with chunk/sample context.
+- [x] Avoid nested OpenMP/BiocParallel parallelism. Remove unused OpenMP flags unless a separate measured decision justifies them.
+- [x] Test `SerialParam()` and a small portable multi-worker backend; conditionally test platform-specific backends only where supported.
+- [x] Test one sample, fewer samples than workers, empty worker chunks, and backend reuse.
 
 **Acceptance:** serial and parallel outputs/names are identical; task count is bounded rather than proportional to millions of cells; no unused OpenMP configuration remains.
 
@@ -471,7 +471,7 @@ The final package documentation must explicitly convey these thesis-derived poin
 
 - [x] Sparse input is never fully densified.
 - [x] Gene-set indices are precomputed once.
-- [ ] Parallel task count and memory are bounded.
+- [x] Parallel task count and memory are bounded.
 - [ ] Benchmark scripts and environment metadata are reproducible.
 
 ### Package quality

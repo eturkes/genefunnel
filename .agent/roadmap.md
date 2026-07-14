@@ -88,3 +88,31 @@ Remaining: Session 5 - bounded parallel chunking, deterministic portable backend
 coverage, contextual worker errors, and removal of unused OpenMP flags.
 Risks/blockers: one BiocParallel task per sample still captures the full input;
 sparse random access is semantically correct but remains a profiling candidate.
+
+2026-07-14 | session 5 | commit `HEAD`
+Scope: deterministic, worker-bounded BiocParallel execution.
+Changed: manager-side `bpiterate()` streams contiguous matrix slices through at
+most two tasks per worker (one serial task); namespace worker function captures
+no full matrix; membership indices are static worker arguments; explicit task
+IDs/ranges restore input order; failures add global chunk/sample context; unused
+OpenMP flags removed.
+Profile: exploratory local 10,000 x 480, 800 sets x 24, started two-worker SOCK,
+minimum of two elapsed runs. Dense 36.75 MiB input: 0.468 s column calls ->
+0.319 s four chunks; 3%-dense sparse 1.78 MiB input: 0.450 s -> 0.405 s. This
+selects two chunks/worker for limited load balancing; results are context, not a
+package performance claim. Baseline `bplapply()` grouped column evaluations into
+backend jobs by parameter settings but still invoked one native call per column
+and serialized its full-matrix closure to workers.
+Verified: testthat = 162/162 expectations, including dense/sparse serial-SOCK
+identity, reordered completion assembly, one sample with two workers, live
+backend reuse, nonempty worker chunks, and contextual errors; source build +
+built-tarball `R CMD check --no-manual` = `Status: OK`; install compile lines
+contain no OpenMP flags.
+Decisions: bounded task count takes precedence over fixed-width buffers; iterator
+dispatch limits live slices to backend capacity while preserving a small task
+count for very wide matrices. Full benchmark/memory characterization remains
+Session 7 work.
+Remaining: Session 6 - randomized oracle/property/invariance suite plus native
+memory and undefined-behavior tooling where practical.
+Risks/blockers: sparse native random access remains the known profiling target;
+no release blocker identified.
