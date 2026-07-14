@@ -20,7 +20,8 @@
     matrix_numeric_matrix <- inherits(mat, "dMatrix")
     if (!base_numeric_matrix && !matrix_numeric_matrix) {
         stop(
-            "`mat` must be a base numeric or integer matrix, or a numeric Matrix object.",
+            "`mat` must be a base numeric or integer matrix, ",
+            "or a numeric Matrix object.",
             call. = FALSE
         )
     }
@@ -53,10 +54,8 @@
 
     if (contains_negative) {
         stop(
-            paste0(
-                "`mat` contains negative values; all observed values must ",
-                "be non-negative."
-            ),
+            "`mat` contains negative values; all observed values must ",
+            "be non-negative.",
             call. = FALSE
         )
     }
@@ -75,10 +74,8 @@
         block <- values[seq.int(first, last)]
         if (any(is.infinite(block))) {
             stop(
-                paste0(
-                    "`mat` contains infinite values; only finite values, ",
-                    "NA, and NaN are allowed."
-                ),
+                "`mat` contains infinite values; only finite values, ",
+                "NA, and NaN are allowed.",
                 call. = FALSE
             )
         }

@@ -1,0 +1,249 @@
+# Assisted-by: OpenAI Codex.
+
+name: package-ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: "23 5 * * 1"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: package-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  bioc-config:
+    name: Current Bioconductor matrix
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      matrix: ${{ steps.versions.outputs.matrix }}
+      devel_bioc: ${{ steps.versions.outputs.devel_bioc }}
+      devel_r: ${{ steps.versions.outputs.devel_r }}
+    steps:
+      - name: Resolve release and devel versions
+        id: versions
+        shell: bash
+        run: |
+          set -euo pipefail
+          config=$(curl --fail --silent --show-error --location --retry 3 \
+            https://bioconductor.org/config.yaml)
+          field() {
+            sed -n "s/^$1: *\"\([^\"]*\)\".*/\1/p" <<<"$config" | head -n 1
+          }
+          release_bioc=$(field release_version)
+          devel_bioc=$(field devel_version)
+          release_r=$(field r_version_associated_with_release)
+          configured_devel_r=$(field r_version_associated_with_devel)
+          for value in "$release_bioc" "$devel_bioc"; do
+            [[ $value =~ ^[0-9]+\.[0-9]+$ ]]
+          done
+          for value in "$release_r" "$configured_devel_r"; do
+            [[ $value =~ ^[0-9]+\.[0-9]+(\.[0-9]+)?$ ]]
+          done
+          if [[ $configured_devel_r == "$release_r" ]]; then
+            devel_r=$configured_devel_r
+          else
+            devel_r=devel
+          fi
+          matrix=$(printf '%s' \
+            '{"include":[' \
+            "{\"os\":\"ubuntu-latest\",\"r\":\"$release_r\",\"bioc\":\"$release_bioc\",\"label\":\"linux-release\"}," \
+            "{\"os\":\"ubuntu-latest\",\"r\":\"$devel_r\",\"bioc\":\"$devel_bioc\",\"label\":\"linux-devel\"}," \
+            "{\"os\":\"macos-latest\",\"r\":\"$devel_r\",\"bioc\":\"$devel_bioc\",\"label\":\"macos-devel\"}," \
+            "{\"os\":\"windows-latest\",\"r\":\"$devel_r\",\"bioc\":\"$devel_bioc\",\"label\":\"windows-devel\"}" \
+            ']}')
+          {
+            echo "matrix=$matrix"
+            echo "devel_bioc=$devel_bioc"
+            echo "devel_r=$devel_r"
+          } >> "$GITHUB_OUTPUT"
+
+  check:
+    name: ${{ matrix.label }} (R ${{ matrix.r }}, Bioc ${{ matrix.bioc }})
+    needs: bioc-config
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.bioc-config.outputs.matrix) }}
+    env:
+      BIOC_VERSION: ${{ matrix.bioc }}
+      NOT_CRAN: "true"
+      R_CHECK_ENVIRON: ${{ github.workspace }}/.github/check.Renviron
+      R_KEEP_PKG_SOURCE: "yes"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          persist-credentials: false
+      - name: Set up R
+        uses: r-lib/actions/setup-r@d3c5be51b12e724e68f33216ca3c148b66d5f0b6 # v2
+        with:
+          r-version: ${{ matrix.r }}
+          extra-repositories: |
+            https://bioconductor.org/packages/${{ matrix.bioc }}/bioc
+            https://bioconductor.org/packages/${{ matrix.bioc }}/data/annotation
+            https://bioconductor.org/packages/${{ matrix.bioc }}/data/experiment
+            https://bioconductor.org/packages/${{ matrix.bioc }}/workflows
+      - name: Install package dependencies
+        uses: r-lib/actions/setup-r-dependencies@d3c5be51b12e724e68f33216ca3c148b66d5f0b6 # v2
+        with:
+          cache-version: bioc-${{ matrix.bioc }}-1
+          extra-packages: |
+            any::BiocManager
+            any::BiocVersion
+      - name: Verify Bioconductor version
+        shell: bash
+        run: Rscript --vanilla .github/scripts/assert-bioc-version.R
+      - name: Build source tarball
+        shell: bash
+        run: R CMD build .
+      - name: Install built tarball
+        shell: bash
+        run: R CMD INSTALL --preclean --install-tests genefunnel_*.tar.gz
+      - name: Run installed unit tests (including storage dispatch)
+        shell: bash
+        run: >-
+          Rscript --vanilla -e
+          'testthat::test_package("genefunnel", reporter = "summary")'
+      - name: Check built tarball
+        shell: bash
+        run: R CMD check --no-manual --no-build-vignettes --timings genefunnel_*.tar.gz
+      - name: Require clean check status
+        shell: bash
+        run: Rscript --vanilla .github/scripts/assert-check.R
+      - name: Upload failed check artifacts
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: check-${{ matrix.label }}
+          path: genefunnel.Rcheck
+          if-no-files-found: ignore
+          retention-days: 7
+
+  quality:
+    name: Bioconductor and release-quality gates
+    needs: bioc-config
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      BIOC_VERSION: ${{ needs.bioc-config.outputs.devel_bioc }}
+      NOT_CRAN: "true"
+      R_KEEP_PKG_SOURCE: "yes"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          persist-credentials: false
+      - name: Set up R
+        uses: r-lib/actions/setup-r@d3c5be51b12e724e68f33216ca3c148b66d5f0b6 # v2
+        with:
+          r-version: ${{ needs.bioc-config.outputs.devel_r }}
+          extra-repositories: |
+            https://bioconductor.org/packages/${{ needs.bioc-config.outputs.devel_bioc }}/bioc
+            https://bioconductor.org/packages/${{ needs.bioc-config.outputs.devel_bioc }}/data/annotation
+            https://bioconductor.org/packages/${{ needs.bioc-config.outputs.devel_bioc }}/data/experiment
+            https://bioconductor.org/packages/${{ needs.bioc-config.outputs.devel_bioc }}/workflows
+      - name: Install quality dependencies
+        uses: r-lib/actions/setup-r-dependencies@d3c5be51b12e724e68f33216ca3c148b66d5f0b6 # v2
+        with:
+          cache-version: bioc-${{ needs.bioc-config.outputs.devel_bioc }}-quality-1
+          extra-packages: |
+            any::BiocManager
+            any::BiocVersion
+            any::BiocCheck
+      - name: Verify Bioconductor version
+        shell: bash
+        run: Rscript --vanilla .github/scripts/assert-bioc-version.R
+      - name: Check Git-clone hygiene
+        shell: bash
+        run: Rscript --vanilla .github/scripts/bioc-check.R git
+      - name: Build source tarball
+        shell: bash
+        run: R CMD build .
+      - name: Test tarball in a clean target library
+        shell: bash
+        run: Rscript --vanilla .github/scripts/clean-install.R
+      - name: Install built tarball for quality smokes
+        shell: bash
+        run: R CMD INSTALL --preclean genefunnel_*.tar.gz
+      - name: Check documentation offline
+        shell: bash
+        run: Rscript --vanilla .github/scripts/documentation.R
+      - name: Run BiocCheck
+        shell: bash
+        run: Rscript --vanilla .github/scripts/bioc-check.R tarball
+      - name: Run sparse memory and backend-identity smoke
+        shell: bash
+        run: Rscript --vanilla benchmark/ci-smoke.R
+      - name: Upload failed BiocCheck artifacts
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: bioccheck-devel
+          path: genefunnel.BiocCheck
+          if-no-files-found: ignore
+          retention-days: 7
+
+  native-sanitizers:
+    name: Native ASan and UBSan
+    needs: bioc-config
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      BIOC_VERSION: ${{ needs.bioc-config.outputs.devel_bioc }}
+      NOT_CRAN: "true"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          persist-credentials: false
+      - name: Set up R
+        uses: r-lib/actions/setup-r@d3c5be51b12e724e68f33216ca3c148b66d5f0b6 # v2
+        with:
+          r-version: ${{ needs.bioc-config.outputs.devel_r }}
+          extra-repositories: |
+            https://bioconductor.org/packages/${{ needs.bioc-config.outputs.devel_bioc }}/bioc
+            https://bioconductor.org/packages/${{ needs.bioc-config.outputs.devel_bioc }}/data/annotation
+            https://bioconductor.org/packages/${{ needs.bioc-config.outputs.devel_bioc }}/data/experiment
+            https://bioconductor.org/packages/${{ needs.bioc-config.outputs.devel_bioc }}/workflows
+      - name: Install package dependencies
+        uses: r-lib/actions/setup-r-dependencies@d3c5be51b12e724e68f33216ca3c148b66d5f0b6 # v2
+        with:
+          cache-version: bioc-${{ needs.bioc-config.outputs.devel_bioc }}-sanitizers-1
+          extra-packages: |
+            any::BiocManager
+            any::BiocVersion
+      - name: Verify Bioconductor version
+        shell: bash
+        run: Rscript --vanilla .github/scripts/assert-bioc-version.R
+      - name: Configure native sanitizers
+        shell: Rscript {0}
+        run: |
+          dir.create(path.expand("~/.R"), showWarnings = FALSE)
+          writeLines(
+              c(
+                  "CXX17FLAGS=-O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer",
+                  "LDFLAGS=-fsanitize=address,undefined"
+              ),
+              path.expand("~/.R/Makevars")
+          )
+      - name: Install and test with ASan and UBSan
+        shell: bash
+        env:
+          ASAN_OPTIONS: detect_leaks=0:halt_on_error=1
+          UBSAN_OPTIONS: halt_on_error=1:print_stacktrace=1
+        run: |
+          set -euo pipefail
+          asan_library=$(g++ -print-file-name=libasan.so)
+          export LD_PRELOAD="$asan_library"
+          R CMD INSTALL --preclean --install-tests .
+          Rscript --vanilla -e \
+            'testthat::test_package("genefunnel", reporter = "summary")'

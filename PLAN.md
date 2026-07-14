@@ -360,14 +360,14 @@ Session boundaries are suggested cohesive commits, not a fixed limit. Split any 
 
 ### Session 10 - Add CI and current Bioconductor quality gates
 
-- [ ] Consult only current official R/Bioconductor guidance at implementation time; standards may have changed since this plan was written.
-- [ ] Add CI for supported R/Bioconductor combinations and major operating systems.
-- [ ] Run at minimum package install, unit tests, `R CMD check`, and `BiocCheck` where applicable.
-- [ ] Include a job that builds the source tarball and tests the installed tarball in a clean library.
-- [ ] Add native sanitizer/valgrind checks if supported and stable in CI.
-- [ ] Add documentation build/link checks and a small sparse-memory/dispatch smoke test.
-- [ ] Cache dependencies safely without committing caches.
-- [ ] Ensure tests do not require network access, large external data, a thesis file, or many cores.
+- [x] Consult only current official R/Bioconductor guidance at implementation time; standards may have changed since this plan was written.
+- [x] Add CI for supported R/Bioconductor combinations and major operating systems.
+- [x] Run at minimum package install, unit tests, `R CMD check`, and `BiocCheck` where applicable.
+- [x] Include a job that builds the source tarball and tests the installed tarball in a clean library.
+- [x] Add native sanitizer/valgrind checks if supported and stable in CI.
+- [x] Add documentation build/link checks and a small sparse-memory/dispatch smoke test.
+- [x] Cache dependencies safely without committing caches.
+- [x] Ensure tests do not require network access, large external data, a thesis file, or many cores.
 
 **Acceptance:** CI is green from a clean checkout; failures are actionable; package checks produce no errors or warnings and no unexplained notes.
 
@@ -397,6 +397,7 @@ Session boundaries are suggested cohesive commits, not a fixed limit. Split any 
 - [ ] Re-run full dense/sparse/parallel benchmarks and archive result metadata.
 - [ ] Audit warnings, messages, errors, numerical tolerances, native registration, package size, examples, and license/citation text.
 - [ ] Verify no accidental API expansion or undocumented behavior exists.
+- [ ] Disclose non-trivial AI assistance/provenance in the Bioconductor issue and PR, with provenance cited in new code, according to current policy.
 - [ ] Set the release/submission version according to current Bioconductor policy only when all gates pass.
 - [ ] Write release notes describing breaking behavior relative to the prototype: partial coverage, proper missing-value omission, sparse preservation, duplicate handling, and stricter validation.
 - [ ] Create a tag/release only after maintainer review; do not claim Bioconductor availability before acceptance.

@@ -194,3 +194,30 @@ development status and all scientific comparability/downstream limitations.
 Remaining: Session 10 - cross-platform CI/current Bioconductor gates, including
 Session 8's empirical macOS/Windows portability evidence; then Sessions 11-12.
 Risks/blockers: actual macOS/Windows execution awaits CI; no local blocker.
+
+2026-07-14 | session 10 | commit `HEAD`
+Scope: current Bioconductor CI + release-quality automation.
+Changed: live official release/devel matrix on Linux plus devel macOS/Windows;
+SHA-pinned actions and version-separated dependency caches; source-tarball build,
+installed tests, packagebuilder `R CMD check`, Git-clone/tarball BiocCheck, clean
+target-library install, offline Rd/link/vignette checks, sparse-memory/backend
+identity smoke, and Linux ASan/UBSan jobs; RStudio project removed for repository
+hygiene; condition construction and iterator state satisfy BiocCheck coding gates.
+Verified locally: dynamic matrix resolves Bioconductor 3.23/3.24 with R 4.6.0;
+actionlint + ShellCheck clean; clean tarball install runs 44 tests/349 expectations;
+official packagebuilder environment gives `R CMD check` `Status: OK`; BiocCheck
+Git-clone hygiene = 0/0/0; tarball = 0 errors/0 warnings/5 explained notes; docs
+and benchmark smoke pass; serial/SOCK
+digests agree; sparse fixtures stay smaller than logical dense payloads; combined
+ASan/UBSan installed-package suite passes.
+Decisions: CI fails every package-controlled BiocCheck error/warning; development
+version numbering and maintainer-owned Support-site enrollment remain explicit
+Session 12 gates. Suggested `Coverage` view is a semantic false positive; ORCID,
+funding roles, and mailing-list state remain unasserted. Valgrind stays omitted
+because it is unavailable locally; the already-stable stronger sanitizer pair is
+gating. Current AI provenance policy is encoded for the release audit and new CI
+code carries provenance comments.
+Remaining: first remote workflow run must establish macOS/Windows portability and
+close Session 8/Definition-of-Done cross-platform boxes; then Session 11.
+Risks/blockers: GitHub-hosted results cannot exist before maintainer push; full
+submission BiocCheck still needs a 0.99-series version and Support-site state.

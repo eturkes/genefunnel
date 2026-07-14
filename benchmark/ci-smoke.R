@@ -1,3 +1,5 @@
+# Assisted-by: OpenAI Codex.
+
 smoke_file <- grep("^--file=", commandArgs(trailingOnly = FALSE), value = TRUE)
 if (length(smoke_file) != 1L) {
     stop("Cannot locate benchmark/ci-smoke.R.", call. = FALSE)
@@ -40,5 +42,16 @@ stopifnot(
         output,
         c("manifest.tsv", "metadata.tsv", "runs.tsv", "session-info.txt")
     )))
+)
+sparse <- summary$storage == "sparse"
+fixture_digests <- split(summary$output_md5, summary$fixture_id, drop = TRUE)
+stopifnot(
+    any(sparse),
+    all(summary$input_bytes[sparse] < summary$logical_dense_bytes[sparse]),
+    all(vapply(
+        fixture_digests,
+        function(digests) length(unique(digests)) == 1L,
+        logical(1)
+    ))
 )
 cat("Benchmark smoke checks passed: ", normalizePath(output), "\n", sep = "")

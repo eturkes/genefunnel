@@ -97,15 +97,14 @@
     }
     warning(
         sprintf(
-            paste0(
-                "Omitting %d gene set%s with fewer than two unique members ",
-                "matched to `mat` row names: %s%s."
-            ),
+            "Omitting %d gene set%s with fewer than two unique members ",
             count,
-            if (count == 1L) "" else "s",
-            shown,
-            suffix
+            if (count == 1L) "" else "s"
         ),
+        "matched to `mat` row names: ",
+        shown,
+        suffix,
+        ".",
         call. = FALSE
     )
 }

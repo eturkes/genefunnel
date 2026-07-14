@@ -1,3 +1,5 @@
+# Assisted-by: OpenAI Codex.
+
 .column_chunk_ranges <- function(n_columns, n_workers) {
     valid_column_count <- is.numeric(n_columns) &&
         length(n_columns) == 1L &&
@@ -39,15 +41,16 @@
 }
 
 .matrix_chunk_iterator <- function(mat, ranges) {
-    next_id <- 0L
+    state <- new.env(parent = emptyenv())
+    state$next_id <- 0L
 
     function() {
-        if (next_id >= nrow(ranges)) {
+        if (state$next_id >= nrow(ranges)) {
             return(NULL)
         }
-        next_id <<- next_id + 1L
-        first <- ranges$first[[next_id]]
-        last <- ranges$last[[next_id]]
+        state$next_id <- state$next_id + 1L
+        first <- ranges$first[[state$next_id]]
+        last <- ranges$last[[state$next_id]]
         chunk <- if (first == 1L && last == ncol(mat)) {
             mat
         } else {
@@ -55,7 +58,7 @@
         }
 
         list(
-            id = ranges$id[[next_id]],
+            id = ranges$id[[state$next_id]],
             first = first,
             last = last,
             mat = chunk
