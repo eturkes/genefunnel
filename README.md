@@ -1,7 +1,9 @@
 # GeneFunnel
 
-**GeneFunnel** is a scoring algorithm implemented in R for computing gene set scores from gene expression matrices.
-It is designed for high-throughput use across large single-cell or bulk datasets, and works efficiently with sparse matrices.
+**GeneFunnel** is an R gene-set scoring algorithm for feature-by-sample
+expression matrices. Dense inputs stay dense; sparse inputs stay sparse through
+bounded scoring chunks. Reproducible dense, sparse, serial, and parallel
+performance measurements are defined in the [benchmark harness](benchmark/README.md).
 
 ```
 This file is part of GeneFunnel.

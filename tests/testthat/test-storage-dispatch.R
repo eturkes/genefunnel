@@ -130,3 +130,32 @@ test_that("dense and sparse paths preserve reordered rows and columns", {
     expect_identical(observed_dense[, colnames(dense), drop = FALSE], expected)
     expect_identical(observed_sparse, observed_dense)
 })
+
+test_that("sparse traversal preserves declared membership arithmetic order", {
+    mat <- matrix(
+        c(
+            1e150, 1, 0, 3, NA_real_, 2,
+            0, 2^-1074, 0, NaN, 4, 1
+        ),
+        nrow = 6L,
+        dimnames = list(LETTERS[1:6], c("wide", "tiny"))
+    )
+    gene_sets <- list(
+        scrambled = c("F", "A", "E", "B", "D", "C"),
+        overlap = c("E", "C", "A", "F")
+    )
+
+    dense <- genefunnel(
+        mat,
+        gene_sets,
+        BPPARAM = BiocParallel::SerialParam()
+    )
+    sparse <- genefunnel(
+        Matrix::Matrix(mat, sparse = TRUE),
+        gene_sets,
+        BPPARAM = BiocParallel::SerialParam()
+    )
+
+    expect_equal(sparse, dense, tolerance = 0)
+    expect_equal(dense, reference_scores(mat, gene_sets), tolerance = 0)
+})

@@ -46,12 +46,23 @@
     .validate_features(features)
 
     members <- lapply(gene_sets, function(set) set[!duplicated(set)])
-    indices <- lapply(members, function(set) {
-        matched <- match(set, features, nomatch = 0L)
-        unname(matched[matched > 0L])
-    })
-
     declared_size <- unname(lengths(members))
+    flat_indices <- match(
+        unlist(members, use.names = FALSE),
+        features,
+        nomatch = 0L
+    )
+    ends <- cumsum(declared_size)
+    starts <- ends - declared_size + 1L
+    indices <- Map(function(first, last, size) {
+        if (size == 0L) {
+            return(integer())
+        }
+        matched <- flat_indices[seq.int(first, last)]
+        unname(matched[matched > 0L])
+    }, starts, ends, declared_size)
+    names(indices) <- names(members)
+
     matched_size <- unname(lengths(indices))
     duplicate_member_count <- unname(lengths(gene_sets)) - declared_size
     coverage_fraction <- rep.int(NA_real_, length(gene_sets))

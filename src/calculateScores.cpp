@@ -49,8 +49,60 @@ void stop_non_finite_result(const int gene_set, const int column) {
   );
 }
 
+double finalize_score(
+  const std::size_t observed_size,
+  const long double sum_values,
+  const std::size_t below_mean_count,
+  const long double below_mean_sum,
+  const int gene_set,
+  const int column
+) {
+  if (!std::isfinite(sum_values) ||
+      !std::isfinite(below_mean_sum) ||
+      below_mean_count >= observed_size) {
+    stop_non_finite_result(gene_set, column);
+  }
+
+  // Since total absolute deviation equals twice the deviation below the
+  // mean, the normative formula is equivalently:
+  // ((n - 1 - l) * sum(x) + n * sum(x[x < mean(x)])) / (n - 1),
+  // where l is the number below the mean. For non-negative inputs every
+  // term is non-negative, avoiding catastrophic subtraction near zero.
+  const long double total_term =
+    (observed_size - 1 - below_mean_count) * sum_values;
+  const long double below_mean_term =
+    observed_size * below_mean_sum;
+  const long double score_extended =
+    (total_term + below_mean_term) / (observed_size - 1);
+  const long double scale = std::max(
+    std::fabs(total_term),
+    std::fabs(below_mean_term)
+  ) / (observed_size - 1);
+  if (!std::isfinite(score_extended) || !std::isfinite(scale)) {
+    stop_non_finite_result(gene_set, column);
+  }
+
+  const long double tolerance = score_tolerance(observed_size, scale);
+  if (score_extended < -tolerance) {
+    stop(
+      "Internal GeneFunnel arithmetic produced a materially negative "
+      "score for gene set %d, column %d.",
+      gene_set,
+      column
+    );
+  }
+
+  const double score = static_cast<double>(score_extended);
+  if (!std::isfinite(score)) {
+    stop_non_finite_result(gene_set, column);
+  }
+
+  // Clamp negative roundoff only. Small positive scores may be genuine.
+  return score <= 0.0 ? 0.0 : score;
+}
+
 template <typename ValueAt>
-NumericMatrix calculate_scores(
+NumericMatrix calculate_dense_scores(
   const int n_rows,
   const int n_columns,
   const List& gene_indices,
@@ -105,9 +157,6 @@ NumericMatrix calculate_scores(
       for (const double value : observed) {
         sum_values += static_cast<long double>(value);
       }
-      if (!std::isfinite(sum_values)) {
-        stop_non_finite_result(i + 1, j + 1);
-      }
 
       const long double mean_values = sum_values / observed_size;
       std::size_t below_mean_count = 0;
@@ -118,50 +167,154 @@ NumericMatrix calculate_scores(
           below_mean_sum += static_cast<long double>(value);
         }
       }
-      if (!std::isfinite(below_mean_sum) ||
-          below_mean_count >= observed_size) {
-        stop_non_finite_result(i + 1, j + 1);
-      }
 
-      // Since total absolute deviation equals twice the deviation below the
-      // mean, the normative formula is equivalently:
-      // ((n - 1 - l) * sum(x) + n * sum(x[x < mean(x)])) / (n - 1),
-      // where l is the number below the mean. For non-negative inputs every
-      // term is non-negative, avoiding catastrophic subtraction near zero.
-      const long double total_term =
-        (observed_size - 1 - below_mean_count) * sum_values;
-      const long double below_mean_term =
-        observed_size * below_mean_sum;
-      const long double score_extended =
-        (total_term + below_mean_term) / (observed_size - 1);
-      const long double scale = std::max(
-        std::fabs(total_term),
-        std::fabs(below_mean_term)
-      ) / (observed_size - 1);
-      if (!std::isfinite(score_extended) || !std::isfinite(scale)) {
-        stop_non_finite_result(i + 1, j + 1);
-      }
-
-      const long double tolerance = score_tolerance(
+      scores(i, j) = finalize_score(
         observed_size,
-        scale
+        sum_values,
+        below_mean_count,
+        below_mean_sum,
+        i + 1,
+        j + 1
       );
-      if (score_extended < -tolerance) {
+    }
+  }
+
+  return scores;
+}
+
+struct SparseMembership {
+  int gene_set;
+  R_xlen_t position;
+};
+
+struct SparseEntry {
+  R_xlen_t position;
+  double value;
+};
+
+NumericMatrix calculate_sparse_scores(
+  const arma::sp_mat& orig_mat,
+  const List& gene_indices
+) {
+  const int n_rows = static_cast<int>(orig_mat.n_rows);
+  const int n_columns = static_cast<int>(orig_mat.n_cols);
+  const int n_gene_sets = gene_indices.size();
+  NumericMatrix scores(n_gene_sets, n_columns);
+
+  // Invert memberships once per bounded native chunk. Each sparse column can
+  // then be streamed once; implicit zeros require neither lookup nor storage.
+  std::vector<std::vector<SparseMembership>> memberships_by_row(n_rows);
+  std::vector<std::size_t> gene_set_sizes(n_gene_sets);
+  for (int i = 0; i < n_gene_sets; ++i) {
+    IntegerVector indices = gene_indices[i];
+    gene_set_sizes[i] = indices.size();
+    for (R_xlen_t k = 0; k < indices.size(); ++k) {
+      const int index = indices[k];
+      if (index == NA_INTEGER || index < 1 || index > n_rows) {
+        stop("Internal gene-set index is invalid.");
+      }
+      memberships_by_row[index - 1].push_back({i, k});
+    }
+  }
+
+  std::vector<std::vector<SparseEntry>> entries_by_gene_set(n_gene_sets);
+  for (int j = 0; j < n_columns; ++j) {
+    for (auto& entries : entries_by_gene_set) {
+      entries.clear();
+    }
+
+    for (arma::sp_mat::const_col_iterator entry = orig_mat.begin_col(j);
+         entry != orig_mat.end_col(j);
+         ++entry) {
+      const int row = static_cast<int>(entry.row());
+      const double value = *entry;
+      const auto& memberships = memberships_by_row[row];
+      if (memberships.empty()) {
+        continue;
+      }
+      if (std::isinf(value)) {
         stop(
-          "Internal GeneFunnel arithmetic produced a materially negative "
-          "score for gene set %d, column %d.",
-          i + 1,
-          j + 1
+          "Internal input contains an infinite value at matrix row %d, "
+          "column %d, gene set %d.",
+          row + 1,
+          j + 1,
+          memberships.front().gene_set + 1
         );
       }
 
-      const double score = static_cast<double>(score_extended);
-      if (!std::isfinite(score)) {
-        stop_non_finite_result(i + 1, j + 1);
+      for (const SparseMembership& membership : memberships) {
+        entries_by_gene_set[membership.gene_set].push_back({
+          membership.position,
+          value
+        });
+      }
+    }
+
+    for (int i = 0; i < n_gene_sets; ++i) {
+      const std::size_t gene_set_size = gene_set_sizes[i];
+      if (gene_set_size < 2) {
+        scores(i, j) = NA_REAL;
+        continue;
       }
 
-      // Clamp negative roundoff only. Small positive scores may be genuine.
-      scores(i, j) = score <= 0.0 ? 0.0 : score;
+      auto& entries = entries_by_gene_set[i];
+      std::sort(
+        entries.begin(),
+        entries.end(),
+        [](const SparseEntry& left, const SparseEntry& right) {
+          return left.position < right.position;
+        }
+      );
+
+      std::size_t observed_size = gene_set_size;
+      std::size_t positive_count = 0;
+      long double sum_values = 0.0L;
+      for (const SparseEntry& entry : entries) {
+        if (std::isnan(entry.value)) {
+          --observed_size;
+          continue;
+        }
+        if (entry.value < 0.0) {
+          stop(
+            "Internal GeneFunnel arithmetic produced a materially negative "
+            "score for gene set %d, column %d.",
+            i + 1,
+            j + 1
+          );
+        }
+        if (entry.value > 0.0) {
+          ++positive_count;
+          sum_values += static_cast<long double>(entry.value);
+        }
+      }
+
+      if (observed_size < 2) {
+        scores(i, j) = NA_REAL;
+        continue;
+      }
+
+      const long double mean_values = sum_values / observed_size;
+      std::size_t below_mean_count = mean_values > 0.0L
+        ? observed_size - positive_count
+        : 0;
+      long double below_mean_sum = 0.0L;
+      for (const SparseEntry& entry : entries) {
+        if (!std::isnan(entry.value) &&
+            entry.value > 0.0 &&
+            static_cast<long double>(entry.value) < mean_values) {
+          ++below_mean_count;
+          below_mean_sum += static_cast<long double>(entry.value);
+        }
+      }
+
+      scores(i, j) = finalize_score(
+        observed_size,
+        sum_values,
+        below_mean_count,
+        below_mean_sum,
+        i + 1,
+        j + 1
+      );
     }
   }
 
@@ -175,7 +328,7 @@ NumericMatrix calculateScoresDense(
   const NumericMatrix& orig_mat,
   const List& gene_indices
 ) {
-  return calculate_scores(
+  return calculate_dense_scores(
     orig_mat.nrow(),
     orig_mat.ncol(),
     gene_indices,
@@ -190,12 +343,5 @@ NumericMatrix calculateScoresSparse(
   const arma::sp_mat& orig_mat,
   const List& gene_indices
 ) {
-  return calculate_scores(
-    static_cast<int>(orig_mat.n_rows),
-    static_cast<int>(orig_mat.n_cols),
-    gene_indices,
-    [&orig_mat](const int row, const int column) {
-      return orig_mat(row, column);
-    }
-  );
+  return calculate_sparse_scores(orig_mat, gene_indices);
 }

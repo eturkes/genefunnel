@@ -33,6 +33,19 @@ test_that("coverage reports canonical set facts in input order", {
     expect_identical(observed$scoreable, c(TRUE, TRUE, FALSE, TRUE, FALSE))
 })
 
+test_that("coverage preserves multiple entirely empty sets", {
+    observed <- gene_set_coverage(
+        list(first = character(), second = character()),
+        c("A", "B")
+    )
+
+    expect_identical(observed$gene_set, c("first", "second"))
+    expect_identical(observed$declared_size, c(0L, 0L))
+    expect_identical(observed$matched_size, c(0L, 0L))
+    expect_true(all(is.na(observed$coverage)))
+    expect_false(any(observed$scoreable))
+})
+
 test_that("coverage matching is exact and case-sensitive", {
     observed <- gene_set_coverage(
         list(case = c("A", "a"), unmatched = "missing"),

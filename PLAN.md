@@ -310,18 +310,18 @@ Session boundaries are suggested cohesive commits, not a fixed limit. Split any 
 
 ### Session 7 - Profile and optimize without changing semantics
 
-- [ ] Add a reproducible synthetic data generator and benchmark harness outside package tests.
-- [ ] Measure elapsed time, throughput, allocations/peak memory, output digest, package versions, hardware, and session information.
-- [ ] Benchmark at least:
+- [x] Add a reproducible synthetic data generator and benchmark harness outside package tests.
+- [x] Measure elapsed time, throughput, allocations/peak memory, output digest, package versions, hardware, and session information.
+- [x] Benchmark at least:
   - dense bulk-like data, approximately 20,000 features, 60 samples, and 1,000 sets of size 20;
   - sparse single-cell-like data, approximately 20,000 features and configurable sample counts up to at least 600 in the default benchmark;
   - high-overlap and low-overlap set catalogues;
   - matrices containing zeros and sample-specific missing values;
   - serial and multi-worker execution.
-- [ ] Profile native hot spots before optimizing. Likely candidates are sparse random access, repeated set traversal, column copying, and worker serialization.
-- [ ] Consider a sparse-specific algorithm that accounts analytically for implicit-zero deviation rather than materializing dense columns, but adopt it only after oracle validation and measured benefit.
-- [ ] Keep performance changes isolated from API/scientific changes.
-- [ ] Add a small non-gating CI benchmark smoke test and keep full benchmarks manual or scheduled.
+- [x] Profile native hot spots before optimizing. Likely candidates are sparse random access, repeated set traversal, column copying, and worker serialization.
+- [x] Consider a sparse-specific algorithm that accounts analytically for implicit-zero deviation rather than materializing dense columns, but adopt it only after oracle validation and measured benefit.
+- [x] Keep performance changes isolated from API/scientific changes.
+- [x] Add a small non-gating CI benchmark smoke test and keep full benchmarks manual or scheduled.
 
 **Acceptance:** sparse peak memory scales with stored nonzeros plus output/bounded work buffers rather than the full feature-by-sample product; no documented efficiency claim lacks a reproducible benchmark.
 
@@ -472,7 +472,7 @@ The final package documentation must explicitly convey these thesis-derived poin
 - [x] Sparse input is never fully densified.
 - [x] Gene-set indices are precomputed once.
 - [x] Parallel task count and memory are bounded.
-- [ ] Benchmark scripts and environment metadata are reproducible.
+- [x] Benchmark scripts and environment metadata are reproducible.
 
 ### Package quality
 

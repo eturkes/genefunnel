@@ -133,3 +133,25 @@ Remaining: Session 7 - reproducible synthetic benchmark generator/harness,
 profiles, sparse memory evidence, optimization only where measured.
 Risks/blockers: Valgrind is unavailable locally; ASan covers native memory access.
 Sparse random access remains the next profiled candidate; no release blocker.
+
+2026-07-14 | session 7 | commit `HEAD`
+Scope: reproducible performance evidence + semantics-preserving sparse optimization.
+Changed: deterministic dense/sparse low/high-overlap full, hotspot, and CI-smoke
+presets; isolated timing/allocation/RSS/digest/environment capture; one-pass
+catalogue matching; sparse column streaming with analytical implicit zeros;
+qualified README sparse claim.
+Verified: 44 tests/349 expectations; built-tarball `R CMD check --no-manual` =
+`Status: OK`; combined ASan/UBSan suite passes; smoke serial/SOCK digests match.
+Exact 20,000 x 200 hotspot comparison against Session 6, three isolated repeats:
+all digests unchanged; median speedup 5.5x-11.3x (median 9.3x). Full 20,000 x
+600, 3%-stored sparse serial medians = 0.159-0.165 s; 5.81 MB input + 4.92 MB
+output; peak scoring increment = 4.88 MB versus 96 MB logical dense payload.
+Decisions: base-R profiling + optional GNU time avoid new dependencies; allocation
+tracing uses a separate identity-checked pass; sparse traversal cost now follows
+stored entries; performance results remain generated/untracked and contextual.
+Remaining: Session 8 - metadata, namespace/source hygiene, maintainer scaffolding,
+package docs/NEWS/citation, and cross-platform portability preparation.
+Risks/blockers: cold two-worker SOCK medians (0.897-1.221 s) exceed serial at
+default sizes because process startup/transfer dominates; claim no parallel
+speedup. Workflow wiring for the threshold-free smoke entry point remains
+Session 10 CI scope.
