@@ -34,3 +34,21 @@ Remaining: Session 2 - validation, shared membership/coverage preparation,
 partial-coverage policy, namespace-qualified backend default.
 Risks/blockers: unqualified `bpparam` causes the sole check note and leaves the
 implicit default unusable until Session 2; explicit `SerialParam()` is covered.
+
+2026-07-14 | session 2 | commit `HEAD` (`api: lock validation and coverage contract`)
+Scope: strict R-level inputs + shared set preparation/coverage + partial-set policy.
+Changed: exact base numeric/integer and numeric `Matrix` class boundary; dimensions,
+identifiers, finite/non-negative values, and `BiocParallelParam` validation;
+`gene_set_coverage()` diagnostics; stable deduplication/matching/indices; aggregate
+omission warning; partial scoring; namespace-qualified registered backend default;
+native scorer now consumes prepared integer memberships.
+Verified: testthat = 96/96 expectations; dense/integer/Matrix + sparse validation
+fixtures; generated docs/bindings; source manifest; built-tarball
+`R CMD check --no-manual` = `Status: OK`.
+Decisions: zero-member declared sets are valid diagnostics (`coverage = NA`) but
+unscoreable; zero retained sets return a warned 0-by-sample numeric matrix; native
+membership refactor moved forward from Session 3 to eliminate per-sample rematching.
+Remaining: Session 3 - sample-specific missing omission + effective size; defensive
+native infinity/result checks; scale-aware zero tolerance; oracle fixtures.
+Risks/blockers: dense inputs still route through sparse storage; scoring still uses
+one task per sample and unused OpenMP flags. Both remain explicitly scheduled.

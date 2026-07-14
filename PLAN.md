@@ -244,20 +244,20 @@ Session boundaries are suggested cohesive commits, not a fixed limit. Split any 
 
 ### Session 2 - Lock the R-level contract and coverage policy
 
-- [ ] Implement strict validation for matrix classes, dimensions, row names, gene-set names, member identifiers, duplicates, negative values, and infinities.
-- [ ] Remove arbitrary coercion paths that can silently densify or convert non-numeric objects.
-- [ ] Implement shared gene-set canonicalization: deduplicate members, preserve order, exact-match row names, precompute integer indices once.
-- [ ] Implement `gene_set_coverage()` with the fields defined in Section 2.4.
-- [ ] Change the scorer’s global set policy from “all members present” to “at least two unique matched members”.
-- [ ] Emit one aggregate warning for sets omitted because fewer than two members match; keep partially represented but scoreable sets.
-- [ ] Fix and validate the namespace-qualified `BPPARAM` default.
-- [ ] Add tests for strict 100% and caller-selected 50% coverage filtering, partial-set scoring, duplicate members, duplicate names, malformed identifiers, and output ordering.
+- [x] Implement strict validation for matrix classes, dimensions, row names, gene-set names, member identifiers, duplicates, negative values, and infinities.
+- [x] Remove arbitrary coercion paths that can silently densify or convert non-numeric objects.
+- [x] Implement shared gene-set canonicalization: deduplicate members, preserve order, exact-match row names, precompute integer indices once.
+- [x] Implement `gene_set_coverage()` with the fields defined in Section 2.4.
+- [x] Change the scorer’s global set policy from “all members present” to “at least two unique matched members”.
+- [x] Emit one aggregate warning for sets omitted because fewer than two members match; keep partially represented but scoreable sets.
+- [x] Fix and validate the namespace-qualified `BPPARAM` default.
+- [x] Add tests for strict 100% and caller-selected 50% coverage filtering, partial-set scoring, duplicate members, duplicate names, malformed identifiers, and output ordering.
 
 **Acceptance:** partial coverage behaves exactly as specified; invalid structures fail before native code/parallel work; no per-sample rematching exists.
 
 ### Session 3 - Correct missing-value and numerical semantics
 
-- [ ] Refactor native scoring to consume precomputed integer memberships rather than row names and character sets.
+- [x] Refactor native scoring to consume precomputed integer memberships rather than row names and character sets.
 - [ ] Omit `NA` and `NaN` per set/sample and recompute effective `n`.
 - [ ] Return `NA_real_` when fewer than two observed values remain in a cell.
 - [ ] Preserve explicit and implicit zeros in `n`, mean, deviation, and score.
@@ -470,7 +470,7 @@ The final package documentation must explicitly convey these thesis-derived poin
 ### Scalability
 
 - [ ] Sparse input is never fully densified.
-- [ ] Gene-set indices are precomputed once.
+- [x] Gene-set indices are precomputed once.
 - [ ] Parallel task count and memory are bounded.
 - [ ] Benchmark scripts and environment metadata are reproducible.
 

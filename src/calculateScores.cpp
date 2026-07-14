@@ -26,30 +26,16 @@ using namespace arma;
 
 // [[Rcpp::export]]
 NumericMatrix calculateScores(
-  const arma::sp_mat& orig_mat, CharacterVector row_names, List gene_ids
+  const arma::sp_mat& orig_mat, List gene_indices
 ) {
   int ncol_mat = orig_mat.n_cols;
-  int nrow_list = gene_ids.size();
+  int nrow_list = gene_indices.size();
 
   NumericMatrix mat(nrow_list, ncol_mat);
 
-  std::unordered_map<std::string, uword> row_map;
-  for (uword i = 0; i < row_names.size(); ++i) {
-    row_map[as<std::string>(row_names[i])] = i;
-  }
-
-
   for (int j = 0; j < ncol_mat; ++j) {
     for (int i = 0; i < nrow_list; ++i) {
-      CharacterVector gene_set = gene_ids[i];
-      std::vector<uword> indices;
-
-      for (int m = 0; m < gene_set.size(); ++m) {
-        std::string gene = as<std::string>(gene_set[m]);
-        if (row_map.find(gene) != row_map.end()) {
-          indices.push_back(row_map[gene]);
-        }
-      }
+      IntegerVector indices = gene_indices[i];
 
       if (indices.size() < 2) {
         mat(i, j) = NA_REAL;
@@ -57,14 +43,19 @@ NumericMatrix calculateScores(
       }
 
       vec idx_values(indices.size());
-      for (size_t k = 0; k < indices.size(); ++k) {
-        idx_values[k] = orig_mat(indices[k], j);
+      for (R_xlen_t k = 0; k < indices.size(); ++k) {
+        int index = indices[k];
+        if (index == NA_INTEGER || index < 1 ||
+            static_cast<uword>(index) > orig_mat.n_rows) {
+          stop("Internal gene-set index is invalid.");
+        }
+        idx_values[k] = orig_mat(index - 1, j);
       }
 
       double sum_values = sum(idx_values);
       double var_values = sum(abs(idx_values - mean(idx_values)));
 
-      size_t size = idx_values.size();
+      uword size = idx_values.size();
       double factor = static_cast<double>(size) / (2.0 * (size - 1));
       double score = sum_values - (var_values * factor);
 

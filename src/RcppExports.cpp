@@ -12,21 +12,20 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // calculateScores
-NumericMatrix calculateScores(const arma::sp_mat& orig_mat, CharacterVector row_names, List gene_ids);
-RcppExport SEXP _genefunnel_calculateScores(SEXP orig_matSEXP, SEXP row_namesSEXP, SEXP gene_idsSEXP) {
+NumericMatrix calculateScores(const arma::sp_mat& orig_mat, List gene_indices);
+RcppExport SEXP _genefunnel_calculateScores(SEXP orig_matSEXP, SEXP gene_indicesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::sp_mat& >::type orig_mat(orig_matSEXP);
-    Rcpp::traits::input_parameter< CharacterVector >::type row_names(row_namesSEXP);
-    Rcpp::traits::input_parameter< List >::type gene_ids(gene_idsSEXP);
-    rcpp_result_gen = Rcpp::wrap(calculateScores(orig_mat, row_names, gene_ids));
+    Rcpp::traits::input_parameter< List >::type gene_indices(gene_indicesSEXP);
+    rcpp_result_gen = Rcpp::wrap(calculateScores(orig_mat, gene_indices));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_genefunnel_calculateScores", (DL_FUNC) &_genefunnel_calculateScores, 3},
+    {"_genefunnel_calculateScores", (DL_FUNC) &_genefunnel_calculateScores, 2},
     {NULL, NULL, 0}
 };
 

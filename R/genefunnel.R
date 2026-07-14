@@ -21,67 +21,53 @@
 #' This function computes GeneFunnel scores for each sample and gene set, based
 #' on a matrix of feature expression and a list of gene sets.
 #'
-#' @param mat A (sparse) matrix of feature expression (features x samples).
-#' @param gene_sets A named list of character vectors representing gene sets.
-#' @param BPPARAM A BiocParallel backend.
+#' @param mat A base numeric/integer matrix or numeric `Matrix` object, with
+#'   features in rows and samples in columns. Row names must be unique.
+#' @param gene_sets A named list of character vectors containing feature
+#'   identifiers.
+#' @param BPPARAM A `BiocParallelParam` backend.
 #'
 #' @return A numeric matrix of gene set scores (gene sets x samples).
 #' @export
 #' @useDynLib genefunnel, .registration = TRUE
 #' @importFrom Rcpp sourceCpp
 
-genefunnel <- function(mat, gene_sets, BPPARAM = bpparam()) {
+genefunnel <- function(
+    mat,
+    gene_sets,
+    BPPARAM = BiocParallel::bpparam()
+) {
+    .validate_score_matrix(mat)
+    prepared <- .prepare_gene_sets(gene_sets, rownames(mat))
+    .validate_bpparam(BPPARAM)
 
-  if (!inherits(mat, "matrix") && !inherits(mat, "sparseMatrix")) {
-    mat <- tryCatch({
-      m <- as.matrix(mat)
-      storage.mode(m) <- "numeric"
-      m
-    }, error = function(e) {
-      stop("Input 'mat' must be coercible to a numeric matrix: ", e$message)
-    })
-  } else {
-    mat <- as.matrix(mat)
-    storage.mode(mat) <- "numeric"
-  }
+    retained <- prepared$coverage$scoreable
+    if (any(!retained)) {
+        .warn_unscoreable_sets(prepared$coverage$gene_set[!retained])
+    }
 
-  if (any(mat < 0, na.rm = TRUE)) {
-    stop("Input matrix contains negative values. genefunnel() expects all values to be non-negative.")
-  }
+    retained_names <- prepared$coverage$gene_set[retained]
+    if (!any(retained)) {
+        return(matrix(
+            double(),
+            nrow = 0L,
+            ncol = ncol(mat),
+            dimnames = list(character(), colnames(mat))
+        ))
+    }
 
-  mat <- Matrix::Matrix(mat, sparse = TRUE)
+    mat <- .as_sparse_numeric_matrix(mat)
+    indices <- prepared$indices[retained]
+    result <- BiocParallel::bplapply(
+        seq_len(ncol(mat)),
+        function(column) {
+            calculateScores(mat[, column, drop = FALSE], indices)
+        },
+        BPPARAM = BPPARAM
+    )
 
-  if (!is.list(gene_sets)) {
-    stop("Input 'gene_sets' must be a list.")
-  }
-
-  if (is.null(names(gene_sets)) || any(names(gene_sets) == "")) {
-    stop("Each gene set in the list must be named.")
-  }
-
-  if (!all(vapply(gene_sets, is.character, logical(1)))) {
-    stop("Each gene set must be a character vector of gene names.")
-  }
-
-  valid_sets <- gene_sets[
-    sapply(gene_sets, function(g) length(g) >= 2 && all(g %in% rownames(mat)))
-  ]
-
-  if (length(valid_sets) == 0) {
-    stop("None of the gene sets have at least 2 genes and all genes present in the input matrix.")
-  }
-
-  result <- BiocParallel::bplapply(
-    seq_len(ncol(mat)),
-    function(i) {
-      calculateScores(mat[, i, drop = FALSE], rownames(mat), valid_sets)
-    },
-    BPPARAM = BPPARAM
-  )
-
-  scores <- do.call(cbind, result)
-  rownames(scores) <- names(valid_sets)
-  colnames(scores) <- colnames(mat)
-
-  return(scores)
+    scores <- do.call(cbind, result)
+    rownames(scores) <- retained_names
+    colnames(scores) <- colnames(mat)
+    scores
 }

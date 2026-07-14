@@ -4,14 +4,16 @@
 \alias{genefunnel}
 \title{GeneFunnel scoring algorithm}
 \usage{
-genefunnel(mat, gene_sets, BPPARAM = bpparam())
+genefunnel(mat, gene_sets, BPPARAM = BiocParallel::bpparam())
 }
 \arguments{
-\item{mat}{A (sparse) matrix of feature expression (features x samples).}
+\item{mat}{A base numeric/integer matrix or numeric \code{Matrix} object, with
+features in rows and samples in columns. Row names must be unique.}
 
-\item{gene_sets}{A named list of character vectors representing gene sets.}
+\item{gene_sets}{A named list of character vectors containing feature
+identifiers.}
 
-\item{BPPARAM}{A BiocParallel backend.}
+\item{BPPARAM}{A \code{BiocParallelParam} backend.}
 }
 \value{
 A numeric matrix of gene set scores (gene sets x samples).
