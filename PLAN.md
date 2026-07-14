@@ -340,9 +340,9 @@ Session boundaries are suggested cohesive commits, not a fixed limit. Split any 
 
 ### Session 9 - Write durable scientific and user documentation
 
-- [ ] Create a durable tracked scientific specification, for example `inst/SCIENTIFIC_SPEC.md`, containing the normative formula and value/coverage semantics so correctness does not depend on this temporary plan.
-- [ ] Expand roxygen documentation for `genefunnel()` and `gene_set_coverage()` with exact input classes, matching rules, equation, zeros, missing values, partial coverage, errors, return shape, and examples.
-- [ ] Build a vignette using current Bioconductor conventions that covers:
+- [x] Create a durable tracked scientific specification, for example `inst/SCIENTIFIC_SPEC.md`, containing the normative formula and value/coverage semantics so correctness does not depend on this temporary plan.
+- [x] Expand roxygen documentation for `genefunnel()` and `gene_set_coverage()` with exact input classes, matching rules, equation, zeros, missing values, partial coverage, errors, return shape, and examples.
+- [x] Build a vignette using current Bioconductor conventions that covers:
   - algorithm and interpretation;
   - canonical examples;
   - dense and sparse usage;
@@ -351,10 +351,10 @@ Session boundaries are suggested cohesive commits, not a fixed limit. Split any 
   - exact identifier matching/versioning;
   - limitations from Section 2.8;
   - guidance that GeneFunnel performs no normalization or downstream testing.
-- [ ] Rewrite the README as a concise quick start and link to the vignette/specification.
-- [ ] State development/Bioconductor installation status accurately.
-- [ ] Keep examples small, deterministic, offline, and fast enough for package checks.
-- [ ] Remove or qualify any claim of “efficient sparse matrices”, superiority, absolute activity, or cross-dataset comparability unless directly supported by the final benchmark evidence.
+- [x] Rewrite the README as a concise quick start and link to the vignette/specification.
+- [x] State development/Bioconductor installation status accurately.
+- [x] Keep examples small, deterministic, offline, and fast enough for package checks.
+- [x] Remove or qualify any claim of “efficient sparse matrices”, superiority, absolute activity, or cross-dataset comparability unless directly supported by the final benchmark evidence.
 
 **Acceptance:** a user with no thesis can understand and reproduce every core behavior from package docs alone; rendered documentation and examples pass checks.
 
@@ -478,16 +478,16 @@ The final package documentation must explicitly convey these thesis-derived poin
 
 - [x] No placeholder metadata or tracked binaries.
 - [x] Generated namespace/native files are current.
-- [ ] Complete tests, reference documentation, vignette, README, NEWS, citation, and durable scientific spec exist.
+- [x] Complete tests, reference documentation, vignette, README, NEWS, citation, and durable scientific spec exist.
 - [ ] Source tarball installs and passes current `R CMD check`/Bioconductor checks on supported platforms.
 - [ ] CI is green from a clean checkout without network/data/thesis dependencies.
 
 ### Trustworthy claims
 
-- [ ] README/vignette claims are limited to tested behavior.
-- [ ] Cross-dataset comparability and downstream statistical suitability are qualified.
-- [ ] No exact thesis benchmark is claimed as reproduced unless corresponding data and scripts were actually run.
-- [ ] Release status and Bioconductor availability are stated accurately.
+- [x] README/vignette claims are limited to tested behavior.
+- [x] Cross-dataset comparability and downstream statistical suitability are qualified.
+- [x] No exact thesis benchmark is claimed as reproduced unless corresponding data and scripts were actually run.
+- [x] Release status and Bioconductor availability are stated accurately.
 
 ## 10. Explicit non-goals for this plan
 

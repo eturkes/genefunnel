@@ -177,3 +177,20 @@ Remaining: Session 9 durable scientific specification, complete function docs,
 vignette, and README; Session 8 macOS/Windows verification through Session 10.
 Risks/blockers: empirical macOS/Windows build evidence awaits CI; no local
 release blocker.
+
+2026-07-14 | session 9 | commit `HEAD`
+Scope: durable scientific contract + complete task-oriented user documentation.
+Changed: installed `SCIENTIFIC_SPEC.md`; exact scorer/coverage help + examples;
+executable BiocStyle vignette; concise README; vignette metadata/dependencies;
+documentation NEWS; regenerated Rd files.
+Verified: current official Bioconductor vignette guidance reviewed; 44 tests/349
+expectations pass; roxygen/Rd checks pass; standalone HTML has zero external
+resources; Chromium PDF inspection confirms formula/tables/layout; source build
+executes the vignette; built-tarball `R CMD check --no-manual` = `Status: OK`,
+including examples, tests, installed docs, and vignette rebuild.
+Decisions: HTML math uses native MathML for deterministic offline rendering;
+coverage thresholds remain labelled caller examples; README/vignette state
+development status and all scientific comparability/downstream limitations.
+Remaining: Session 10 - cross-platform CI/current Bioconductor gates, including
+Session 8's empirical macOS/Windows portability evidence; then Sessions 11-12.
+Risks/blockers: actual macOS/Windows execution awaits CI; no local blocker.

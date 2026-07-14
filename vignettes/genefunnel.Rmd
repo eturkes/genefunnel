@@ -1,0 +1,273 @@
+---
+title: "GeneFunnel: scientific scoring and practical use"
+author: "Emir Turkes"
+date: "14 July 2026"
+package: genefunnel
+output:
+  BiocStyle::html_document:
+    toc: true
+    toc_depth: 2
+    math_method: mathml
+vignette: >
+  %\VignetteIndexEntry{GeneFunnel: scientific scoring and practical use}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>",
+    fig.align = "center"
+)
+Sys.setenv(TZ = "UTC")
+```
+
+# Introduction
+
+GeneFunnel turns a non-negative feature-by-sample matrix into a
+gene-set-by-sample score matrix. It preserves observed magnitude while
+penalizing absolute variation among the available members of each set. Every
+gene set and sample is calculated independently.
+
+Transcriptomic and proteomic assays commonly use Bioconductor's matrix,
+sparse-matrix, and parallel infrastructure. GeneFunnel fits that environment by
+accepting base and `Matrix` matrices and a `BiocParallelParam`, while returning
+a plain numeric matrix for downstream analysis. It is a scorer only: it does
+not normalize data, impute missing values, map identifiers, retrieve gene sets,
+or perform statistical testing.
+
+The package is in development and has not been accepted into Bioconductor. Its
+source and issue tracker are on the
+[GeneFunnel repository](https://github.com/eturkes/genefunnel).
+
+# Installation
+
+Install the development version from GitHub with Bioconductor-compatible
+dependencies:
+
+```{r installation, eval=FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+    install.packages("BiocManager")
+}
+BiocManager::install("eturkes/genefunnel")
+```
+
+Load the installed package and choose a serial backend for the first examples.
+
+```{r load}
+library(genefunnel)
+serial <- BiocParallel::SerialParam()
+```
+
+# Score definition
+
+For one declared gene set, GeneFunnel first deduplicates member identifiers and
+matches them exactly and case-sensitively to matrix row names. Within sample
+$j$, it omits matched values that are `NA` or `NaN`. If the remaining observed
+values are $x_1,\ldots,x_n$ and $n \ge 2$, the score is
+
+$$
+\bar{x}=\frac{1}{n}\sum_{i=1}^{n}x_i
+$$
+
+and
+
+$$
+\operatorname{GeneFunnel}(x_1,\ldots,x_n)
+=\sum_{i=1}^{n}x_i
+-\frac{n}{2(n-1)}\sum_{i=1}^{n}|x_i-\bar{x}|.
+$$
+
+The cell is `NA_real_` when fewer than two observed members remain. Zero is an
+observed value, including an implicit sparse zero, so it participates in $n$,
+the sum, the mean, and the deviation. Infinities and negative values are
+invalid.
+
+The following matrix places the canonical cases in columns.
+
+```{r canonical}
+canonical <- matrix(
+    c(4, 4, 4, 0, 0, 0, 4, 0, 0, 1, 2, NA, 4, NA, NA),
+    nrow = 3,
+    dimnames = list(
+        c("A", "B", "C"),
+        c("equal", "zeros", "one_nonzero", "missing_pair", "one_observed")
+    )
+)
+canonical_sets <- list(
+    three_members = c("A", "B", "C"),
+    two_members = c("A", "B")
+)
+
+canonical_scores <- genefunnel(
+    canonical,
+    canonical_sets,
+    BPPARAM = serial
+)
+knitr::kable(canonical_scores, digits = 3)
+
+stopifnot(
+    identical(
+        unname(canonical_scores["three_members", ]),
+        c(12, 0, 0, 2, NA_real_)
+    ),
+    identical(
+        unname(canonical_scores["two_members", ]),
+        c(8, 0, 0, 2, NA_real_)
+    )
+)
+```
+
+Equal values score their sum. All-zero sets and sets with only one non-zero
+member score zero. The missing-pair column scores the observed values `c(1, 2)`
+as 2; the last column has only one observed value and returns `NA`.
+
+# Coverage is caller controlled
+
+A declared member absent from the matrix changes global assay coverage. It is
+different from a missing cell, which affects only one sample, and from an
+observed zero. `gene_set_coverage()` exposes these facts before scoring.
+
+```{r coverage}
+catalogue <- list(
+    complete = c("A", "B"),
+    partial = c("A", "B", "D"),
+    duplicated = c("A", "A", "B"),
+    insufficient = c("A", "Z")
+)
+coverage <- gene_set_coverage(catalogue, rownames(canonical))
+knitr::kable(coverage, digits = 3)
+```
+
+GeneFunnel can score a set whenever at least two unique members match. It does
+not impose a coverage fraction because assay-specific policies differ. A strict
+transcriptomic analysis might require complete coverage:
+
+```{r strict-coverage}
+strict <- !is.na(coverage$coverage) & coverage$coverage == 1
+names(catalogue[strict])
+```
+
+A low-coverage proteomic analysis might require at least 50% coverage and at
+least two matched members:
+
+```{r relaxed-coverage}
+relaxed <- !is.na(coverage$coverage) &
+    coverage$coverage >= 0.5 &
+    coverage$matched_size >= 2
+names(catalogue[relaxed])
+
+relaxed_scores <- genefunnel(
+    canonical,
+    catalogue[relaxed],
+    BPPARAM = serial
+)
+knitr::kable(relaxed_scores, digits = 3)
+```
+
+These thresholds are examples, not package recommendations. Record the exact
+gene-set collection and version alongside the chosen policy.
+
+# Dense and sparse matrices
+
+Sparse input stays sparse through scoring, and implicit zeros remain observed.
+Stored sparse `NA` and `NaN` values follow the same sample-specific omission
+rule as dense missing values.
+
+```{r sparse}
+sparse_canonical <- Matrix::Matrix(canonical, sparse = TRUE)
+sparse_scores <- genefunnel(
+    sparse_canonical,
+    canonical_sets,
+    BPPARAM = serial
+)
+
+isTRUE(all.equal(
+    sparse_scores,
+    canonical_scores,
+    tolerance = 0,
+    check.attributes = TRUE
+))
+```
+
+The dense and sparse implementations are required to produce the same named
+matrix. Sparse storage changes memory use and traversal, not the scientific
+calculation.
+
+# Serial and parallel execution
+
+`BPPARAM` accepts any suitable `BiocParallelParam`. `SerialParam()` is useful
+for debugging and small inputs. A portable SOCK backend can distribute bounded
+column chunks while preserving sample order.
+
+```{r parallel}
+sock <- BiocParallel::bpstart(BiocParallel::SnowParam(
+    workers = 2L,
+    type = "SOCK",
+    progressbar = FALSE
+))
+parallel_scores <- tryCatch(
+    genefunnel(canonical, canonical_sets, BPPARAM = sock),
+    finally = BiocParallel::bpstop(sock)
+)
+
+identical(parallel_scores, canonical_scores)
+```
+
+Process startup and data transfer can outweigh parallel work on small inputs.
+Benchmark the intended workload rather than assuming that more workers are
+faster.
+
+# Identifiers and preprocessing
+
+Matrix row names and gene-set names must be unique, non-missing, and non-empty.
+Member matching is exact, with no case conversion, synonym resolution, or
+annotation lookup. Duplicated members within one set are counted in coverage
+diagnostics and deduplicated for scoring. Overlapping sets remain valid and do
+not influence one another.
+
+GeneFunnel requires non-negative input with a meaningful zero. It applies no
+automatic preprocessing. An arbitrary positive shift is unsuitable because
+adding a constant $c$ to all $n$ observed members adds $nc$ to the score. Raw
+non-negative measurements can be preferable when scientifically appropriate,
+but the package does not prescribe a universal pipeline position.
+
+# Interpretation and limitations
+
+The absolute-deviation penalty treats within-set variability as evidence
+against coherent activity. That is a scientific assumption rather than a
+universal property of biological pathways.
+
+The sum term preserves magnitude and therefore also preserves effects of input
+units, library size, preprocessing, set size, and feature coverage. Independent
+sample scoring does not make scores from unrelated data sets automatically
+comparable. Such comparisons require compatible units, preprocessing,
+identifiers, gene-set definitions, versions, and coverage policies.
+
+Gene-set database revisions can change scores. The package does not guarantee
+that the resulting distribution meets the assumptions of every downstream
+statistical method. Validate those assumptions for the intended analysis.
+
+The complete normative contract is installed as `SCIENTIFIC_SPEC.md`:
+
+```{r specification-path}
+specification <- system.file("SCIENTIFIC_SPEC.md", package = "genefunnel")
+stopifnot(nzchar(specification), file.exists(specification))
+basename(specification)
+```
+
+# Citation
+
+The package citation includes the software and the thesis that defines its
+scientific intent.
+
+```{r citation}
+citation("genefunnel")
+```
+
+# Session information
+
+```{r session-info}
+sessionInfo()
+```

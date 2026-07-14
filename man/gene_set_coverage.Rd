@@ -7,10 +7,12 @@
 gene_set_coverage(gene_sets, features)
 }
 \arguments{
-\item{gene_sets}{A named list of character vectors containing feature
-identifiers.}
+\item{gene_sets}{A non-empty named list of character vectors. Set names must
+be unique, non-missing, and non-empty. Member identifiers must be
+non-missing and non-empty.}
 
-\item{features}{A character vector of unique available feature identifiers.}
+\item{features}{A character vector of unique, non-missing, non-empty feature
+identifiers, typically \code{rownames(mat)}.}
 }
 \value{
 A data frame with one row per gene set and columns \code{gene_set},
@@ -25,7 +27,32 @@ available features. Duplicate members are counted, then removed while
 preserving their first occurrence. The function reports facts only; callers
 choose a coverage policy appropriate to their experiment.
 }
+\details{
+This function uses the same validation, stable member deduplication, and
+exact matching rules as \code{\link[=genefunnel]{genefunnel()}}. It performs no identifier mapping or
+case conversion. An empty character vector is a valid declared set: its
+coverage is undefined and it is not scoreable.
+}
 \examples{
-sets <- list(pathway = c("A", "B", "C"))
-gene_set_coverage(sets, c("A", "B"))
+sets <- list(
+    complete = c("A", "B"),
+    partial = c("A", "B", "C"),
+    duplicated = c("A", "A", "B"),
+    insufficient = c("A", "Z")
+)
+coverage <- gene_set_coverage(sets, c("A", "B"))
+coverage
+
+# Strict transcriptomic policy: retain complete sets.
+strict <- !is.na(coverage$coverage) & coverage$coverage == 1
+names(sets[strict])
+
+# Example low-coverage proteomic policy: >= 50\% and >= 2 matches.
+relaxed <- !is.na(coverage$coverage) &
+    coverage$coverage >= 0.5 &
+    coverage$matched_size >= 2
+names(sets[relaxed])
+}
+\seealso{
+\code{\link[=genefunnel]{genefunnel()}}
 }

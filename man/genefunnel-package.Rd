@@ -19,6 +19,10 @@ covered sets remain scoreable when at least two unique members match.
 GeneFunnel does not normalize or impute measurements, map identifiers,
 retrieve gene sets, perform downstream tests, or supply biological
 interpretation.
+
+See \code{vignette("genefunnel")} for a worked workflow and
+\code{system.file("SCIENTIFIC_SPEC.md", package = "genefunnel")} for the durable
+mathematical and behavioral contract.
 }
 \seealso{
 \code{\link[=genefunnel]{genefunnel()}}, \code{\link[=gene_set_coverage]{gene_set_coverage()}}, \code{citation("genefunnel")}

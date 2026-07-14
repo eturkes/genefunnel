@@ -22,10 +22,14 @@ Imports:
     BiocParallel,
     Rcpp (>= 1.0.5)
 Suggests:
+    BiocStyle,
+    knitr,
+    rmarkdown (>= 2.12),
     testthat (>= 3.0.0)
 LinkingTo:
     Rcpp,
     RcppArmadillo
+VignetteBuilder: knitr
 SystemRequirements: C++17
 Config/testthat/edition: 3
 Config/roxygen2/version: 8.0.0

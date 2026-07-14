@@ -24,3 +24,12 @@
   serial-parallel tests.
 - Adds a reproducible synthetic benchmark harness with identity-checked output
   digests and environment metadata.
+
+## Documentation
+
+- Adds a durable scientific specification for the equation, value and coverage
+  semantics, invariants, computational equivalence, and limitations.
+- Adds an executable BiocStyle vignette covering canonical examples,
+  caller-controlled coverage, dense/sparse matrices, and parallel execution.
+- Expands function help and the README with the complete public contract and
+  accurate development status.

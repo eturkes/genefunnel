@@ -16,6 +16,10 @@
 #' retrieve gene sets, perform downstream tests, or supply biological
 #' interpretation.
 #'
+#' See `vignette("genefunnel")` for a worked workflow and
+#' `system.file("SCIENTIFIC_SPEC.md", package = "genefunnel")` for the durable
+#' mathematical and behavioral contract.
+#'
 #' @seealso [genefunnel()], [gene_set_coverage()], `citation("genefunnel")`
 #' @aliases genefunnel-package NULL
 #' @keywords internal

@@ -2,23 +2,97 @@
 % Please edit documentation in R/genefunnel.R
 \name{genefunnel}
 \alias{genefunnel}
-\title{GeneFunnel scoring algorithm}
+\title{Calculate GeneFunnel scores}
 \usage{
 genefunnel(mat, gene_sets, BPPARAM = BiocParallel::bpparam())
 }
 \arguments{
-\item{mat}{A base numeric/integer matrix or numeric \code{Matrix} object, with
-features in rows and samples in columns. Row names must be unique.}
+\item{mat}{A base numeric or integer matrix, or a numeric dense/sparse
+\link[Matrix:Matrix]{Matrix::Matrix} object, with features in rows and samples in columns. It
+must have at least one row and column. Row names must be unique,
+non-missing, and non-empty. Values may be finite and non-negative, \code{NA},
+or \code{NaN}; negative and infinite values are rejected.}
 
-\item{gene_sets}{A named list of character vectors containing feature
-identifiers.}
+\item{gene_sets}{A non-empty named list of character vectors. Set names must
+be unique, non-missing, and non-empty. Member identifiers must be
+non-missing and non-empty; duplicate members are deduplicated in first
+occurrence order.}
 
-\item{BPPARAM}{A \code{BiocParallelParam} backend.}
+\item{BPPARAM}{A \link[BiocParallel:BiocParallelParam]{BiocParallel::BiocParallelParam} backend. The default is
+the currently registered \code{\link[BiocParallel:bpparam]{BiocParallel::bpparam()}} backend.}
 }
 \value{
-A numeric matrix of gene set scores (gene sets x samples).
+A base numeric matrix with retained gene sets in rows and samples in
+columns. Retained set order, set names, sample order, and existing column
+names are preserved. When every set is omitted, the result has zero rows
+and \code{ncol(mat)} columns.
 }
 \description{
-This function computes GeneFunnel scores for each sample and gene set, based
-on a matrix of feature expression and a list of gene sets.
+Convert a non-negative feature-by-sample matrix into sample-wise gene-set
+scores. Every retained gene set and sample is calculated independently.
+}
+\details{
+For the members of one gene set that match matrix rows, \code{NA} and \code{NaN} are
+removed separately in each sample. Given the remaining values
+\eqn{x_1,\ldots,x_n}, where \eqn{n \ge 2}, the score is
+
+\deqn{
+\sum_{i=1}^{n}x_i
+-\frac{n}{2(n-1)}\sum_{i=1}^{n}|x_i-\bar{x}|,
+\qquad
+\bar{x}=\frac{1}{n}\sum_{i=1}^{n}x_i.
+}
+
+Zeros are observed values: explicit dense zeros and implicit sparse zeros
+contribute to the effective size, sum, mean, and deviation. Missing values
+are absent information and reduce the sample-specific effective size. A
+cell with fewer than two observed members is returned as \code{NA_real_}.
+}
+\section{Matching and coverage}{
+
+Matching against \code{rownames(mat)} is exact and case-sensitive. The function
+performs no identifier conversion or annotation lookup. Unmatched members
+are ignored. Sets with at least two unique matched members are scored; all
+other sets are omitted with at most one aggregate warning. Use
+\code{\link[=gene_set_coverage]{gene_set_coverage()}} to inspect coverage and apply an experiment-specific
+threshold before scoring.
+}
+
+\section{Interpretation}{
+
+The deviation penalty treats within-set absolute variability as evidence
+against coherent activity. The sum term retains the effects of units,
+library size, preprocessing, gene-set size, and assay coverage. GeneFunnel
+performs no normalization, imputation, identifier mapping, downstream
+testing, or biological interpretation. Scores from unrelated data sets are
+comparable only when units, preprocessing, identifiers, gene-set versions,
+and coverage are compatible.
+}
+
+\examples{
+mat <- rbind(
+    A = c(equal = 4, zeros = 0, one_nonzero = 4, missing = 1),
+    B = c(equal = 4, zeros = 0, one_nonzero = 0, missing = 2),
+    C = c(equal = 4, zeros = 0, one_nonzero = 0, missing = NA)
+)
+gene_sets <- list(
+    three_members = c("A", "B", "C"),
+    two_members = c("A", "B")
+)
+
+genefunnel(
+    mat,
+    gene_sets,
+    BPPARAM = BiocParallel::SerialParam()
+)
+}
+\references{
+Turkes E (2025). \emph{Development of Gene Set Enrichment and Imputation Methods
+for Transcriptomics and Proteomics: Application in the Study of
+Neurofibrillary Tangle-bearing Neurons in Alzheimer's Disease}. PhD thesis,
+University College London.
+}
+\seealso{
+\code{\link[=gene_set_coverage]{gene_set_coverage()}}, \code{vignette("genefunnel")},
+\code{system.file("SCIENTIFIC_SPEC.md", package = "genefunnel")}
 }

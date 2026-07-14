@@ -117,20 +117,46 @@
 #' preserving their first occurrence. The function reports facts only; callers
 #' choose a coverage policy appropriate to their experiment.
 #'
-#' @param gene_sets A named list of character vectors containing feature
-#'   identifiers.
-#' @param features A character vector of unique available feature identifiers.
+#' @param gene_sets A non-empty named list of character vectors. Set names must
+#'   be unique, non-missing, and non-empty. Member identifiers must be
+#'   non-missing and non-empty.
+#' @param features A character vector of unique, non-missing, non-empty feature
+#'   identifiers, typically `rownames(mat)`.
+#'
+#' @details
+#' This function uses the same validation, stable member deduplication, and
+#' exact matching rules as [genefunnel()]. It performs no identifier mapping or
+#' case conversion. An empty character vector is a valid declared set: its
+#' coverage is undefined and it is not scoreable.
 #'
 #' @return A data frame with one row per gene set and columns `gene_set`,
 #'   `declared_size` (unique declared members), `matched_size`,
 #'   `unmatched_size`, `coverage`, `duplicate_member_count`, and `scoreable`.
 #'   Coverage is `NA` for an empty declared set; a set is scoreable when at
 #'   least two unique members match.
+#'
+#' @seealso [genefunnel()]
 #' @export
 #'
 #' @examples
-#' sets <- list(pathway = c("A", "B", "C"))
-#' gene_set_coverage(sets, c("A", "B"))
+#' sets <- list(
+#'     complete = c("A", "B"),
+#'     partial = c("A", "B", "C"),
+#'     duplicated = c("A", "A", "B"),
+#'     insufficient = c("A", "Z")
+#' )
+#' coverage <- gene_set_coverage(sets, c("A", "B"))
+#' coverage
+#'
+#' # Strict transcriptomic policy: retain complete sets.
+#' strict <- !is.na(coverage$coverage) & coverage$coverage == 1
+#' names(sets[strict])
+#'
+#' # Example low-coverage proteomic policy: >= 50% and >= 2 matches.
+#' relaxed <- !is.na(coverage$coverage) &
+#'     coverage$coverage >= 0.5 &
+#'     coverage$matched_size >= 2
+#' names(sets[relaxed])
 gene_set_coverage <- function(gene_sets, features) {
     .prepare_gene_sets(gene_sets, features)$coverage
 }
