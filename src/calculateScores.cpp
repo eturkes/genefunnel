@@ -1,6 +1,6 @@
 /*
  *    This file is part of GeneFunnel.
- *    Copyright (C) 2025  Emir Turkes, UK DRI at UCL
+ *    Copyright (C) 2025-2026  Emir Turkes, UK DRI at UCL
  *
  *    This program is free software: you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  *    Emir Turkes can be contacted at emir.turkes@eturkes.com
  */

@@ -155,3 +155,25 @@ Risks/blockers: cold two-worker SOCK medians (0.897-1.221 s) exceed serial at
 default sizes because process startup/transfer dominates; claim no parallel
 speedup. Workflow wiring for the threshold-free smoke entry point remains
 Session 10 CI scope.
+
+2026-07-14 | session 8 | commit `HEAD`
+Scope: release metadata + generated-interface/source-package hygiene.
+Changed: complete author/license/URL/dependency metadata; four current official
+leaf `biocViews`; C++17 build contract; `sourceCpp` replaced by the minimal
+Rcpp namespace-loading import; generated namespace/registration refreshed;
+package help, NEWS, package + thesis citations; obsolete bootstrap scripts
+removed; build/ignore rules cover local and platform-native artifacts.
+Verified: official R/Bioconductor metadata, licensing, namespace, citation,
+NEWS, and C++ guidance reviewed; devel vocabulary confirms all four views are
+leaf terms; citation/NEWS/registration/installed-score smoke passes; source
+manifest contains only intentional package files; built-tarball `R CMD check
+--no-manual` = `Status: OK` with all 44 tests; Linux GCC C++17, Makevars, and
+GNU-extension portability checks pass.
+Decisions: retain GPL-3-or-later to match source notices; `Rcpp::evalCpp` import
+is required to load C callables used by registered Rcpp wrappers; pin C++17 to
+avoid compiler-default drift; actual macOS/Windows execution evidence belongs
+with Session 10's cross-platform CI rather than a Debian-only claim.
+Remaining: Session 9 durable scientific specification, complete function docs,
+vignette, and README; Session 8 macOS/Windows verification through Session 10.
+Risks/blockers: empirical macOS/Windows build evidence awaits CI; no local
+release blocker.

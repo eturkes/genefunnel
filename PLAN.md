@@ -327,13 +327,13 @@ Session boundaries are suggested cohesive commits, not a fixed limit. Split any 
 
 ### Session 8 - Finish package metadata, hygiene, and portability
 
-- [ ] Replace every placeholder in `DESCRIPTION` with accurate title, description, author, contact, GPL-3 license declaration, URLs, bug tracker, dependencies, and validated `biocViews` terms.
-- [ ] Remove the unnecessary `Rcpp::sourceCpp` import if package registration makes it redundant.
-- [ ] Regenerate native registration and namespace files.
-- [ ] Review `dev/` bootstrap scripts: delete obsolete scaffolding or clearly retain it as maintainer-only and exclude it from builds.
-- [ ] Expand `.Rbuildignore` for agent files, plans, local caches, benchmark outputs, and other non-package content while retaining user-facing source/docs.
-- [ ] Ensure no generated binary, check directory, tarball, cache, or platform-specific file is tracked.
-- [ ] Add package-level documentation, `NEWS.md`, and an appropriate citation entry for the thesis/package without inventing a DOI.
+- [x] Replace every placeholder in `DESCRIPTION` with accurate title, description, author, contact, GPL-3 license declaration, URLs, bug tracker, dependencies, and validated `biocViews` terms.
+- [x] Remove the unnecessary `Rcpp::sourceCpp` import if package registration makes it redundant.
+- [x] Regenerate native registration and namespace files.
+- [x] Review `dev/` bootstrap scripts: delete obsolete scaffolding or clearly retain it as maintainer-only and exclude it from builds.
+- [x] Expand `.Rbuildignore` for agent files, plans, local caches, benchmark outputs, and other non-package content while retaining user-facing source/docs.
+- [x] Ensure no generated binary, check directory, tarball, cache, or platform-specific file is tracked.
+- [x] Add package-level documentation, `NEWS.md`, and an appropriate citation entry for the thesis/package without inventing a DOI.
 - [ ] Verify compiler portability on Linux, macOS, and Windows; avoid GNU-only assumptions unless guarded.
 
 **Acceptance:** source tarball contains only intentional package content; install/check succeeds on all supported platforms; metadata contains no placeholders or false Bioconductor status.
@@ -476,8 +476,8 @@ The final package documentation must explicitly convey these thesis-derived poin
 
 ### Package quality
 
-- [ ] No placeholder metadata or tracked binaries.
-- [ ] Generated namespace/native files are current.
+- [x] No placeholder metadata or tracked binaries.
+- [x] Generated namespace/native files are current.
 - [ ] Complete tests, reference documentation, vignette, README, NEWS, citation, and durable scientific spec exist.
 - [ ] Source tarball installs and passes current `R CMD check`/Bioconductor checks on supported platforms.
 - [ ] CI is green from a clean checkout without network/data/thesis dependencies.

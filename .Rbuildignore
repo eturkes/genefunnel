@@ -1,7 +1,11 @@
 ^genefunnel\.Rproj$
 ^\.Rproj\.user$
-^dev$
 ^AGENTS\.md$
 ^PLAN\.md$
 ^\.agent$
+^\.codex$
+^\.github$
 ^benchmark$
+^.*\.Rcheck$
+^genefunnel_.*\.tar\.gz$
+^src/.*\.(a|dll|dylib|exp|lib|o|obj|pdb|so)$

@@ -10,8 +10,13 @@
 /benchmark/results/
 /*.Rcheck/
 /*.tar.gz
+/src/*.a
 /src/*.dll
 /src/*.dylib
+/src/*.exp
+/src/*.lib
 /src/*.o
+/src/*.obj
+/src/*.pdb
 /src/*.so
 /src/symbols.rds

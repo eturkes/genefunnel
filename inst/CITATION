@@ -1,0 +1,22 @@
+citHeader("To cite GeneFunnel or its scientific source:")
+
+bibentry(
+    bibtype = "Manual",
+    title = "{genefunnel}: Gene Set Activity Scoring with {GeneFunnel}",
+    author = person("Emir", "Turkes"),
+    year = "2026",
+    note = paste("R package version", meta$Version),
+    url = "https://github.com/eturkes/genefunnel"
+)
+
+bibentry(
+    bibtype = "PhdThesis",
+    title = paste(
+        "Development of Gene Set Enrichment and Imputation Methods for",
+        "Transcriptomics and Proteomics: Application in the Study of",
+        "Neurofibrillary Tangle-bearing Neurons in Alzheimer's Disease"
+    ),
+    author = person("Emir", "Turkes"),
+    school = "University College London",
+    year = "2025"
+)
