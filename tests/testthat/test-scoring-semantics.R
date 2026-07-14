@@ -127,39 +127,75 @@ test_that("stable arithmetic preserves scores across extreme dynamic range", {
 })
 
 test_that("the native boundary rejects escaped infinities with context", {
-    mat <- Matrix::sparseMatrix(
+    dense <- matrix(c(Inf, 1), nrow = 2L)
+    sparse <- Matrix::sparseMatrix(
         i = c(1L, 2L),
         j = c(1L, 1L),
         x = c(Inf, 1),
         dims = c(2L, 1L)
     )
 
-    expect_error(
-        genefunnel:::calculateScores(mat, list(c(1L, 2L))),
-        "infinite.*row 1.*column 1.*gene set 1"
-    )
+    for (native_call in list(
+        function() genefunnel:::calculateScoresDense(
+            dense,
+            list(c(1L, 2L))
+        ),
+        function() genefunnel:::calculateScoresSparse(
+            sparse,
+            list(c(1L, 2L))
+        )
+    )) {
+        expect_error(
+            native_call(),
+            "infinite.*row 1.*column 1.*gene set 1"
+        )
+    }
 })
 
 test_that("the native boundary rejects invalid arithmetic results", {
-    negative <- Matrix::sparseMatrix(
+    negative_dense <- matrix(c(-1, -1), nrow = 2L)
+    negative_sparse <- Matrix::sparseMatrix(
         i = c(1L, 2L),
         j = c(1L, 1L),
         x = c(-1, -1),
         dims = c(2L, 1L)
     )
-    overflowing <- Matrix::sparseMatrix(
+    overflowing_dense <- matrix(rep(.Machine$double.xmax, 2L), nrow = 2L)
+    overflowing_sparse <- Matrix::sparseMatrix(
         i = c(1L, 2L),
         j = c(1L, 1L),
         x = rep(.Machine$double.xmax, 2L),
         dims = c(2L, 1L)
     )
 
-    expect_error(
-        genefunnel:::calculateScores(negative, list(c(1L, 2L))),
-        "materially negative.*gene set 1.*column 1"
-    )
-    expect_error(
-        genefunnel:::calculateScores(overflowing, list(c(1L, 2L))),
-        "non-finite.*gene set 1.*column 1"
-    )
+    for (native_call in list(
+        function() genefunnel:::calculateScoresDense(
+            negative_dense,
+            list(c(1L, 2L))
+        ),
+        function() genefunnel:::calculateScoresSparse(
+            negative_sparse,
+            list(c(1L, 2L))
+        )
+    )) {
+        expect_error(
+            native_call(),
+            "materially negative.*gene set 1.*column 1"
+        )
+    }
+    for (native_call in list(
+        function() genefunnel:::calculateScoresDense(
+            overflowing_dense,
+            list(c(1L, 2L))
+        ),
+        function() genefunnel:::calculateScoresSparse(
+            overflowing_sparse,
+            list(c(1L, 2L))
+        )
+    )) {
+        expect_error(
+            native_call(),
+            "non-finite.*gene set 1.*column 1"
+        )
+    }
 })

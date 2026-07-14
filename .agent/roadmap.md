@@ -69,3 +69,22 @@ Remaining: Session 4 - distinct dense/sparse paths, representation preservation,
 stored sparse missing equivalence, and a testable dispatch seam.
 Risks/blockers: dense inputs still route through sparse storage; scoring still uses
 one task per sample and unused OpenMP flags. All remain explicitly scheduled.
+
+2026-07-14 | session 4 | commit `HEAD`
+Scope: representation-preserving dense/sparse scoring dispatch.
+Changed: base + `Matrix` dense inputs stay dense through bounded column work;
+sparse inputs stay sparse and normalize only bounded chunks; separate native
+wrappers share one numerical core; bounded semantic-column validation avoids
+dense intermediates and raw structured-storage false positives; dispatch and
+dense/sparse equivalence regressions cover zeros, partial coverage, missingness,
+and reordered dimensions.
+Verified: testthat = 131/131 expectations; regenerated Rcpp/roxygen outputs;
+source build + built-tarball `R CMD check --no-manual` = `Status: OK`.
+Decisions: storage kind is fixed from the validated top-level input and guarded
+at each native boundary; implicit sparse zeros remain random-access observations;
+validation reads represented values because raw structured `Matrix` storage can
+contain ignored entries or unaggregated duplicates.
+Remaining: Session 5 - bounded parallel chunking, deterministic portable backend
+coverage, contextual worker errors, and removal of unused OpenMP flags.
+Risks/blockers: one BiocParallel task per sample still captures the full input;
+sparse random access is semantically correct but remains a profiling candidate.

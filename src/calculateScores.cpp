@@ -49,23 +49,23 @@ void stop_non_finite_result(const int gene_set, const int column) {
   );
 }
 
-}  // namespace
-
-// [[Rcpp::export]]
-NumericMatrix calculateScores(
-  const arma::sp_mat& orig_mat, List gene_indices
+template <typename ValueAt>
+NumericMatrix calculate_scores(
+  const int n_rows,
+  const int n_columns,
+  const List& gene_indices,
+  const ValueAt& value_at
 ) {
-  int ncol_mat = orig_mat.n_cols;
-  int nrow_list = gene_indices.size();
+  const int n_gene_sets = gene_indices.size();
 
-  NumericMatrix mat(nrow_list, ncol_mat);
+  NumericMatrix scores(n_gene_sets, n_columns);
 
-  for (int j = 0; j < ncol_mat; ++j) {
-    for (int i = 0; i < nrow_list; ++i) {
+  for (int j = 0; j < n_columns; ++j) {
+    for (int i = 0; i < n_gene_sets; ++i) {
       IntegerVector indices = gene_indices[i];
 
       if (indices.size() < 2) {
-        mat(i, j) = NA_REAL;
+        scores(i, j) = NA_REAL;
         continue;
       }
 
@@ -74,12 +74,11 @@ NumericMatrix calculateScores(
 
       for (R_xlen_t k = 0; k < indices.size(); ++k) {
         int index = indices[k];
-        if (index == NA_INTEGER || index < 1 ||
-            static_cast<uword>(index) > orig_mat.n_rows) {
+        if (index == NA_INTEGER || index < 1 || index > n_rows) {
           stop("Internal gene-set index is invalid.");
         }
 
-        double value = orig_mat(index - 1, j);
+        double value = value_at(index - 1, j);
         if (std::isnan(value)) {
           continue;
         }
@@ -98,7 +97,7 @@ NumericMatrix calculateScores(
 
       const std::size_t observed_size = observed.size();
       if (observed_size < 2) {
-        mat(i, j) = NA_REAL;
+        scores(i, j) = NA_REAL;
         continue;
       }
 
@@ -162,9 +161,41 @@ NumericMatrix calculateScores(
       }
 
       // Clamp negative roundoff only. Small positive scores may be genuine.
-      mat(i, j) = score <= 0.0 ? 0.0 : score;
+      scores(i, j) = score <= 0.0 ? 0.0 : score;
     }
   }
 
-  return mat;
+  return scores;
+}
+
+}  // namespace
+
+// [[Rcpp::export]]
+NumericMatrix calculateScoresDense(
+  const NumericMatrix& orig_mat,
+  const List& gene_indices
+) {
+  return calculate_scores(
+    orig_mat.nrow(),
+    orig_mat.ncol(),
+    gene_indices,
+    [&orig_mat](const int row, const int column) {
+      return orig_mat(row, column);
+    }
+  );
+}
+
+// [[Rcpp::export]]
+NumericMatrix calculateScoresSparse(
+  const arma::sp_mat& orig_mat,
+  const List& gene_indices
+) {
+  return calculate_scores(
+    static_cast<int>(orig_mat.n_rows),
+    static_cast<int>(orig_mat.n_cols),
+    gene_indices,
+    [&orig_mat](const int row, const int column) {
+      return orig_mat(row, column);
+    }
+  );
 }

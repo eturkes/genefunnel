@@ -30,6 +30,7 @@
 #' @return A numeric matrix of gene set scores (gene sets x samples).
 #' @export
 #' @useDynLib genefunnel, .registration = TRUE
+#' @importClassesFrom Matrix dMatrix sparseMatrix
 #' @importFrom Rcpp sourceCpp
 
 genefunnel <- function(
@@ -56,12 +57,16 @@ genefunnel <- function(
         ))
     }
 
-    mat <- .as_sparse_numeric_matrix(mat)
     indices <- prepared$indices[retained]
+    storage <- .matrix_storage(mat)
     result <- BiocParallel::bplapply(
         seq_len(ncol(mat)),
         function(column) {
-            calculateScores(mat[, column, drop = FALSE], indices)
+            .score_matrix_chunk(
+                mat[, column, drop = FALSE],
+                indices,
+                storage
+            )
         },
         BPPARAM = BPPARAM
     )
@@ -70,4 +75,19 @@ genefunnel <- function(
     rownames(scores) <- retained_names
     colnames(scores) <- colnames(mat)
     scores
+}
+
+.score_matrix_chunk <- function(mat, gene_indices, storage) {
+    switch(
+        storage,
+        dense = calculateScoresDense(
+            .as_dense_numeric_chunk(mat),
+            gene_indices
+        ),
+        sparse = calculateScoresSparse(
+            .as_sparse_numeric_chunk(mat),
+            gene_indices
+        ),
+        stop("Internal matrix storage kind is invalid.", call. = FALSE)
+    )
 }

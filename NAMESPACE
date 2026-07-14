@@ -2,5 +2,7 @@
 
 export(gene_set_coverage)
 export(genefunnel)
+importClassesFrom(Matrix,dMatrix)
+importClassesFrom(Matrix,sparseMatrix)
 importFrom(Rcpp,sourceCpp)
 useDynLib(genefunnel, .registration = TRUE)

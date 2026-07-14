@@ -141,6 +141,38 @@ test_that("negative and infinite values are rejected before scoring", {
     expect_no_error(score_contract_matrix(sparse_missing))
 })
 
+test_that("Matrix validation uses represented rather than raw stored values", {
+    duplicate_triplet <- Matrix::sparseMatrix(
+        i = c(1L, 1L, 2L),
+        j = c(1L, 1L, 1L),
+        x = c(-1, 2, 1),
+        dims = c(2L, 1L),
+        dimnames = list(c("A", "B"), "sample"),
+        repr = "T"
+    )
+    triangular_dense <- methods::new(
+        "dtrMatrix",
+        Dim = c(2L, 2L),
+        Dimnames = list(c("A", "B"), c("sample_1", "sample_2")),
+        x = c(1, -99, 2, 1),
+        uplo = "U",
+        diag = "N"
+    )
+
+    expect_identical(
+        score_contract_matrix(duplicate_triplet),
+        matrix(2, nrow = 1L, dimnames = list("set", "sample"))
+    )
+    expect_identical(
+        score_contract_matrix(triangular_dense),
+        matrix(
+            c(0, 2),
+            nrow = 1L,
+            dimnames = list("set", c("sample_1", "sample_2"))
+        )
+    )
+})
+
 test_that("gene-set structures use one strict shared contract", {
     mat <- valid_contract_matrix()
     coverage_call <- function(gene_sets) {

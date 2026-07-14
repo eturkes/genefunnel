@@ -270,13 +270,13 @@ Session boundaries are suggested cohesive commits, not a fixed limit. Split any 
 
 ### Session 4 - Preserve dense and sparse representations
 
-- [ ] Provide separate or safely dispatched dense and sparse native paths.
-- [ ] Ensure a base dense matrix remains dense and a sparse `Matrix` remains sparse until the bounded native work buffer.
-- [ ] Ensure sparse implicit zeros are counted as observed members.
-- [ ] Support stored `NA`/`NaN` entries in sparse matrices according to the same semantics as dense matrices.
-- [ ] Avoid whole-matrix dense copies in validation, negativity checks, infinity checks, subsetting, worker export, and native conversion.
-- [ ] Add dense/sparse equivalence tests across ordinary values, all-zero columns, partial coverage, stored missing entries, and reordered rows/columns.
-- [ ] Add a testable internal dispatch seam so CI can verify that sparse input reaches the sparse kernel without brittle source-text assertions.
+- [x] Provide separate or safely dispatched dense and sparse native paths.
+- [x] Ensure a base dense matrix remains dense and a sparse `Matrix` remains sparse until the bounded native work buffer.
+- [x] Ensure sparse implicit zeros are counted as observed members.
+- [x] Support stored `NA`/`NaN` entries in sparse matrices according to the same semantics as dense matrices.
+- [x] Avoid whole-matrix dense copies in validation, negativity checks, infinity checks, subsetting, worker export, and native conversion.
+- [x] Add dense/sparse equivalence tests across ordinary values, all-zero columns, partial coverage, stored missing entries, and reordered rows/columns.
+- [x] Add a testable internal dispatch seam so CI can verify that sparse input reaches the sparse kernel without brittle source-text assertions.
 
 **Acceptance:** dense and sparse outputs agree within a justified tolerance; sparse input never invokes the dense kernel; no `as.matrix()` call occurs on the full sparse input path.
 
@@ -469,7 +469,7 @@ The final package documentation must explicitly convey these thesis-derived poin
 
 ### Scalability
 
-- [ ] Sparse input is never fully densified.
+- [x] Sparse input is never fully densified.
 - [x] Gene-set indices are precomputed once.
 - [ ] Parallel task count and memory are bounded.
 - [ ] Benchmark scripts and environment metadata are reproducible.
