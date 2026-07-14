@@ -295,16 +295,16 @@ Session boundaries are suggested cohesive commits, not a fixed limit. Split any 
 
 ### Session 6 - Complete the scientific invariant and adversarial test suite
 
-- [ ] Add deterministic randomized tests comparing native dense and sparse results with the pure R oracle.
-- [ ] Test non-negativity and upper bound by observed sum over broad non-negative inputs and set sizes.
-- [ ] Test member permutation, row permutation, sample permutation, irrelevant-row addition, set addition/removal, and sample addition/removal invariance.
-- [ ] Test positive homogeneity and constant-shift behavior.
-- [ ] Test overlapping gene sets without cross-set effects.
-- [ ] Test minimum sizes globally and per sample after missing-value omission.
-- [ ] Test extreme but finite values, signed zero, integer input, zero-only sparse matrices, unnamed columns, and empty/degenerate inputs.
-- [ ] Test that inputs are not mutated.
-- [ ] Test stable matrix dimensions and names after sets are omitted.
-- [ ] Run native memory/undefined-behavior tooling available in the current R toolchain where practical.
+- [x] Add deterministic randomized tests comparing native dense and sparse results with the pure R oracle.
+- [x] Test non-negativity and upper bound by observed sum over broad non-negative inputs and set sizes.
+- [x] Test member permutation, row permutation, sample permutation, irrelevant-row addition, set addition/removal, and sample addition/removal invariance.
+- [x] Test positive homogeneity and constant-shift behavior.
+- [x] Test overlapping gene sets without cross-set effects.
+- [x] Test minimum sizes globally and per sample after missing-value omission.
+- [x] Test extreme but finite values, signed zero, integer input, zero-only sparse matrices, unnamed columns, and empty/degenerate inputs.
+- [x] Test that inputs are not mutated.
+- [x] Test stable matrix dimensions and names after sets are omitted.
+- [x] Run native memory/undefined-behavior tooling available in the current R toolchain where practical.
 
 **Acceptance:** all specification statements in Section 2 have at least one direct test; randomized oracle comparisons find no dense/sparse/native discrepancy.
 
@@ -462,10 +462,10 @@ The final package documentation must explicitly convey these thesis-derived poin
 
 ### Scientific fidelity
 
-- [ ] Equation matches Section 2.2 exactly.
-- [ ] Zeros, `NA`/`NaN`, infinities, negatives, duplicates, and partial coverage match Sections 2.3-2.5 exactly.
-- [ ] Every property in Section 2.6 is directly tested.
-- [ ] Pure R, dense native, sparse native, serial, and parallel paths agree.
+- [x] Equation matches Section 2.2 exactly.
+- [x] Zeros, `NA`/`NaN`, infinities, negatives, duplicates, and partial coverage match Sections 2.3-2.5 exactly.
+- [x] Every property in Section 2.6 is directly tested.
+- [x] Pure R, dense native, sparse native, serial, and parallel paths agree.
 
 ### Scalability
 

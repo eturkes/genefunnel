@@ -116,3 +116,20 @@ Remaining: Session 6 - randomized oracle/property/invariance suite plus native
 memory and undefined-behavior tooling where practical.
 Risks/blockers: sparse native random access remains the known profiling target;
 no release blocker identified.
+
+2026-07-14 | session 6 | commit `HEAD`
+Scope: complete scientific invariant + adversarial regression suite.
+Changed: matrix-level pure-R oracle; 32 seeded randomized dense/sparse fixtures;
+direct score-bound, permutation, independence, overlap, scale/shift, minimum-size,
+extreme/subnormal, signed-zero, integer, structural-zero, output-shape, and
+immutability coverage; oracle handles subnormal mean underflow explicitly.
+Verified: testthat = 42 tests/342 expectations; installed-package suite passes
+under UBSan and combined ASan/UBSan; source build + built-tarball
+`R CMD check --no-manual` = `Status: OK`.
+Decisions: sanitizer leak detection stays disabled because R-runtime lifetime
+allocations are out of package scope; fixed-seed randomized tests calculate their
+expected values independently through the R oracle.
+Remaining: Session 7 - reproducible synthetic benchmark generator/harness,
+profiles, sparse memory evidence, optimization only where measured.
+Risks/blockers: Valgrind is unavailable locally; ASan covers native memory access.
+Sparse random access remains the next profiled candidate; no release blocker.

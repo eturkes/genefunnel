@@ -6,3 +6,6 @@
   contend on `00LOCK-*` and can leave an incomplete toolchain.
 - Validate `Matrix` objects through represented columns, not raw `@x`: structured
   dense classes can hold ignored values and triplet sparse duplicates aggregate.
+- ASan-instrumented package install/load requires
+  `LD_PRELOAD="$(g++ -print-file-name=libasan.so)"`; disable leak detection to
+  avoid R-runtime lifetime noise. UBSan needs no preload.
