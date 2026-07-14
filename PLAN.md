@@ -232,13 +232,13 @@ Session boundaries are suggested cohesive commits, not a fixed limit. Split any 
 
 ### Session 1 - Establish a trustworthy build and test baseline
 
-- [ ] Record live `HEAD`, repository tree, package/tool versions, current `R CMD build` and `R CMD check` failures in `.agent/roadmap.md`.
-- [ ] Remove tracked `src/*.o`, `src/*.so`, DLLs, and similar build products; add appropriate ignore rules.
-- [ ] Correct only the minimum package metadata needed for reliable install/check/test execution. Use real author/creator information already present in the repository; never invent an ORCID.
-- [ ] Add a supported R package test framework after checking current official Bioconductor guidance.
-- [ ] Add a pure R reference implementation in test helpers for the exact formula on already matched member values.
-- [ ] Add green smoke tests for current complete, finite, non-negative dense behavior: shape, names, all-equal case, all-zero case, one-nonzero case.
-- [ ] Ensure package installation from a built source tarball, not only `load_all()`, reaches the smoke tests.
+- [x] Record live `HEAD`, repository tree, package/tool versions, current `R CMD build` and `R CMD check` failures in `.agent/roadmap.md`.
+- [x] Remove tracked `src/*.o`, `src/*.so`, DLLs, and similar build products; add appropriate ignore rules.
+- [x] Correct only the minimum package metadata needed for reliable install/check/test execution. Use real author/creator information already present in the repository; never invent an ORCID.
+- [x] Add a supported R package test framework after checking current official Bioconductor guidance.
+- [x] Add a pure R reference implementation in test helpers for the exact formula on already matched member values.
+- [x] Add green smoke tests for current complete, finite, non-negative dense behavior: shape, names, all-equal case, all-zero case, one-nonzero case.
+- [x] Ensure package installation from a built source tarball, not only `load_all()`, reaches the smoke tests.
 
 **Acceptance:** clean source tree; package installs; test harness runs; formula smoke tests pass; no intended scoring behavior has changed yet except removal of accidental build artifacts.
 

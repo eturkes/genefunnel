@@ -1,3 +1,6 @@
 ^genefunnel\.Rproj$
 ^\.Rproj\.user$
 ^dev$
+^AGENTS\.md$
+^PLAN\.md$
+^\.agent$

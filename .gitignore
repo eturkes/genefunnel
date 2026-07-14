@@ -1,6 +1,16 @@
 .Rproj.user
 .Rhistory
+.RData
 .Rdata
+.Ruserdata
 .httr-oauth
 .DS_Store
 .quarto
+/.agent/R-library/
+/*.Rcheck/
+/*.tar.gz
+/src/*.dll
+/src/*.dylib
+/src/*.o
+/src/*.so
+/src/symbols.rds

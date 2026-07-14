@@ -1,11 +1,13 @@
 Package: genefunnel
-Title: What the Package Does (One Line, Title Case)
+Title: Gene Set Activity Scoring with GeneFunnel
 Version: 0.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+    person("Emir", "Turkes", email = "emir.turkes@eturkes.com",
+        role = c("aut", "cre"))
+Description: Computes sample-wise gene set activity scores from non-negative
+    feature-by-sample matrices. Each score combines the observed feature sum
+    with a penalty for absolute deviation within the gene set.
+License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
@@ -13,6 +15,9 @@ Imports:
     Matrix,
     BiocParallel,
     Rcpp (>= 1.0.5)
+Suggests:
+    testthat (>= 3.0.0)
 LinkingTo:
     Rcpp,
     RcppArmadillo
+Config/testthat/edition: 3
