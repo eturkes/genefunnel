@@ -368,6 +368,8 @@ Session boundaries are suggested cohesive commits, not a fixed limit. Split any 
 - [x] Add documentation build/link checks and a small sparse-memory/dispatch smoke test.
 - [x] Cache dependencies safely without committing caches.
 - [x] Ensure tests do not require network access, large external data, a thesis file, or many cores.
+- [ ] Confirm the first-run portability fixes in a green remote workflow, then close the
+  cross-platform and CI Definition-of-Done gates.
 
 **Acceptance:** CI is green from a clean checkout; failures are actionable; package checks produce no errors or warnings and no unexplained notes.
 

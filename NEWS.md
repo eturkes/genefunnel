@@ -22,6 +22,8 @@
 
 - Adds deterministic formula, invariant, randomized-oracle, dense-sparse, and
   serial-parallel tests.
+- Preserves exact-zero classification when positive subnormal means underflow
+  on platforms whose C++ `long double` has the range of `double`.
 - Adds a reproducible synthetic benchmark harness with identity-checked output
   digests and environment metadata.
 

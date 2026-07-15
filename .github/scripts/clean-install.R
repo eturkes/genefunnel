@@ -32,5 +32,27 @@ if (!identical(dirname(package_path), normalizePath(clean_library))) {
     stop("GeneFunnel was not loaded from the clean target library.")
 }
 
+# SOCK workers are fresh R processes: propagate the temporary target library
+# through their startup environment so they load this tarball installation.
+user_libraries <- strsplit(
+    Sys.getenv("R_LIBS_USER", unset = ""),
+    .Platform$path.sep,
+    fixed = TRUE
+)[[1L]]
+worker_libraries <- unique(c(
+    clean_library,
+    user_libraries[nzchar(user_libraries)]
+))
+Sys.setenv(R_LIBS_USER = paste(worker_libraries, collapse = .Platform$path.sep))
+
+worker_paths <- unlist(BiocParallel::bplapply(
+    seq_len(2L),
+    function(...) normalizePath(find.package("genefunnel")),
+    BPPARAM = BiocParallel::SnowParam(workers = 2L, type = "SOCK")
+))
+if (!all(worker_paths == package_path)) {
+    stop("SOCK workers did not load GeneFunnel from the clean target library.")
+}
+
 testthat::test_package("genefunnel", reporter = "summary")
 cat("Installed-tarball tests passed from ", package_path, ".\n", sep = "")

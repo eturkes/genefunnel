@@ -221,3 +221,24 @@ Remaining: first remote workflow run must establish macOS/Windows portability an
 close Session 8/Definition-of-Done cross-platform boxes; then Session 11.
 Risks/blockers: GitHub-hosted results cannot exist before maintainer push; full
 submission BiocCheck still needs a 0.99-series version and Support-site state.
+
+2026-07-15 | session 10 follow-up | commit `HEAD`
+Scope: reconcile and repair the first remote cross-platform CI run.
+Changed: dense/sparse kernels classify zeros correctly when a positive subnormal
+mean underflows on 64-bit `long double`; direct regression locks the exact cell;
+clean-target CI propagates its temporary library to fresh SOCK workers and asserts
+their loaded package paths.
+Verified: first remote run proved Linux release/devel, Windows devel, and sanitizer
+jobs green plus macOS ARM64 compile/install portable; local forced
+`-mlong-double-64` suite = 44 tests/350 expectations; clean-tarball SOCK suite,
+`R CMD check` (`Status: OK`), documentation, benchmark smoke, and combined
+ASan/UBSan pass; BiocCheck Git clone = 0/0/0 and tarball = 0 errors/0 warnings/5
+explained notes.
+Decisions: positive totals determine whether exact sparse/dense zeros lie below an
+underflowed mean; clean-process library propagation belongs to the CI harness,
+while workers still prove they execute the just-built tarball installation.
+Remaining: maintainer push + remote rerun must make macOS tests/check and the
+quality job green; then close Session 8/10 + Definition-of-Done platform boxes and
+begin Session 11.
+Risks/blockers: post-fix macOS and clean-runner evidence requires the next remote
+workflow; no local release blocker remains.

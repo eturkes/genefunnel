@@ -159,10 +159,18 @@ NumericMatrix calculate_dense_scores(
       }
 
       const long double mean_values = sum_values / observed_size;
+      // On platforms where long double equals double, a positive subnormal
+      // mean can round to zero. Exact zeros remain below that mathematical
+      // mean; positive observed values do not.
+      const bool mean_underflowed =
+        sum_values > 0.0L && mean_values == 0.0L;
       std::size_t below_mean_count = 0;
       long double below_mean_sum = 0.0L;
       for (const double value : observed) {
-        if (static_cast<long double>(value) < mean_values) {
+        const bool below_mean = mean_underflowed
+          ? value == 0.0
+          : static_cast<long double>(value) < mean_values;
+        if (below_mean) {
           ++below_mean_count;
           below_mean_sum += static_cast<long double>(value);
         }
@@ -294,7 +302,10 @@ NumericMatrix calculate_sparse_scores(
       }
 
       const long double mean_values = sum_values / observed_size;
-      std::size_t below_mean_count = mean_values > 0.0L
+      // A positive mathematical mean can underflow when long double has the
+      // same range as double. Implicit and stored zeros are still below it.
+      const bool positive_mean = sum_values > 0.0L;
+      std::size_t below_mean_count = positive_mean
         ? observed_size - positive_count
         : 0;
       long double below_mean_sum = 0.0L;

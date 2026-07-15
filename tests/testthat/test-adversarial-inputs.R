@@ -56,6 +56,10 @@ test_that("extreme finite values and signed zero preserve score semantics", {
 
     expect_equal(dense, expected, tolerance = 0)
     expect_equal(sparse, expected, tolerance = 0)
+    expect_identical(
+        unname(dense[, "tiny"]),
+        c(2 * smallest, smallest)
+    )
     expect_true(all(is.finite(dense)))
     expect_identical(unname(dense[, "signed_zero"]), c(0, 0))
     reciprocals <- 1 / dense[, "signed_zero"]
