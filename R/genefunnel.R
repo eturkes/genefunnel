@@ -23,15 +23,15 @@
 #' Convert a non-negative feature-by-sample matrix into sample-wise gene-set
 #' scores. Every retained gene set and sample is calculated independently.
 #'
-#' @param mat A base numeric or integer matrix, or a numeric dense/sparse
-#'   [Matrix::Matrix] object, with features in rows and samples in columns. It
-#'   must have at least one row and column. Row names must be unique,
-#'   non-missing, and non-empty. Values may be finite and non-negative, `NA`,
-#'   or `NaN`; negative and infinite values are rejected.
-#' @param gene_sets A non-empty named list of character vectors. Set names must
-#'   be unique, non-missing, and non-empty. Member identifiers must be
-#'   non-missing and non-empty; duplicate members are deduplicated in first
-#'   occurrence order.
+#' @param mat An unclassed base numeric or integer matrix, or a numeric
+#'   dense/sparse [Matrix::Matrix] object, with features in rows and samples in
+#'   columns. It must have at least one row and column. Row names must be
+#'   unique, non-missing, and non-empty. Values may be finite and non-negative,
+#'   `NA`, or `NaN`; negative and infinite values are rejected.
+#' @param gene_sets A non-empty unclassed named list of unclassed character
+#'   vectors. Set names must be unique, non-missing, and non-empty. Member
+#'   identifiers must be non-missing and non-empty; duplicate members are
+#'   deduplicated in first occurrence order.
 #' @param BPPARAM A [BiocParallel::BiocParallelParam] backend. The default is
 #'   the currently registered [BiocParallel::bpparam()] backend.
 #'

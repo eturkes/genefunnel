@@ -321,3 +321,22 @@ commit + confirm the exact candidate CI; disclose `Assisted-by: OpenAI Codex` in
 the Bioconductor issue and PR; tag/release only after review.
 Risks/blockers: watched-tag, submission, push, and review state are external;
 all locally actionable release gates pass.
+
+2026-07-15 | post-plan audit 1 | commit `HEAD`
+Scope: prevent S3 class spoofing across public input boundaries.
+Changed: accept plain base matrices/lists/character identifiers or genuine S4
+matrix/backend objects only; shared identifier validation retains member
+duplicates solely for canonicalization; docs + NEWS state the tightened contract.
+Verified: red exploit changed `c(10, 0)` from the correct score `0` to `20` via
+a classed member's `[` method; 47 tests/373 expectations pass after rejection;
+clean source-tarball install/tests including fresh SOCK workers pass; `R CMD
+check --no-manual` = `Status: OK`; fresh-clone BiocCheck = 0/0/0 and tarball
+BiocCheck = 0 errors/0 warnings/5 justified notes.
+Decisions: validation and scoring must observe one representation; S3 subclasses
+remain caller-convertible but are not implicit package inputs. The Support
+watched-tag gate remains suppressed/deferred after the correct account/profile
+continued to return an empty API tag list; it no longer blocks other work.
+Remaining: choose the next post-plan feature or maintenance objective; resume
+submission issue/PR disclosure and review/tag gates when desired.
+Risks/blockers: this commit needs the normal maintainer push + cross-platform CI;
+no local package-controlled blocker is known.

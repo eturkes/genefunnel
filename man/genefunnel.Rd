@@ -7,16 +7,16 @@
 genefunnel(mat, gene_sets, BPPARAM = BiocParallel::bpparam())
 }
 \arguments{
-\item{mat}{A base numeric or integer matrix, or a numeric dense/sparse
-\link[Matrix:Matrix]{Matrix::Matrix} object, with features in rows and samples in columns. It
-must have at least one row and column. Row names must be unique,
-non-missing, and non-empty. Values may be finite and non-negative, \code{NA},
-or \code{NaN}; negative and infinite values are rejected.}
+\item{mat}{An unclassed base numeric or integer matrix, or a numeric
+dense/sparse \link[Matrix:Matrix]{Matrix::Matrix} object, with features in rows and samples in
+columns. It must have at least one row and column. Row names must be
+unique, non-missing, and non-empty. Values may be finite and non-negative,
+\code{NA}, or \code{NaN}; negative and infinite values are rejected.}
 
-\item{gene_sets}{A non-empty named list of character vectors. Set names must
-be unique, non-missing, and non-empty. Member identifiers must be
-non-missing and non-empty; duplicate members are deduplicated in first
-occurrence order.}
+\item{gene_sets}{A non-empty unclassed named list of unclassed character
+vectors. Set names must be unique, non-missing, and non-empty. Member
+identifiers must be non-missing and non-empty; duplicate members are
+deduplicated in first occurrence order.}
 
 \item{BPPARAM}{A \link[BiocParallel:BiocParallelParam]{BiocParallel::BiocParallelParam} backend. The default is
 the currently registered \code{\link[BiocParallel:bpparam]{BiocParallel::bpparam()}} backend.}

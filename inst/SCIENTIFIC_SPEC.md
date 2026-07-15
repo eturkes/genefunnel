@@ -17,8 +17,9 @@ differential testing, or provide biological interpretation.
 
 `genefunnel(mat, gene_sets, BPPARAM)` accepts:
 
-- a base R numeric/integer matrix or supported numeric dense/sparse `Matrix`;
-- a named list of character gene-set members; and
+- an unclassed base R numeric/integer matrix or supported numeric dense/sparse
+  `Matrix`;
+- an unclassed named list of unclassed character gene-set members; and
 - a `BiocParallelParam`, defaulting to the registered backend.
 
 The result is a base numeric matrix. Retained gene sets and samples preserve

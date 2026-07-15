@@ -2,10 +2,11 @@
 
 .validate_gene_sets <- function(gene_sets) {
     valid_list <- is.list(gene_sets) &&
+        !is.object(gene_sets) &&
         !is.data.frame(gene_sets) &&
         is.null(dim(gene_sets))
     if (!valid_list) {
-        stop("`gene_sets` must be a named list.", call. = FALSE)
+        stop("`gene_sets` must be an unclassed named list.", call. = FALSE)
     }
     if (length(gene_sets) == 0L) {
         stop("`gene_sets` must contain at least one gene set.", call. = FALSE)
@@ -15,29 +16,17 @@
     if (is.null(set_names)) {
         stop("`gene_sets` must have names.", call. = FALSE)
     }
-    if (anyNA(set_names)) {
-        stop("`gene_sets` contains a missing name.", call. = FALSE)
-    }
-    if (any(!nzchar(set_names))) {
-        stop("`gene_sets` contains an empty name.", call. = FALSE)
-    }
-    if (anyDuplicated(set_names)) {
-        stop("`gene_sets` contains duplicated names.", call. = FALSE)
-    }
+    .validate_identifier_vector(set_names, "`gene_sets` names")
 
     for (index in seq_along(gene_sets)) {
         members <- gene_sets[[index]]
         encoded_name <- encodeString(set_names[[index]], quote = '"')
         label <- sprintf("`gene_sets[[%s]]`", encoded_name)
-        if (!is.character(members) || !is.null(dim(members))) {
-            stop(label, " must be a character vector.", call. = FALSE)
-        }
-        if (anyNA(members)) {
-            stop(label, " contains missing member identifiers.", call. = FALSE)
-        }
-        if (any(!nzchar(members))) {
-            stop(label, " contains empty member identifiers.", call. = FALSE)
-        }
+        .validate_identifier_vector(
+            members,
+            label,
+            allow_duplicates = TRUE
+        )
     }
 
     invisible(gene_sets)
@@ -118,11 +107,11 @@
 #' preserving their first occurrence. The function reports facts only; callers
 #' choose a coverage policy appropriate to their experiment.
 #'
-#' @param gene_sets A non-empty named list of character vectors. Set names must
-#'   be unique, non-missing, and non-empty. Member identifiers must be
-#'   non-missing and non-empty.
-#' @param features A character vector of unique, non-missing, non-empty feature
-#'   identifiers, typically `rownames(mat)`.
+#' @param gene_sets A non-empty unclassed named list of unclassed character
+#'   vectors. Set names must be unique, non-missing, and non-empty. Member
+#'   identifiers must be non-missing and non-empty.
+#' @param features An unclassed character vector of unique, non-missing,
+#'   non-empty feature identifiers, typically `rownames(mat)`.
 #'
 #' @details
 #' This function uses the same validation, stable member deduplication, and

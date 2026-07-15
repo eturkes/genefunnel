@@ -7,12 +7,12 @@
 gene_set_coverage(gene_sets, features)
 }
 \arguments{
-\item{gene_sets}{A non-empty named list of character vectors. Set names must
-be unique, non-missing, and non-empty. Member identifiers must be
-non-missing and non-empty.}
+\item{gene_sets}{A non-empty unclassed named list of unclassed character
+vectors. Set names must be unique, non-missing, and non-empty. Member
+identifiers must be non-missing and non-empty.}
 
-\item{features}{A character vector of unique, non-missing, non-empty feature
-identifiers, typically \code{rownames(mat)}.}
+\item{features}{An unclassed character vector of unique, non-missing,
+non-empty feature identifiers, typically \code{rownames(mat)}.}
 }
 \value{
 A data frame with one row per gene set and columns \code{gene_set},

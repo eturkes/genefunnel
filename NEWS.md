@@ -15,6 +15,8 @@
 - Duplicate members are counted for diagnostics and deduplicated for scoring.
 - Invalid structures, negative values, and infinities are rejected before
   parallel or native work begins.
+- S3 subclasses that spoof matrices, gene sets, identifiers, or parallel
+  parameters are rejected before their methods can alter validation or scoring.
 - Dense inputs remain dense and sparse inputs remain sparse through bounded
   scoring chunks.
 

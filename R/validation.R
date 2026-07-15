@@ -1,8 +1,14 @@
 # Assisted-by: OpenAI Codex.
 
-.validate_identifier_vector <- function(identifiers, label) {
-    if (!is.character(identifiers) || !is.null(dim(identifiers))) {
-        stop(label, " must be a character vector.", call. = FALSE)
+.validate_identifier_vector <- function(
+    identifiers,
+    label,
+    allow_duplicates = FALSE
+) {
+    if (!is.character(identifiers) ||
+        is.object(identifiers) ||
+        !is.null(dim(identifiers))) {
+        stop(label, " must be an unclassed character vector.", call. = FALSE)
     }
     if (anyNA(identifiers)) {
         stop(label, " contains missing identifiers.", call. = FALSE)
@@ -10,7 +16,7 @@
     if (any(!nzchar(identifiers))) {
         stop(label, " contains empty identifiers.", call. = FALSE)
     }
-    if (anyDuplicated(identifiers)) {
+    if (!allow_duplicates && anyDuplicated(identifiers)) {
         stop(label, " contains duplicated identifiers.", call. = FALSE)
     }
     invisible(identifiers)
@@ -18,11 +24,12 @@
 
 .validate_score_matrix <- function(mat) {
     base_numeric_matrix <- is.matrix(mat) &&
+        !is.object(mat) &&
         typeof(mat) %in% c("double", "integer")
-    matrix_numeric_matrix <- inherits(mat, "dMatrix")
+    matrix_numeric_matrix <- isS4(mat) && inherits(mat, "dMatrix")
     if (!base_numeric_matrix && !matrix_numeric_matrix) {
         stop(
-            "`mat` must be a base numeric or integer matrix, ",
+            "`mat` must be an unclassed base numeric or integer matrix, ",
             "or a numeric Matrix object.",
             call. = FALSE
         )
@@ -95,7 +102,7 @@
 }
 
 .validate_bpparam <- function(BPPARAM) {
-    if (!methods::is(BPPARAM, "BiocParallelParam")) {
+    if (!isS4(BPPARAM) || !methods::is(BPPARAM, "BiocParallelParam")) {
         stop("`BPPARAM` must be a BiocParallelParam object.", call. = FALSE)
     }
     invisible(BPPARAM)

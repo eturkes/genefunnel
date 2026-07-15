@@ -68,6 +68,35 @@ test_that("coercion-prone and non-numeric matrix inputs are rejected", {
     }
 })
 
+test_that("S3 matrix subclasses are rejected before method dispatch", {
+    calls <- new.env(parent = emptyenv())
+    calls$subsets <- 0L
+    testthat::local_mocked_s3_method(
+        "[",
+        "genefunnel_test_matrix",
+        function(x, ...) {
+            calls$subsets <- calls$subsets + 1L
+            NextMethod("[")
+        }
+    )
+
+    classed <- valid_contract_matrix()
+    class(classed) <- c("genefunnel_test_matrix", class(classed))
+
+    expect_error(
+        score_contract_matrix(classed),
+        "base numeric or integer matrix"
+    )
+    expect_identical(calls$subsets, 0L)
+
+    spoofed_matrix_class <- valid_contract_matrix()
+    class(spoofed_matrix_class) <- c("dMatrix", "matrix", "array")
+    expect_error(
+        score_contract_matrix(spoofed_matrix_class),
+        "base numeric or integer matrix"
+    )
+})
+
 test_that("matrix dimensions and feature identifiers are strict", {
     zero_rows <- matrix(
         numeric(),
@@ -98,6 +127,12 @@ test_that("matrix dimensions and feature identifiers are strict", {
         rownames(candidate) <- invalid_names[[kind]]
         expect_error(score_contract_matrix(candidate), kind)
     }
+
+    classed_names <- valid_contract_matrix()
+    features <- rownames(classed_names)
+    class(features) <- c("genefunnel_test_features", "character")
+    dimnames(classed_names)[[1L]] <- features
+    expect_error(score_contract_matrix(classed_names), "unclassed")
 })
 
 test_that("negative and infinite values are rejected before scoring", {
@@ -188,11 +223,26 @@ test_that("gene-set structures use one strict shared contract", {
     malformed <- list(
         empty_list = list(),
         data_frame = data.frame(set = c("A", "B")),
+        classed_list = structure(
+            list(set = c("A", "B")),
+            class = "genefunnel_test_sets"
+        ),
         unnamed = list(c("A", "B")),
         missing_name = stats::setNames(list(c("A", "B")), NA_character_),
         empty_name = stats::setNames(list(c("A", "B")), ""),
+        classed_name = structure(
+            list(c("A", "B")),
+            names = structure(
+                "set",
+                class = c("genefunnel_test_names", "character")
+            )
+        ),
         duplicated_name = list(set = c("A", "B"), set = c("A", "B")),
         non_character = list(set = 1:2),
+        classed_member = list(set = structure(
+            c("A", "B"),
+            class = c("genefunnel_test_members", "character")
+        )),
         matrix_member = list(set = matrix(c("A", "B"), nrow = 1L)),
         missing_member = list(set = c("A", NA_character_)),
         empty_member = list(set = c("A", ""))
@@ -200,11 +250,14 @@ test_that("gene-set structures use one strict shared contract", {
     patterns <- c(
         empty_list = "at least one",
         data_frame = "named list",
+        classed_list = "named list",
         unnamed = "names",
         missing_name = "missing",
         empty_name = "empty",
+        classed_name = "unclassed",
         duplicated_name = "duplicated",
         non_character = "character vector",
+        classed_member = "character vector",
         matrix_member = "character vector",
         missing_member = "missing",
         empty_member = "empty"
@@ -217,10 +270,35 @@ test_that("gene-set structures use one strict shared contract", {
     }
 })
 
+test_that("S3 gene-set members are rejected before method dispatch", {
+    calls <- new.env(parent = emptyenv())
+    calls$subsets <- 0L
+    testthat::local_mocked_s3_method(
+        "[",
+        "genefunnel_test_members",
+        function(x, ...) {
+            calls$subsets <- calls$subsets + 1L
+            NextMethod("[")
+        }
+    )
+
+    members <- c("A", "B")
+    class(members) <- c("genefunnel_test_members", "character")
+    expect_error(
+        gene_set_coverage(list(set = members), c("A", "B")),
+        "character vector"
+    )
+    expect_identical(calls$subsets, 0L)
+})
+
 test_that("coverage feature identifiers are validated without coercion", {
     gene_sets <- list(set = c("A", "B"))
     malformed <- list(
         factor(c("A", "B")),
+        structure(
+            c("A", "B"),
+            class = c("genefunnel_test_features", "character")
+        ),
         matrix(c("A", "B"), nrow = 1L),
         c("A", NA_character_),
         c("A", ""),
@@ -239,7 +317,12 @@ test_that("BPPARAM has a qualified default and rejects non-backends", {
         quote(BiocParallel::bpparam())
     )
 
-    for (candidate in list(NULL, "serial", list(BiocParallel::SerialParam()))) {
+    for (candidate in list(
+        NULL,
+        "serial",
+        list(BiocParallel::SerialParam()),
+        structure(list(), class = "BiocParallelParam")
+    )) {
         expect_error(
             genefunnel(
                 valid_contract_matrix(),
