@@ -1,13 +1,12 @@
 # Assisted-by: OpenAI Codex.
 
-files <- list.files(
-    recursive = TRUE,
-    all.files = TRUE,
-    full.names = TRUE
-)
-logs <- files[grepl("[.]Rcheck/00check[.]log$", files)]
+logs <- Sys.glob(file.path("*.Rcheck", "00check.log"))
 if (length(logs) != 1L) {
-    stop("Expected exactly one R CMD check log; found ", length(logs), ".")
+    stop(
+        "Expected exactly one top-level R CMD check log; found ",
+        length(logs),
+        "."
+    )
 }
 
 status <- grep("^Status:", readLines(logs, warn = FALSE), value = TRUE)

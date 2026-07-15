@@ -1,3 +1,5 @@
+# Assisted-by: OpenAI Codex.
+
 benchmark_rss_kib <- function(pid) {
     path <- sprintf("/proc/%d/status", as.integer(pid))
     lines <- tryCatch(readLines(path, warn = FALSE), error = function(error) character())

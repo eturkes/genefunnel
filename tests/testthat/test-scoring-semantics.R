@@ -1,3 +1,5 @@
+# Assisted-by: OpenAI Codex.
+
 test_that("native scores match the oracle with sample-specific missingness", {
     values <- list(
         equal = c(4, 4, 4),

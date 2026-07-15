@@ -1,3 +1,5 @@
+# Assisted-by: OpenAI Codex.
+
 test_that("global and sample-specific minimum sizes remain distinct", {
     mat <- cbind(
         no_observed = c(NA_real_, NaN, NA_real_),

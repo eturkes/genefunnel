@@ -1,3 +1,5 @@
+# Assisted-by: OpenAI Codex.
+
 .validate_identifier_vector <- function(identifiers, label) {
     if (!is.character(identifiers) || !is.null(dim(identifiers))) {
         stop(label, " must be a character vector.", call. = FALSE)

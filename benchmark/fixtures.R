@@ -1,3 +1,5 @@
+# Assisted-by: OpenAI Codex.
+
 benchmark_assert_count <- function(value, label, minimum = 1L) {
     valid <- is.numeric(value) && length(value) == 1L && !is.na(value) &&
         is.finite(value) && value == floor(value) && value >= minimum

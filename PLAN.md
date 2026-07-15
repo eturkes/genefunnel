@@ -394,14 +394,14 @@ Session boundaries are suggested cohesive commits, not a fixed limit. Split any 
 
 ### Session 12 - Release-candidate audit
 
-- [ ] Re-read the entire specification and trace every requirement to code, tests, and documentation.
+- [x] Re-read the entire specification and trace every requirement to code, tests, and documentation.
 - [ ] Run full checks from a clean clone/library on all CI platforms and the built source tarball.
-- [ ] Re-run full dense/sparse/parallel benchmarks and archive result metadata.
-- [ ] Audit warnings, messages, errors, numerical tolerances, native registration, package size, examples, and license/citation text.
-- [ ] Verify no accidental API expansion or undocumented behavior exists.
+- [x] Re-run full dense/sparse/parallel benchmarks and archive result metadata.
+- [x] Audit warnings, messages, errors, numerical tolerances, native registration, package size, examples, and license/citation text.
+- [x] Verify no accidental API expansion or undocumented behavior exists.
 - [ ] Disclose non-trivial AI assistance/provenance in the Bioconductor issue and PR, with provenance cited in new code, according to current policy.
 - [ ] Set the release/submission version according to current Bioconductor policy only when all gates pass.
-- [ ] Write release notes describing breaking behavior relative to the prototype: partial coverage, proper missing-value omission, sparse preservation, duplicate handling, and stricter validation.
+- [x] Write release notes describing breaking behavior relative to the prototype: partial coverage, proper missing-value omission, sparse preservation, duplicate handling, and stricter validation.
 - [ ] Create a tag/release only after maintainer review; do not claim Bioconductor availability before acceptance.
 
 **Acceptance:** all Definition-of-Done items in Section 9 pass; `git status` is clean; the source tarball is independently installable and scientifically traceable.

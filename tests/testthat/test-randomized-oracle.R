@@ -1,3 +1,5 @@
+# Assisted-by: OpenAI Codex.
+
 random_score_fixture <- function(case_id) {
     set.seed(110000L + case_id)
     n_features <- sample.int(23L, 1L) + 1L

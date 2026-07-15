@@ -1,3 +1,5 @@
+# Assisted-by: OpenAI Codex.
+
 storage_fixture <- function() {
     matrix(
         c(

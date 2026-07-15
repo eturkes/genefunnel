@@ -1,3 +1,5 @@
+# Assisted-by: OpenAI Codex.
+
 library(testthat)
 library(genefunnel)
 

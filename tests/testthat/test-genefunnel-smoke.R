@@ -1,3 +1,5 @@
+# Assisted-by: OpenAI Codex.
+
 test_that("complete finite dense input preserves shape, names, and scores", {
     mat <- matrix(
         c(

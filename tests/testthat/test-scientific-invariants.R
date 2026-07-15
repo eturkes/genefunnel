@@ -1,3 +1,5 @@
+# Assisted-by: OpenAI Codex.
+
 scientific_fixture <- function() {
     mat <- cbind(
         ordinary = c(1, 2, 4, 8, 3, 5),

@@ -1,3 +1,5 @@
+# Assisted-by: OpenAI Codex.
+
 #' GeneFunnel gene-set activity scoring
 #'
 #' @description

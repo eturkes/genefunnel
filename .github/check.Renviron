@@ -1,3 +1,5 @@
+# Assisted-by: OpenAI Codex.
+
 # Snapshot of Bioconductor/packagebuilder check.Renviron at commit
 # 46929d498cec6af14bcabf13aca5e9b1bb9e3954 (2026-07-14).
 # https://contributions.bioconductor.org/general.html#r-cmd-check-environment

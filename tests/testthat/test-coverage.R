@@ -1,3 +1,5 @@
+# Assisted-by: OpenAI Codex.
+
 coverage_fixture <- function() {
     list(
         full = c("A", "B"),

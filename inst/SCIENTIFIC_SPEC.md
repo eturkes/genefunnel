@@ -1,3 +1,5 @@
+<!-- Assisted-by: OpenAI Codex. -->
+
 # GeneFunnel scientific specification
 
 This document is the durable public contract for GeneFunnel scoring. It is

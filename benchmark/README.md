@@ -1,3 +1,5 @@
+<!-- Assisted-by: OpenAI Codex. -->
+
 # GeneFunnel benchmark protocol
 
 The tracked runners plus [`protocol.tsv`](protocol.tsv) define benchmark

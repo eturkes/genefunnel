@@ -1,3 +1,5 @@
+<!-- Assisted-by: OpenAI Codex. -->
+
 # GeneFunnel
 
 GeneFunnel calculates sample-wise gene-set scores from non-negative
@@ -75,8 +77,9 @@ an arbitrary positive shift changes the score and is not a valid workaround.
   coverage semantics, invariants, and limitations.
 - [Vignette](vignettes/genefunnel.Rmd) - canonical examples, dense/sparse use,
   coverage policies, and serial/parallel execution.
-- [Benchmark protocol](benchmark/README.md) - controlled scientific assertions
-  plus reproducible timing, memory, output-identity, and environment evidence.
+- [Benchmark protocol](https://github.com/eturkes/genefunnel/blob/main/benchmark/README.md)
+  - controlled scientific assertions plus reproducible timing, memory,
+  output-identity, and environment evidence.
 
 After installation, run `vignette("genefunnel", package = "genefunnel")` or
 `citation("genefunnel")`.

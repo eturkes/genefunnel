@@ -1,3 +1,5 @@
+# Assisted-by: OpenAI Codex.
+
 .validate_gene_sets <- function(gene_sets) {
     valid_list <- is.list(gene_sets) &&
         !is.data.frame(gene_sets) &&

@@ -1,3 +1,5 @@
+# Assisted-by: OpenAI Codex.
+
 if (!nzchar(Sys.getenv("TZ", unset = ""))) {
     Sys.setenv(TZ = "UTC")
 }

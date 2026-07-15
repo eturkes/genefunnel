@@ -1,3 +1,5 @@
+# Assisted-by: OpenAI Codex.
+
 parallel_fixture <- function() {
     matrix(
         c(

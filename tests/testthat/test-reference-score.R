@@ -1,3 +1,5 @@
+# Assisted-by: OpenAI Codex.
+
 test_that("the reference scorer implements the normative formula", {
     expect_identical(reference_score(c(4, 4, 4)), 12)
     expect_identical(reference_score(c(0, 0, 0)), 0)

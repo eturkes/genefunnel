@@ -1,3 +1,5 @@
+# Assisted-by: OpenAI Codex.
+
 reference_score <- function(values) {
     stopifnot(
         is.numeric(values),

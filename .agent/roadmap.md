@@ -276,3 +276,28 @@ Remaining: complete local Session 12 contract/release audit and full benchmarks;
 remote rerun still gates macOS/Windows/CI closure and submission numbering.
 Risks/blockers: post-fix remote evidence still requires maintainer push; no local
 numerical blocker remains.
+
+2026-07-15 | session 12 audit 2 | commit `HEAD`
+Scope: local release-candidate trace, reproducibility rerun, and provenance gate.
+Changed: current-policy `Assisted-by: OpenAI Codex` citations now cover all
+contributed non-generated code; check-log assertion ignores nested scratch trees;
+README benchmark link survives the source-tarball boundary; local audit boxes and
+handoff state reconciled.
+Verified: every scientific requirement traced to implementation/tests/docs; only
+the intended two functions export; generated native/roxygen files are current;
+fresh committed clone gives BiocCheckGitClone 0/0/0, 260 KiB source tarball,
+`R CMD check` = `Status: OK`, and clean-library tarball tests on fresh SOCK
+workers; offline docs, benchmark smoke, and combined ASan/UBSan pass; tarball
+BiocCheck = 0 errors/0 warnings/5 justified notes; package name absent from
+current/archive CRAN and current/removed Bioconductor indices. Clean-HEAD
+protocol 1.0.0 archive = 14/14 controlled assertions + 24/24 stable full-run
+digests; sparse serial peak increment ~4.9 MiB vs 96 MB logical dense payload.
+Decisions: keep `0.0.0.9000` until remote platform gates pass and submission is
+authorized; keep advisory BiocCheck notes rather than invent Coverage semantics,
+ORCID, or funding; parallel speedup remains unclaimed because SOCK overhead wins
+at default benchmark sizes.
+Remaining: maintainer push + green macOS/Windows/quality rerun; then enable full
+submission checks, use `0.99.0`, disclose AI assistance in the issue/PR, and tag
+only after review.
+Risks/blockers: all remaining gates require remote evidence or maintainer-owned
+submission state; local release audit has no known package-controlled blocker.

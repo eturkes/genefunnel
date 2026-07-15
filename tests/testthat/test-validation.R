@@ -1,3 +1,5 @@
+# Assisted-by: OpenAI Codex.
+
 valid_contract_matrix <- function() {
     matrix(
         c(1, 2, 3, 4),

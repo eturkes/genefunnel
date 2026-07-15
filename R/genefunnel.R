@@ -1,3 +1,5 @@
+# Assisted-by: OpenAI Codex.
+
 #    This file is part of GeneFunnel.
 #    Copyright (C) 2025-2026  Emir Turkes, UK DRI at UCL
 #
