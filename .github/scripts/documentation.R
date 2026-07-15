@@ -2,6 +2,7 @@
 
 markdown_files <- c(
     "README.md",
+    "benchmark/README.md",
     list.files("inst", pattern = "[.]md$", recursive = TRUE, full.names = TRUE),
     list.files(
         "vignettes",

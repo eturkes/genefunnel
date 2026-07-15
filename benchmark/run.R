@@ -1,3 +1,5 @@
+# Assisted-by: OpenAI Codex.
+
 if (!nzchar(Sys.getenv("TZ", unset = ""))) {
     Sys.setenv(TZ = "UTC")
 }
@@ -8,7 +10,10 @@ if (length(runner_file) != 1L) {
 }
 benchmark_dir <- dirname(normalizePath(sub("^--file=", "", runner_file)))
 repo_root <- dirname(benchmark_dir)
+source(file.path(benchmark_dir, "protocol.R"))
+source(file.path(benchmark_dir, "provenance.R"))
 source(file.path(benchmark_dir, "fixtures.R"))
+source(file.path(benchmark_dir, "report.R"))
 
 benchmark_usage <- function() {
     cat(paste0(
@@ -45,72 +50,6 @@ benchmark_parse_options <- function(args) {
         stop("`preset` must be smoke, full, or hotspot.", call. = FALSE)
     }
     options
-}
-
-benchmark_command_output <- function(command, args = character(), wd = NULL) {
-    old_wd <- getwd()
-    if (!is.null(wd)) {
-        setwd(wd)
-        on.exit(setwd(old_wd), add = TRUE)
-    }
-    tryCatch(
-        system2(command, args, stdout = TRUE, stderr = TRUE),
-        error = function(error) character()
-    )
-}
-
-benchmark_linux_field <- function(path, pattern) {
-    lines <- tryCatch(readLines(path, warn = FALSE), error = function(error) character())
-    value <- grep(pattern, lines, value = TRUE)
-    if (length(value) == 0L) NA_character_ else trimws(sub(pattern, "", value[[1L]]))
-}
-
-benchmark_write_metadata <- function(path, options, time_bin) {
-    git_head <- benchmark_command_output("git", c("rev-parse", "HEAD"), repo_root)
-    git_status <- benchmark_command_output("git", c("status", "--porcelain"), repo_root)
-    cpu_model <- benchmark_linux_field("/proc/cpuinfo", "^model name[[:space:]]*:[[:space:]]*")
-    memory_kib <- benchmark_linux_field("/proc/meminfo", "^MemTotal:[[:space:]]*")
-    time_version <- if (nzchar(time_bin)) {
-        version <- benchmark_command_output(time_bin, "--version")
-        if (length(version)) version[[1L]] else NA_character_
-    } else {
-        NA_character_
-    }
-    metadata <- data.frame(
-        key = c(
-            "generated_utc", "preset", "repeats", "requested_workers",
-            "git_head", "git_dirty", "hostname", "sysname", "release",
-            "machine", "cpu_model", "logical_cores", "memory_total",
-            "rscript", "external_time"
-        ),
-        value = c(
-            format(Sys.time(), tz = "UTC", usetz = TRUE),
-            options$preset,
-            options$repeats,
-            options$workers,
-            if (length(git_head)) git_head[[1L]] else NA_character_,
-            length(git_status) > 0L,
-            unname(Sys.info()[["nodename"]]),
-            unname(Sys.info()[["sysname"]]),
-            unname(Sys.info()[["release"]]),
-            unname(Sys.info()[["machine"]]),
-            cpu_model,
-            parallel::detectCores(logical = TRUE),
-            memory_kib,
-            Sys.which("Rscript"),
-            time_version
-        ),
-        stringsAsFactors = FALSE,
-        check.names = FALSE
-    )
-    utils::write.table(
-        metadata,
-        path,
-        sep = "\t",
-        row.names = FALSE,
-        quote = TRUE,
-        na = "NA"
-    )
 }
 
 benchmark_summary <- function(results) {
@@ -188,24 +127,25 @@ output_dir <- normalizePath(options$output, mustWork = TRUE)
 run_dir <- file.path(output_dir, "runs")
 dir.create(run_dir, recursive = TRUE, showWarnings = FALSE)
 
-if (!requireNamespace("genefunnel", quietly = TRUE)) {
-    stop("Install GeneFunnel before running benchmarks.", call. = FALSE)
-}
-for (package in c("Matrix", "BiocParallel", "Rcpp", "RcppArmadillo")) {
+packages <- c("genefunnel", "Matrix", "BiocParallel", "Rcpp", "RcppArmadillo")
+for (package in packages) {
     if (!requireNamespace(package, quietly = TRUE)) {
         stop("Benchmark dependency is not installed: ", package, call. = FALSE)
     }
 }
 
+protocol <- benchmark_read_protocol(file.path(benchmark_dir, "protocol.tsv"))
+performance_protocol <- benchmark_protocol_subset(protocol, "performance")
+if (!options$preset %in% performance_protocol$scenario_id) {
+    stop("Benchmark preset is absent from protocol.tsv: ", options$preset, call. = FALSE)
+}
 scenarios <- benchmark_scenarios(options$preset, options$workers)
-utils::write.table(
-    scenarios,
-    file.path(output_dir, "manifest.tsv"),
-    sep = "\t",
-    row.names = FALSE,
-    quote = TRUE,
-    na = "NA"
+scenarios <- cbind(
+    protocol_version = GENEFUNNEL_BENCHMARK_PROTOCOL,
+    scenarios
 )
+benchmark_write_tsv(protocol, file.path(output_dir, "protocol.tsv"))
+benchmark_write_tsv(scenarios, file.path(output_dir, "manifest.tsv"))
 time_candidate <- if (file.exists("/usr/bin/time")) "/usr/bin/time" else ""
 time_version <- if (nzchar(time_candidate)) {
     benchmark_command_output(time_candidate, "--version")
@@ -217,19 +157,16 @@ time_bin <- if (any(grepl("GNU Time", time_version, fixed = TRUE))) {
 } else {
     ""
 }
-benchmark_write_metadata(file.path(output_dir, "metadata.tsv"), options, time_bin)
-writeLines(
-    capture.output({
-        print(sessionInfo())
-        cat("\nInstalled benchmark packages:\n")
-        for (package in c(
-            "genefunnel", "Matrix", "BiocParallel", "Rcpp", "RcppArmadillo"
-        )) {
-            cat(package, as.character(utils::packageVersion(package)), "\n")
-        }
-    }),
-    file.path(output_dir, "session-info.txt")
+metadata <- benchmark_metadata(
+    repo_root = repo_root,
+    runner = "benchmark/run.R",
+    preset = options$preset,
+    repeats = options$repeats,
+    workers = options$workers,
+    time_bin = time_bin
 )
+benchmark_write_tsv(metadata, file.path(output_dir, "metadata.tsv"))
+benchmark_write_session_info(file.path(output_dir, "session-info.txt"), packages)
 
 rscript <- Sys.which("Rscript")
 worker <- file.path(benchmark_dir, "worker.R")
@@ -304,14 +241,7 @@ for (scenario_index in seq_len(nrow(scenarios))) {
         }
         results[[length(results) + 1L]] <- row
         combined <- do.call(rbind, results)
-        utils::write.table(
-            combined,
-            file.path(output_dir, "runs.tsv"),
-            sep = "\t",
-            row.names = FALSE,
-            quote = TRUE,
-            na = "NA"
-        )
+        benchmark_write_tsv(combined, file.path(output_dir, "runs.tsv"))
         cat(readLines(stdout_path, warn = FALSE), sep = "\n")
     }
 }
@@ -320,12 +250,12 @@ results <- do.call(rbind, results)
 rownames(results) <- NULL
 benchmark_verify_digests(results)
 summary <- benchmark_summary(results)
-utils::write.table(
+benchmark_write_tsv(summary, file.path(output_dir, "summary.tsv"))
+benchmark_write_performance_report(
+    file.path(output_dir, "report.md"),
+    protocol,
     summary,
-    file.path(output_dir, "summary.tsv"),
-    sep = "\t",
-    row.names = FALSE,
-    quote = TRUE,
-    na = "NA"
+    metadata,
+    options
 )
 cat("Benchmark complete: ", output_dir, "\n", sep = "")

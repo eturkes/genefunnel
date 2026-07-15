@@ -180,7 +180,7 @@ jobs:
       - name: Run BiocCheck
         shell: bash
         run: Rscript --vanilla .github/scripts/bioc-check.R tarball
-      - name: Run sparse memory and backend-identity smoke
+      - name: Run benchmark protocol smoke
         shell: bash
         run: Rscript --vanilla benchmark/ci-smoke.R
       - name: Upload failed BiocCheck artifacts

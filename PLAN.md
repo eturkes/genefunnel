@@ -375,8 +375,8 @@ Session boundaries are suggested cohesive commits, not a fixed limit. Split any 
 
 ### Session 11 - Encode reproducibility and thesis-derived benchmark protocols
 
-- [ ] Add versioned benchmark scripts and a manifest describing seeds, dimensions, set construction, preprocessing, methods, and recorded environment.
-- [ ] Encode the thesis-inspired controlled scenarios without needing thesis text or data:
+- [x] Add versioned benchmark scripts and a manifest describing seeds, dimensions, set construction, preprocessing, methods, and recorded environment.
+- [x] Encode the thesis-inspired controlled scenarios without needing thesis text or data:
   - equal-value sets;
   - equal sums with low versus high within-set deviation;
   - all-zero sets;
@@ -385,10 +385,10 @@ Session boundaries are suggested cohesive commits, not a fixed limit. Split any 
   - partial matrix coverage;
   - sparse single-cell-like matrices;
   - sample/gene-set independence.
-- [ ] Optionally add non-gating competitor benchmarks for GSVA Poisson/Gaussian, ssGSEA, PLAGE, and z-score only if dependencies and current APIs are pinned/documented. Keep competitor code outside core package tests.
-- [ ] Do not assert the historical thesis runtimes as universal thresholds. Record observed values with hardware/software context.
-- [ ] If real thesis datasets are supplied later, add optional download/checksum/provenance scripts rather than bundling them in the package.
-- [ ] Produce a machine-readable result summary and human-readable benchmark report that can be regenerated from a clean environment.
+- [x] Evaluate optional non-gating competitor benchmarks for GSVA Poisson/Gaussian, ssGSEA, PLAGE, and z-score. Omit them while the release makes no comparative claim; dependencies and current APIs would otherwise need pinning/documentation outside core package tests.
+- [x] Do not assert the historical thesis runtimes as universal thresholds. Record observed values with hardware/software context.
+- [x] Confirm no real thesis datasets are supplied or bundled; document that any future data require optional retrieval, checksums, licensing, immutable provenance, and separate results.
+- [x] Produce a machine-readable result summary and human-readable benchmark report that can be regenerated from a clean environment.
 
 **Acceptance:** scientific and computational claims can be audited from repository scripts; nothing claims that unavailable thesis data were rerun.
 

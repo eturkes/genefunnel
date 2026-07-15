@@ -242,3 +242,20 @@ quality job green; then close Session 8/10 + Definition-of-Done platform boxes a
 begin Session 11.
 Risks/blockers: post-fix macOS and clean-runner evidence requires the next remote
 workflow; no local release blocker remains.
+
+2026-07-15 | session 11 | commit `HEAD`
+Scope: versioned synthetic scientific + computational benchmark protocol.
+Changed: protocol 1.0.0 manifest; nine controlled scenarios with analytic/paired
+assertions; shared environment capture + plain Markdown report generation;
+performance report; combined CI smoke; complete provenance/reproduction boundary.
+Verified: controlled = 9 scenarios/14 assertions; smoke = eight serial/SOCK cases
+with paired digests + controlled suite; package = 44 tests/350 expectations;
+documentation checks pass; clean source build + `R CMD check --no-manual` =
+`Status: OK`; tarball BiocCheck = 0 errors/0 warnings/5 explained notes.
+Decisions: benchmark semantics carry an explicit protocol version; competitor
+methods stay absent until a comparative claim justifies pinned APIs/dependencies;
+future real data stay external with URL/license/checksum/immutable provenance.
+Remaining: maintainer push + green remote rerun closes Session 8/10 platform/CI
+gates; Session 12 release-candidate audit follows.
+Risks/blockers: remote evidence for the unpushed portability fix remains the sole
+pre-audit gate; no local release blocker.

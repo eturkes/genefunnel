@@ -75,8 +75,8 @@ an arbitrary positive shift changes the score and is not a valid workaround.
   coverage semantics, invariants, and limitations.
 - [Vignette](vignettes/genefunnel.Rmd) - canonical examples, dense/sparse use,
   coverage policies, and serial/parallel execution.
-- [Benchmark harness](benchmark/README.md) - reproducible timing, memory, and
-  output-identity measurements with recorded environment metadata.
+- [Benchmark protocol](benchmark/README.md) - controlled scientific assertions
+  plus reproducible timing, memory, output-identity, and environment evidence.
 
 After installation, run `vignette("genefunnel", package = "genefunnel")` or
 `citation("genefunnel")`.
