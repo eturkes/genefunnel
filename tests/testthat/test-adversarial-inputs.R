@@ -66,6 +66,47 @@ test_that("extreme finite values and signed zero preserve score semantics", {
     expect_true(all(is.infinite(reciprocals) & reciprocals > 0))
 })
 
+test_that("overflowing intermediate sums retain representable finite scores", {
+    maximum <- .Machine$double.xmax
+    cases <- list(
+        repeated_maximum = c(maximum, maximum, 0),
+        maximum_and_half = c(maximum, maximum / 2),
+        equal_quarters = rep(maximum / 4, 4L)
+    )
+
+    for (values in cases) {
+        mat <- matrix(
+            values,
+            ncol = 1L,
+            dimnames = list(LETTERS[seq_along(values)], "sample")
+        )
+        gene_sets <- list(set = rownames(mat))
+        expected <- matrix(
+            reference_score(values),
+            nrow = 1L,
+            dimnames = list("set", "sample")
+        )
+
+        expect_identical(expected[[1L]], maximum)
+        expect_identical(
+            genefunnel(
+                mat,
+                gene_sets,
+                BPPARAM = BiocParallel::SerialParam()
+            ),
+            expected
+        )
+        expect_identical(
+            genefunnel(
+                Matrix::Matrix(mat, sparse = TRUE),
+                gene_sets,
+                BPPARAM = BiocParallel::SerialParam()
+            ),
+            expected
+        )
+    }
+})
+
 test_that("integer and zero-only sparse matrices retain numeric semantics", {
     integer_mat <- matrix(
         as.integer(c(

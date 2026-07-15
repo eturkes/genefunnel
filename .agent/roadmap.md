@@ -259,3 +259,20 @@ Remaining: maintainer push + green remote rerun closes Session 8/10 platform/CI
 gates; Session 12 release-candidate audit follows.
 Risks/blockers: remote evidence for the unpushed portability fix remains the sole
 pre-audit gate; no local release blocker.
+
+2026-07-15 | session 12 audit 1 | commit `HEAD`
+Scope: finite-overflow numerical portability audit + repair.
+Changed: bounded-coefficient evaluation avoids weighted-term overflow; a
+max-scaled fallback handles overflowing finite sums while retaining errors for
+unrepresentable outputs; the independent R oracle and dense/sparse regressions
+cover both paths.
+Verified: normal and forced 64-bit-`long double` suites pass; forced coverage
+includes repeated maxima, maximum-plus-half, equal quarters, and prior subnormal
+cases.
+Decisions: scaling is an overflow-only numerical representation and leaves the
+equation/API unchanged; ordinary arithmetic order stays stable when intermediates
+fit.
+Remaining: complete local Session 12 contract/release audit and full benchmarks;
+remote rerun still gates macOS/Windows/CI closure and submission numbering.
+Risks/blockers: post-fix remote evidence still requires maintainer push; no local
+numerical blocker remains.

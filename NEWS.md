@@ -24,6 +24,8 @@
   serial-parallel tests.
 - Preserves exact-zero classification when positive subnormal means underflow
   on platforms whose C++ `long double` has the range of `double`.
+- Preserves representable finite scores when an intermediate sum or weighted
+  term would overflow on those platforms.
 - Adds a reproducible synthetic benchmark harness with identity-checked output
   digests and environment metadata.
 - Adds a versioned controlled-science protocol covering analytic score cases,

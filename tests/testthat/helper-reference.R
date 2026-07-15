@@ -12,6 +12,20 @@ reference_score <- function(values) {
     }
 
     total <- sum(observed)
+    if (!is.finite(total)) {
+        # Finite inputs can overflow an intermediate sum even when deviation
+        # cancellation leaves a representable score. Evaluate the normative
+        # equation in max-scaled units for this oracle-only edge case.
+        value_scale <- max(observed)
+        scaled <- observed / value_scale
+        scaled_total <- sum(scaled)
+        scaled_center <- scaled_total / n_observed
+        return(value_scale * (
+            scaled_total -
+                n_observed / (2 * (n_observed - 1L)) *
+                    sum(abs(scaled - scaled_center))
+        ))
+    }
     center <- total / n_observed
     below_center <- if (center == 0 && total > 0) {
         # `total / n_observed` can underflow for subnormal values. In that
@@ -23,10 +37,16 @@ reference_score <- function(values) {
 
     # Algebraically identical to the normative subtraction, but all terms are
     # non-negative. This avoids catastrophic cancellation for valid inputs.
-    (
-        (n_observed - 1L - sum(below_center)) * total +
-            n_observed * sum(observed[below_center])
-    ) / (n_observed - 1L)
+    total_weight <- n_observed - 1L - sum(below_center)
+    total_term <- total_weight * total
+    below_term <- n_observed * sum(observed[below_center])
+    if (is.finite(total_term) && is.finite(below_term)) {
+        return((total_term + below_term) / (n_observed - 1L))
+    }
+
+    total_weight / (n_observed - 1L) * total +
+        n_observed / (n_observed - 1L) *
+            sum(observed[below_center])
 }
 
 reference_memberships <- function(gene_sets, features) {

@@ -54,11 +54,14 @@ double finalize_score(
   const long double sum_values,
   const std::size_t below_mean_count,
   const long double below_mean_sum,
+  const long double value_scale,
   const int gene_set,
   const int column
 ) {
   if (!std::isfinite(sum_values) ||
       !std::isfinite(below_mean_sum) ||
+      !std::isfinite(value_scale) ||
+      value_scale <= 0.0L ||
       below_mean_count >= observed_size) {
     stop_non_finite_result(gene_set, column);
   }
@@ -68,16 +71,27 @@ double finalize_score(
   // ((n - 1 - l) * sum(x) + n * sum(x[x < mean(x)])) / (n - 1),
   // where l is the number below the mean. For non-negative inputs every
   // term is non-negative, avoiding catastrophic subtraction near zero.
-  const long double total_term =
-    (observed_size - 1 - below_mean_count) * sum_values;
-  const long double below_mean_term =
-    observed_size * below_mean_sum;
-  const long double score_extended =
-    (total_term + below_mean_term) / (observed_size - 1);
+  const long double denominator = observed_size - 1;
+  const std::size_t total_weight =
+    observed_size - 1 - below_mean_count;
+  long double total_term = total_weight * sum_values;
+  long double below_mean_term = observed_size * below_mean_sum;
+  if (std::isfinite(total_term) && std::isfinite(below_mean_term)) {
+    total_term /= denominator;
+    below_mean_term /= denominator;
+  } else {
+    // Form bounded coefficients when multiplying either sum by n would
+    // overflow despite a potentially representable final score.
+    total_term = (total_weight / denominator) * sum_values;
+    below_mean_term =
+      (observed_size / denominator) * below_mean_sum;
+  }
+  const long double score_in_units = total_term + below_mean_term;
+  const long double score_extended = score_in_units * value_scale;
   const long double scale = std::max(
     std::fabs(total_term),
     std::fabs(below_mean_term)
-  ) / (observed_size - 1);
+  ) * value_scale;
   if (!std::isfinite(score_extended) || !std::isfinite(scale)) {
     stop_non_finite_result(gene_set, column);
   }
@@ -99,6 +113,49 @@ double finalize_score(
 
   // Clamp negative roundoff only. Small positive scores may be genuine.
   return score <= 0.0 ? 0.0 : score;
+}
+
+double score_with_scaled_sum(
+  const std::size_t observed_size,
+  const std::vector<double>& positive_values,
+  const int gene_set,
+  const int column
+) {
+  if (positive_values.empty()) {
+    stop_non_finite_result(gene_set, column);
+  }
+
+  const double maximum = *std::max_element(
+    positive_values.begin(),
+    positive_values.end()
+  );
+  long double normalized_sum = 0.0L;
+  for (const double value : positive_values) {
+    normalized_sum += static_cast<long double>(value) / maximum;
+  }
+
+  const long double normalized_mean = normalized_sum / observed_size;
+  std::size_t below_mean_count =
+    observed_size - positive_values.size();
+  long double below_mean_sum = 0.0L;
+  for (const double value : positive_values) {
+    const long double normalized_value =
+      static_cast<long double>(value) / maximum;
+    if (normalized_value < normalized_mean) {
+      ++below_mean_count;
+      below_mean_sum += normalized_value;
+    }
+  }
+
+  return finalize_score(
+    observed_size,
+    normalized_sum,
+    below_mean_count,
+    below_mean_sum,
+    maximum,
+    gene_set,
+    column
+  );
 }
 
 template <typename ValueAt>
@@ -143,6 +200,14 @@ NumericMatrix calculate_dense_scores(
             i + 1
           );
         }
+        if (value < 0.0) {
+          stop(
+            "Internal GeneFunnel arithmetic produced a materially negative "
+            "score for gene set %d, column %d.",
+            i + 1,
+            j + 1
+          );
+        }
 
         observed.push_back(value);
       }
@@ -156,6 +221,22 @@ NumericMatrix calculate_dense_scores(
       long double sum_values = 0.0L;
       for (const double value : observed) {
         sum_values += static_cast<long double>(value);
+      }
+      if (!std::isfinite(sum_values)) {
+        std::vector<double> positive_values;
+        positive_values.reserve(observed_size);
+        for (const double value : observed) {
+          if (value > 0.0) {
+            positive_values.push_back(value);
+          }
+        }
+        scores(i, j) = score_with_scaled_sum(
+          observed_size,
+          positive_values,
+          i + 1,
+          j + 1
+        );
+        continue;
       }
 
       const long double mean_values = sum_values / observed_size;
@@ -181,6 +262,7 @@ NumericMatrix calculate_dense_scores(
         sum_values,
         below_mean_count,
         below_mean_sum,
+        1.0L,
         i + 1,
         j + 1
       );
@@ -301,6 +383,23 @@ NumericMatrix calculate_sparse_scores(
         continue;
       }
 
+      if (!std::isfinite(sum_values)) {
+        std::vector<double> positive_values;
+        positive_values.reserve(positive_count);
+        for (const SparseEntry& entry : entries) {
+          if (!std::isnan(entry.value) && entry.value > 0.0) {
+            positive_values.push_back(entry.value);
+          }
+        }
+        scores(i, j) = score_with_scaled_sum(
+          observed_size,
+          positive_values,
+          i + 1,
+          j + 1
+        );
+        continue;
+      }
+
       const long double mean_values = sum_values / observed_size;
       // A positive mathematical mean can underflow when long double has the
       // same range as double. Implicit and stored zeros are still below it.
@@ -323,6 +422,7 @@ NumericMatrix calculate_sparse_scores(
         sum_values,
         below_mean_count,
         below_mean_sum,
+        1.0L,
         i + 1,
         j + 1
       );
