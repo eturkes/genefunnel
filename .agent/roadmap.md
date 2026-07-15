@@ -301,3 +301,23 @@ submission checks, use `0.99.0`, disclose AI assistance in the issue/PR, and tag
 only after review.
 Risks/blockers: all remaining gates require remote evidence or maintainer-owned
 submission state; local release audit has no known package-controlled blocker.
+
+2026-07-15 | session 12 audit 3 | commit `HEAD`
+Scope: remote portability closure + Bioconductor submission-version promotion.
+Changed: green cross-platform/CI/Definition-of-Done gates reconciled; package +
+NEWS promoted to `0.99.0`; BiocCheck version validation enabled; Support watched
+tag retained as an explicit maintainer-owned gate.
+Verified: GitHub Actions run `29385049469` at `93e2e4c` passed all seven jobs,
+including Linux release/devel, macOS ARM64 devel, Windows devel, clean-tarball
+quality, and ASan/UBSan; local `0.99.0` tarball clean-library tests pass; `R CMD
+check --no-manual` = `Status: OK`; tarball BiocCheck with version validation =
+0 errors/0 warnings/5 justified notes. Current official guidance still mandates
+`0.99.0` and issue + PR AI provenance disclosure.
+Decisions: Support account exists, while `genefunnel` is absent from its watched
+tags; retain only `no-check-bioc-help` until the maintainer changes that external
+profile state. Submission issue/PR and release/tag stay maintainer-owned.
+Remaining: add the Support watched tag → remove its check suppression; push this
+commit + confirm the exact candidate CI; disclose `Assisted-by: OpenAI Codex` in
+the Bioconductor issue and PR; tag/release only after review.
+Risks/blockers: watched-tag, submission, push, and review state are external;
+all locally actionable release gates pass.

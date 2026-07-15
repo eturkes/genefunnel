@@ -1,6 +1,6 @@
 Package: genefunnel
 Title: Gene Set Activity Scoring with GeneFunnel
-Version: 0.0.0.9000
+Version: 0.99.0
 Authors@R: 
     person("Emir", "Turkes", email = "emir.turkes@eturkes.com",
         role = c("aut", "cre", "cph"))

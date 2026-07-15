@@ -41,12 +41,11 @@ if (length(tarballs) != 1L) {
     stop("Expected exactly one GeneFunnel source tarball.")
 }
 
-# Submission numbering and maintainer-owned Support-site state are explicit
-# Session 12 gates. All package-controlled checks remain enabled here.
+# The maintainer account is registered, but its GeneFunnel watched tag remains
+# an external submission gate. All package-controlled checks are enabled.
 result <- BiocCheck::BiocCheck(
     tarballs[[1L]],
     `new-package` = TRUE,
-    `no-check-version-num` = TRUE,
     `no-check-bioc-help` = TRUE,
     `quit-with-status` = FALSE
 )

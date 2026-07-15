@@ -1,4 +1,4 @@
-# genefunnel 0.0.0.9000
+# genefunnel 0.99.0
 
 ## New features
 

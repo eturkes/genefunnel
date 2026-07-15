@@ -334,7 +334,7 @@ Session boundaries are suggested cohesive commits, not a fixed limit. Split any 
 - [x] Expand `.Rbuildignore` for agent files, plans, local caches, benchmark outputs, and other non-package content while retaining user-facing source/docs.
 - [x] Ensure no generated binary, check directory, tarball, cache, or platform-specific file is tracked.
 - [x] Add package-level documentation, `NEWS.md`, and an appropriate citation entry for the thesis/package without inventing a DOI.
-- [ ] Verify compiler portability on Linux, macOS, and Windows; avoid GNU-only assumptions unless guarded.
+- [x] Verify compiler portability on Linux, macOS, and Windows; avoid GNU-only assumptions unless guarded.
 
 **Acceptance:** source tarball contains only intentional package content; install/check succeeds on all supported platforms; metadata contains no placeholders or false Bioconductor status.
 
@@ -368,7 +368,7 @@ Session boundaries are suggested cohesive commits, not a fixed limit. Split any 
 - [x] Add documentation build/link checks and a small sparse-memory/dispatch smoke test.
 - [x] Cache dependencies safely without committing caches.
 - [x] Ensure tests do not require network access, large external data, a thesis file, or many cores.
-- [ ] Confirm the first-run portability fixes in a green remote workflow, then close the
+- [x] Confirm the first-run portability fixes in a green remote workflow, then close the
   cross-platform and CI Definition-of-Done gates.
 
 **Acceptance:** CI is green from a clean checkout; failures are actionable; package checks produce no errors or warnings and no unexplained notes.
@@ -395,12 +395,13 @@ Session boundaries are suggested cohesive commits, not a fixed limit. Split any 
 ### Session 12 - Release-candidate audit
 
 - [x] Re-read the entire specification and trace every requirement to code, tests, and documentation.
-- [ ] Run full checks from a clean clone/library on all CI platforms and the built source tarball.
+- [x] Run full checks from a clean clone/library on all CI platforms and the built source tarball.
 - [x] Re-run full dense/sparse/parallel benchmarks and archive result metadata.
 - [x] Audit warnings, messages, errors, numerical tolerances, native registration, package size, examples, and license/citation text.
 - [x] Verify no accidental API expansion or undocumented behavior exists.
+- [ ] Add `genefunnel` to the maintainer's Bioconductor Support watched tags, then enable its BiocCheck gate.
 - [ ] Disclose non-trivial AI assistance/provenance in the Bioconductor issue and PR, with provenance cited in new code, according to current policy.
-- [ ] Set the release/submission version according to current Bioconductor policy only when all gates pass.
+- [x] Set the submission version to current mandated `0.99.0` after package-controlled and cross-platform gates pass.
 - [x] Write release notes describing breaking behavior relative to the prototype: partial coverage, proper missing-value omission, sparse preservation, duplicate handling, and stricter validation.
 - [ ] Create a tag/release only after maintainer review; do not claim Bioconductor availability before acceptance.
 
@@ -482,8 +483,8 @@ The final package documentation must explicitly convey these thesis-derived poin
 - [x] No placeholder metadata or tracked binaries.
 - [x] Generated namespace/native files are current.
 - [x] Complete tests, reference documentation, vignette, README, NEWS, citation, and durable scientific spec exist.
-- [ ] Source tarball installs and passes current `R CMD check`/Bioconductor checks on supported platforms.
-- [ ] CI is green from a clean checkout without network/data/thesis dependencies.
+- [x] Source tarball installs and passes current `R CMD check`/Bioconductor checks on supported platforms.
+- [x] CI is green from a clean checkout without network/data/thesis dependencies.
 
 ### Trustworthy claims
 
