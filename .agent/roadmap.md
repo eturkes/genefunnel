@@ -340,3 +340,15 @@ Remaining: choose the next post-plan feature or maintenance objective; resume
 submission issue/PR disclosure and review/tag gates when desired.
 Risks/blockers: this commit needs the normal maintainer push + cross-platform CI;
 no local package-controlled blocker is known.
+
+2026-07-16 | submission gate 1 | commit `HEAD`
+Scope: enable the Bioconductor Support watched-tag check.
+Changed: removed the final BiocCheck suppression after the maintainer added
+`genefunnel` to watched tags; reconciled the Session 12 checklist.
+Verified: live Support APIs find the maintainer account and return watched tags
+`genefunnel,imputefinder`; unsuppressed source-tarball BiocCheck reports the
+maintainer registered and package present in watched tags.
+Remaining: disclose `Assisted-by: OpenAI Codex` in the submission issue and PR;
+create a tag/release only after maintainer review.
+Risks/blockers: submission and review state remain maintainer/external; no local
+package-controlled blocker is known.

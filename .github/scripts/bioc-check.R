@@ -41,12 +41,10 @@ if (length(tarballs) != 1L) {
     stop("Expected exactly one GeneFunnel source tarball.")
 }
 
-# The maintainer account is registered, but its GeneFunnel watched tag remains
-# an external submission gate. All package-controlled checks are enabled.
+# The maintainer account and GeneFunnel watched tag are verified by BiocCheck.
 result <- BiocCheck::BiocCheck(
     tarballs[[1L]],
     `new-package` = TRUE,
-    `no-check-bioc-help` = TRUE,
     `quit-with-status` = FALSE
 )
 assert_clean(result, "BiocCheck")

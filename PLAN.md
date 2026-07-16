@@ -399,7 +399,7 @@ Session boundaries are suggested cohesive commits, not a fixed limit. Split any 
 - [x] Re-run full dense/sparse/parallel benchmarks and archive result metadata.
 - [x] Audit warnings, messages, errors, numerical tolerances, native registration, package size, examples, and license/citation text.
 - [x] Verify no accidental API expansion or undocumented behavior exists.
-- [ ] Add `genefunnel` to the maintainer's Bioconductor Support watched tags, then enable its BiocCheck gate.
+- [x] Add `genefunnel` to the maintainer's Bioconductor Support watched tags, then enable its BiocCheck gate.
 - [ ] Disclose non-trivial AI assistance/provenance in the Bioconductor issue and PR, with provenance cited in new code, according to current policy.
 - [x] Set the submission version to current mandated `0.99.0` after package-controlled and cross-platform gates pass.
 - [x] Write release notes describing breaking behavior relative to the prototype: partial coverage, proper missing-value omission, sparse preservation, duplicate handling, and stricter validation.
