@@ -1,6 +1,7 @@
 # GeneFunnel execution ledger
 
-Normative specification + completion checkboxes = `PLAN.md`.
+Scientific contract = `inst/SCIENTIFIC_SPEC.md`; forward research portfolio =
+`PLAN.md`; this file = chronological execution evidence.
 
 ## Session 1 baseline - 2026-07-14
 
@@ -352,3 +353,25 @@ Remaining: disclose `Assisted-by: OpenAI Codex` in the submission issue and PR;
 create a tag/release only after maintainer review.
 Risks/blockers: submission and review state remain maintainer/external; no local
 package-controlled blocker is known.
+
+2026-07-17 | frontier plan 1 | commit `HEAD`
+Scope: replace the completed release roadmap with a forward research +
+scale portfolio.
+Changed: authority now separates durable scientific contract, future plan, and
+execution evidence; new workstreams cover exact score decomposition,
+aggregation gap, compiled provenance, block execution, reliability, and held-out
+validation with explicit kill gates.
+Verified: live tracked architecture/status/history; cited official Bioconductor
+DelayedArray/SparseArray/HDF5Array/container surfaces; cited primary scoring +
+pathway benchmark literature; randomized decomposition/Jensen identities;
+Markdown render + whitespace checks.
+Decisions: freeze the existing scorer; report all-zero balance as undefined;
+treat aggregation gap as a hypothesis rather than biology; make scale adapters
+explicit and Bioconductor-native; gate public API/dependency work on candidate
+release state and measured value.
+Remaining: close/defer release lane, then formalize decomposition semantics and
+protocol 2.0 design before implementation.
+Risks/blockers: public API/dependency expansion may conflict with the
+pre-submission candidate; synthetic fidelity is not biological validation;
+research spikes may proceed while public surface changes await the candidate
+scope decision.
