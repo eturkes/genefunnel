@@ -375,3 +375,18 @@ Risks/blockers: public API/dependency expansion may conflict with the
 pre-submission candidate; synthetic fidelity is not biological validation;
 research spikes may proceed while public surface changes await the candidate
 scope decision.
+
+2026-07-17 | frontier execution 1 | commit `HEAD`
+Scope: reconcile the first release-lane gate at the frozen candidate baseline.
+Changed: `PLAN.md` records exact post-S3-fix cross-platform CI evidence at
+`c789a23`.
+Verified: GitHub Actions run `29461199816` completed successfully at exact SHA
+`c789a237e579b73fdf47f89a4e8aa54282c5e17f`; all seven checks passed: Linux
+release/devel, macOS devel, Windows devel, release-quality, sanitizers, and the
+matrix resolver. Full local testthat suite passes; `git diff --check` is clean.
+Decisions: `c789a23` remains the package candidate/innovation boundary; later
+local planning/profile commits neither change package code nor reopen scope.
+Remaining: maintainer chooses candidate freeze versus intentional reopening;
+issue/PR AI disclosure and reviewed tag/release remain external release gates.
+Risks/blockers: A1 research can proceed, but PLAN execution order blocks public
+API/dependency work until the release lane is explicitly closed or deferred.

@@ -137,8 +137,9 @@ change, optional or required dependency, S4 registration, public export,
 version bump, or contract change waits for an explicit maintainer decision on
 the pre-submission candidate scope.
 
-- [ ] Record green cross-platform CI at the exact chosen innovation baseline;
-  the ledger's named remote run predates the later S3-spoofing fix.
+- [x] Record green cross-platform CI at exact innovation baseline `c789a23`:
+  [Actions run `29461199816`](https://github.com/eturkes/genefunnel/actions/runs/29461199816)
+  passed all seven jobs after the S3-spoofing fix.
 - [ ] Maintainer chooses one: freeze candidate scope until review completes, or
   intentionally reopen it around new public work.
 - [ ] Disclose non-trivial `Assisted-by: OpenAI Codex` provenance in the
