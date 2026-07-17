@@ -1,8 +1,7 @@
 # Alignment — always on
 
-- Codex is the sole development agent for this repo. Canonical runtime = Codex CLI/API from
-  the repo root; canonical instruction file = this `AGENTS.md`. Keep `CLAUDE.md`, `.claude/`,
-  and non-Codex agent project configs absent from git.
+- Codex is the sole development agent for repos using this profile. Canonical runtime = Codex CLI/API from
+  the repo root; canonical instructions = this root profile.
 - Session entry: when a repo provides the `$session-prompt` skill backed by
   `.codex/prompts/session.md`, treat the skill + prompt as one interface and update them together;
   keep legacy slash-command copies absent.
@@ -31,7 +30,7 @@
 - Git: creds in the global gitconfig; standing permission for all local-repo commands, I handle remote. Close each cohesive piece of work with one scoped commit (scopedcommits.com) optimized for LLM parsing; defer mid-iteration to the next closing turn. Keep `.gitignore` current.
 - Memory/scratchpad = `.agent/memory.md`: learn from mistakes, stay factual, carry live context across sessions + subagents. Each entry earns its place vs code/docs/tests/git history → skip drift-prone bloat (version numbers) + what the diff/log already records; delete superseded or obsolete (git + `roadmap.md`'s ledger hold the trajectory).
 - Instruction + prompt files = yours to maintain → update any the moment it's improvable. Keep this
-  root `AGENTS.md` invariant across repos. Route durable guidance by scope: project-specific
+  root instruction profile invariant across repos. Route durable guidance by scope: project-specific
   facts/decisions/commands → that project's `.agent/memory.md` or tracked docs; agent-agnostic,
   project-independent working principles → here; Codex workflow prompts → `.codex/prompts/`.
 - Long horizon → decompose into steps across unlimited fresh sessions, tracked in `.agent/roadmap.md`.
