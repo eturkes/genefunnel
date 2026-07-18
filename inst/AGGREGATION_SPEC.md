@@ -2,10 +2,11 @@
 
 # Aggregation-gap proof and pre-API contract
 
-**Status:** theorem/design contract ratified 2026-07-18; no public aggregation
-function exists. The frozen scorer remains governed by `SCIENTIFIC_SPEC.md`.
-This document owns Workstream B's estimand, eligibility, missingness,
-terminology, and novelty boundary before a prototype can influence them.
+**Status:** theorem/design contract ratified 2026-07-18; an internal prototype
+implements protocol `B-1.0.1`, but no public aggregation function exists. The
+frozen scorer remains governed by `SCIENTIFIC_SPEC.md`. This document owns
+Workstream B's estimand, eligibility, missingness, terminology, and novelty
+boundary.
 
 ## Estimand
 
@@ -193,8 +194,8 @@ formula and opposing-mass formula in base R, independently of native code.
 normalization, equality/strictness, zero-weight exclusion, scaling, physical
 sums, and unit/member permutations.
 
-A future group-audit API must be additive and must return eligibility reasons,
-effective weights/support, aggregate score, weighted unit score, absolute gap,
-normalized gap/status, and removed member/unit facts. Its schema and factorial
-validation thresholds are frozen in benchmark protocol `B-1.0.1`;
-the prototype and its empirical evidence remain prospective.
+Internal `.aggregation_audit()` implements the frozen additive four-table
+schema: eligibility reasons, effective weights/support, authoritative aggregate
+and unit scores, formula gap, normalized status, identity residual, and removed
+member/unit facts. It remains unexported. Factorial and empirical thresholds
+are frozen in benchmark protocol `B-1.0.1`; their evidence remains prospective.

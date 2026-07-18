@@ -43,6 +43,9 @@
 - Adds a versioned controlled-science protocol covering analytic score cases,
   sparse/dense identity, partial coverage, missingness, and independence, with
   machine-readable results and regenerated Markdown reports.
+- Adds an unexported, fail-closed aggregation-audit prototype with explicit
+  weights, support/missingness facts, identity residuals, and independent
+  randomized-oracle coverage; empirical promotion gates remain open.
 
 ## Documentation
 

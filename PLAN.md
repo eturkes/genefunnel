@@ -248,10 +248,10 @@ cancellation of different member patterns.
 - [x] Define normalized gap as \(J/F(\bar{x})\in[0,1]\) when the aggregate score
   is positive and `NA` otherwise; verify whether that normalization answers the
   intended task before freezing it publicly.
-- [ ] Prototype a group-level audit returning aggregate score, weighted unit
+- [x] Prototype a group-level audit returning aggregate score, weighted unit
   score, absolute gap, normalized gap where defined, removed member identities/
   count, and eligibility reasons.
-- [ ] Verify zero gap for proportional member profiles, positive gap for planted
+- [x] Verify zero gap for proportional member profiles, positive gap for planted
   complementary profiles, the broader no-opposing-deviation equality case,
   permutation invariance, and non-negativity within numerical tolerance.
 - [ ] Run a pre-specified factorial experiment over mixture proportion, library

@@ -673,3 +673,30 @@ adversarial/oracle verification, then run empirical gates without protocol
 changes.
 Risks/blockers: detail volume can grow with member x missing-unit occurrences;
 summary removal count remains unique members and must not be inferred from rows.
+
+2026-07-18 | frontier execution 10 | commit `HEAD`
+Scope: implement and adversarially verify the frozen internal aggregation audit.
+Changed: `.aggregation_audit()` emits the `B-1.0.1` four-table schema with exact
+group/set/unit order, explicit normalized masses, zero-weight exclusion,
+reject/intersection support facts, authoritative native scores, an independent
+scaled opposing-mass gap, residual certification, and fail-closed numerical
+states; pure helpers keep every function below 50 lines and avoid non-local
+mutation. Added schema/reason/missingness/extreme/dense-sparse fixtures plus 128
+random group audits against the independent oracle and direct mass, scale,
+physical-sum, equality, and permutation checks. PLAN/NEWS/spec record only an
+unexported prototype; empirical promotion gates remain open.
+Verified: full source suite = 89 tests/7,083 expectations with zero failures;
+standalone Rd/link/vignette documentation; exact source build; installed-tarball
+`R CMD check --no-manual` = `Status: OK`; tarball BiocCheck = 0 errors/0
+warnings/6 standing advisory notes, with no function-length or `<<-` note.
+Decisions: within-group max-scaled effective weights reject positive-mass
+underflow; inactive values cannot affect validity; unexpected
+native errors propagate while arithmetic range failures become explicit
+`numerically_unavailable`; independent formula and native identity must certify
+before any metric is returned; prototype remains internal and dependency-free.
+Remaining: implement/run the frozen 124,416-measurement synthetic experiment,
+then the pinned CellBench mixture and Kang/Reactome validations without changing
+`B-1.0.1` in response to outcomes.
+Risks/blockers: empirical H2 may fail one or every co-primary threshold; this R
+prototype materializes one retained group/set block and is evidence machinery,
+not a performance or public-API commitment.
