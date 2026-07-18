@@ -11,6 +11,9 @@
     while (last > 1L && value[[last]] == 0) {
         last <- last - 1L
     }
+    if (last == length(value)) {
+        return(value)
+    }
     unname(value[seq_len(last)])
 }
 
@@ -42,7 +45,7 @@
     if (length(left) != length(right)) {
         return(if (length(left) < length(right)) -1L else 1L)
     }
-    for (index in rev(seq_along(left))) {
+    for (index in seq.int(length(left), 1L)) {
         if (left[[index]] != right[[index]]) {
             return(if (left[[index]] < right[[index]]) -1L else 1L)
         }
@@ -273,22 +276,138 @@
     )
 }
 
-.gf_big_order <- function(values) {
-    indices <- seq_along(values)
-    if (length(indices) < 2L) {
-        return(indices)
+.gf_big_prefix_sums <- function(values) {
+    prefix <- vector("list", length(values) + 1L)
+    prefix[[1L]] <- 0
+    for (index in seq_along(values)) {
+        prefix[[index + 1L]] <- .gf_big_add(prefix[[index]], values[[index]])
     }
-    for (position in 2:length(indices)) {
-        current <- position
-        while (current > 1L && .gf_big_compare(
-            values[[indices[[current - 1L]]]],
-            values[[indices[[current]]]]
-        ) > 0L) {
-            swap <- indices[[current - 1L]]
-            indices[[current - 1L]] <- indices[[current]]
-            indices[[current]] <- swap
-            current <- current - 1L
+    prefix
+}
+
+.gf_sorted_below_count <- function(values, total, multiplier) {
+    lower <- 0L
+    upper <- length(values)
+    while (lower < upper) {
+        middle <- (lower + upper + 1L) %/% 2L
+        below <- .gf_big_compare(
+            .gf_big_multiply_small(values[[middle]], multiplier),
+            total
+        ) < 0L
+        if (below) {
+            lower <- middle
+        } else {
+            upper <- middle - 1L
         }
+    }
+    lower
+}
+
+.gf_deleted_score_numerator <- function(
+    index,
+    magnitudes,
+    positions,
+    sorted,
+    prefix,
+    total
+) {
+    remaining_size <- length(magnitudes) - 1L
+    remaining_total <- .gf_big_subtract(total, magnitudes[[index]])
+    boundary <- .gf_sorted_below_count(
+        sorted,
+        remaining_total,
+        remaining_size
+    )
+    included <- positions[[index]] <= boundary
+    below_sum <- prefix[[boundary + 1L]]
+    if (included) {
+        below_sum <- .gf_big_subtract(below_sum, magnitudes[[index]])
+    }
+    below_count <- boundary - as.integer(included)
+    .gf_big_add(
+        .gf_big_multiply_small(
+            remaining_total,
+            remaining_size - 1L - below_count
+        ),
+        .gf_big_multiply_small(below_sum, remaining_size)
+    )
+}
+
+.gf_exact_deltas_sorted <- function(values) {
+    size <- length(values)
+    if (size < 3L) {
+        stop("Internal exact delta support is invalid.", call. = FALSE)
+    }
+    dyadic <- .gf_dyadic_vector(values)
+    full <- .gf_exact_score_numerator(dyadic$magnitudes)
+    ordering <- order(values, method = "radix")
+    sorted <- dyadic$magnitudes[ordering]
+    prefix <- .gf_big_prefix_sums(sorted)
+    if (.gf_big_compare(prefix[[size + 1L]], full$total) != 0L) {
+        stop("Internal exact prefix sum is invalid.", call. = FALSE)
+    }
+    positions <- integer(size)
+    positions[ordering] <- seq_len(size)
+    deltas <- lapply(seq_len(size), function(index) {
+        deleted <- .gf_deleted_score_numerator(
+            index, dyadic$magnitudes, positions, sorted, prefix, full$total
+        )
+        .gf_signed_difference(
+            .gf_big_multiply_small(full$numerator, size - 2L),
+            .gf_big_multiply_small(deleted, size - 1L)
+        )
+    })
+    list(
+        deltas = deltas,
+        denominator = .gf_big_multiply(
+            .gf_big_from_integer(size - 1L),
+            .gf_big_from_integer(size - 2L)
+        ),
+        total = full$total,
+        exponent = dyadic$exponent
+    )
+}
+
+.gf_big_merge_block <- function(indices, values, left, middle, right) {
+    left_indices <- indices[seq.int(left, middle)]
+    right_indices <- indices[seq.int(middle + 1L, right)]
+    merged <- integer(length(left_indices) + length(right_indices))
+    left_position <- 1L
+    right_position <- 1L
+    for (position in seq_along(merged)) {
+        use_left <- right_position > length(right_indices) ||
+            (left_position <= length(left_indices) && .gf_big_compare(
+                values[[left_indices[[left_position]]]],
+                values[[right_indices[[right_position]]]]
+            ) <= 0L)
+        if (use_left) {
+            merged[[position]] <- left_indices[[left_position]]
+            left_position <- left_position + 1L
+        } else {
+            merged[[position]] <- right_indices[[right_position]]
+            right_position <- right_position + 1L
+        }
+    }
+    merged
+}
+
+.gf_big_order <- function(values) {
+    size <- length(values)
+    indices <- seq_len(size)
+    width <- 1L
+    while (width < size) {
+        next_indices <- integer(size)
+        for (left in seq.int(1L, size, by = 2L * width)) {
+            middle <- min(left + width - 1L, size)
+            right <- min(left + 2L * width - 1L, size)
+            next_indices[seq.int(left, right)] <- if (middle == right) {
+                indices[seq.int(left, right)]
+            } else {
+                .gf_big_merge_block(indices, values, left, middle, right)
+            }
+        }
+        indices <- next_indices
+        width <- 2L * width
     }
     indices
 }

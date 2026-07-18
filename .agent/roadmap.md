@@ -1149,3 +1149,34 @@ independently load-blocked.
 Risks/blockers: optimization may fail equivalence or prove too complex to
 maintain, in which case retain the brute internal oracle. Even successful
 optimization cannot rescue failed predictive gates or justify export.
+
+2026-07-18 | frontier execution 25 | commit `HEAD`
+Scope: implement the first exact sorted-prefix candidate while retaining the
+profiled brute path as executable oracle and fallback.
+Changed: exact member sorting + arbitrary-integer prefix sums; per-deletion
+binary search for the strict below-mean boundary; exact removal of the deleted
+member from boundary count/sum; stable bottom-up exact merge order for median
+deltas; allocation-free fast path for already-trimmed limbs. The internal cell
+path uses the candidate; `.gf_exact_deltas()` remains unchanged as brute oracle.
+Verified: red test first failed on absent sorted implementation. Candidate exact
+objects are identical to brute for canonical/zero/subnormal/maximum/wide-range
+fixtures, 250 seeded cells through size 40, and ten size-128 cells; stable equal-
+magnitude ordering is explicit. Existing randomized/direct/schema/extreme/
+dense/sparse/integer/serial/SOCK tests pass with a mocked brute failure, proving
+the API path bypasses brute. Frozen fixture output MD5 remains
+`3d9635e779a9ed1eee453a2a04596369`. Exploratory dirty-tree calls moved from
+24.749 s before exact merge/trim work to 12.582 s after it, versus the committed
+brute median 213.585 s; these are optimization context, not a speed claim.
+Clean source build passes; rebuilt-tarball `R CMD check --no-manual` =
+`Status: OK`; all new functions remain <=35 lines.
+Decisions: sort original finite binary64 values only to establish their exact
+order; every threshold, sum, numerator, sign, delta order, and output conversion
+remains arbitrary-integer/rational. Stable sorting preserves canonical ties.
+The candidate is not adopted in PLAN until a clean archived commit reproduces
+the frozen full-workload digest.
+Remaining: commit; install that clean SHA in isolation and record fixed-workload
+identity. If it passes, close PLAN's optimized-algorithm item and proceed to the
+controlled reliability runner.
+Risks/blockers: a clean-candidate mismatch rejects adoption despite randomized
+success. Further optimization is optional; correctness and maintainability take
+precedence over exploratory elapsed time.

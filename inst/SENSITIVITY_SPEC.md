@@ -144,6 +144,15 @@ infinity or false zero. The prototype has no scaled sidecar. The ordinary
 `genefunnel()` path allocates no sensitivity output, and its score remains
 authoritative.
 
+The retained brute oracle recomputes every deleted score numerator. After the
+frozen profile admitted optimization, the active internal candidate sorts exact
+member magnitudes once and forms exact prefix sums. For deletion `i`, it sets
+`T_-i = T - z_i`, binary-searches the largest sorted boundary `q` satisfying
+`(n - 1) z_(q) < T_-i`, removes `z_i` from the prefix when it lies below that
+boundary, and evaluates the same integer `N_-i`. This changes complexity, not
+the rational estimand. The brute function remains executable; clean fixed-
+workload identity is still required before the candidate is adopted.
+
 Sensitivity depends on input units, preprocessing, effective size, retained
 member identities, gene-specific abundance and dynamic range, measurement
 noise, and the meaningful-zero assumption. It is not causal attribution,

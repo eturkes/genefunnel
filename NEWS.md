@@ -52,6 +52,9 @@
 - Records the fixed exact-brute profile: median call 213.585 seconds and
   exact-arithmetic stack share 0.999403 both cross their frozen optimization
   triggers. The result makes no performance, reliability, or public-API claim.
+- Adds an exact sorted-prefix sensitivity candidate while retaining the brute
+  oracle. Fixed/extreme/randomized delta objects and the existing representation/
+  backend suite must remain identical before adoption.
 - Implements dependency-free scaled double-double native diagnostics for
   overflow, cancellation, and underflow cases while keeping the ordinary score
   authoritative.

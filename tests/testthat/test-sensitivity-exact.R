@@ -146,6 +146,68 @@ test_that("exact deletion integers match an independent integer oracle", {
     }
 })
 
+test_that("sorted-prefix exact deltas are identical to the brute oracle", {
+    smallest <- 2^-1074
+    fixtures <- list(
+        c(1, 2, 7),
+        c(0, 1, 1),
+        c(0, 0, 0, 0),
+        c(smallest, smallest, smallest),
+        c(smallest, 2 * smallest, 7 * smallest),
+        rep(.Machine$double.xmax, 4L),
+        c(smallest, 1, 2^500, .Machine$double.xmax)
+    )
+    set.seed(20260725)
+    for (iteration in seq_len(250L)) {
+        size <- sample(3:40, 1L)
+        exponents <- sample(-1074:1000, size, replace = TRUE)
+        values <- (1 + stats::runif(size)) * 2^exponents
+        values[!is.finite(values)] <- .Machine$double.xmax
+        values[sample.int(size, floor(size / 8L))] <- 0
+        fixtures[[length(fixtures) + 1L]] <- values
+    }
+
+    for (iteration in seq_along(fixtures)) {
+        expect_identical(
+            genefunnel:::.gf_exact_deltas_sorted(fixtures[[iteration]]),
+            genefunnel:::.gf_exact_deltas(fixtures[[iteration]]),
+            info = iteration
+        )
+    }
+
+    for (iteration in seq_len(10L)) {
+        values <- stats::rexp(128L)
+        values[sample.int(128L, 16L)] <- 0
+        expect_identical(
+            genefunnel:::.gf_exact_deltas_sorted(values),
+            genefunnel:::.gf_exact_deltas(values),
+            info = paste("size 128", iteration)
+        )
+    }
+})
+
+test_that("exact magnitude ordering is stable and the API bypasses brute", {
+    magnitudes <- lapply(c(5, 1, 5, 0, 1), function(value) {
+        genefunnel:::.gf_big_from_integer(value)
+    })
+    expect_identical(
+        genefunnel:::.gf_big_order(magnitudes),
+        c(4L, 2L, 5L, 1L, 3L)
+    )
+
+    testthat::local_mocked_bindings(
+        .gf_exact_deltas = function(...) {
+            stop("brute oracle invoked", call. = FALSE)
+        },
+        .package = "genefunnel"
+    )
+    expect_identical(
+        genefunnel:::.sensitivity_cell(c(1, 2, 7), c("A", "B", "C"))$
+            largest_member,
+        "B"
+    )
+})
+
 test_that("exact ordering defeats subtract-rounded tie drift", {
     values <- c(
         A = 0x1.53aa55218p+6,

@@ -459,6 +459,11 @@ value/member constructors and pass boundaries implicit, then byte-pins them
 before any fixed-workload call. It changes no correctness, controlled-design,
 endpoint, threshold, or promotion rule.
 
+The first optimized candidate replaces per-deletion rescanning with exact
+sorted boundaries and prefix sums while retaining the brute oracle. Fixed,
+extreme, and randomized exact-object tests pass; adoption remains pending an
+isolated clean-candidate match to the frozen workload digest.
+
 **Go:** summaries are reproducible, representation-invariant, and pass the
 pre-specified held-out incremental-effect and technical-repeat thresholds.
 **Fallback:** if they do not outperform simple coverage/effective-size facts,

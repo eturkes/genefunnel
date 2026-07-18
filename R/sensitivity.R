@@ -179,7 +179,7 @@
     if (length(values) < 3L) {
         return(.sensitivity_not_applicable(length(values)))
     }
-    .sensitivity_from_exact(.gf_exact_deltas(values), members)
+    .sensitivity_from_exact(.gf_exact_deltas_sorted(values), members)
 }
 
 .sensitivity_extract_values <- function(mat, indices, column) {
