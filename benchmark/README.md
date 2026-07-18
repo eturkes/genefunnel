@@ -27,6 +27,22 @@ controlled factorial, known-mixture validation, donor split, endpoints, and
 go/fallback rules before prototype results. Its external data remain ignored;
 the source manifest pins HTTPS bytes and adds no package dependency.
 
+Workstream F's prospective
+[`validation protocol F-2.0.0`](validation-protocol.md) and machine
+[`registry`](validation-protocol.tsv) freeze the future comparative design. It
+separates bulk RNA, donor-level pseudobulk RNA, and bulk proteomics; pins
+Reactome 97 and the exact sum/mean/singscore/GSVA/ssGSEA APIs; and fixes matched
+controls, units, splits, endpoints, minimum effects, multiplicity, exclusions,
+null tests, and seeds. It is deliberately design-only and absent from the
+executable index until its data and implementation supplements are committed.
+Validate its 184 rows and resolution-IV simulation design with:
+
+```sh
+Rscript --vanilla -e \
+  'source("benchmark/validation-protocol.R"); \
+   print(validation_protocol_validate("."))'
+```
+
 ## Install
 
 ```sh
@@ -451,10 +467,11 @@ universal thresholds.
 
 ## Provenance boundary
 
-The repository has no thesis datasets, so this protocol neither reruns nor
-claims reproduction of thesis results or historical runtimes. It includes no
-competitor methods because the package makes no comparative claim and adding
-their dependency/API surface would not strengthen a current acceptance gate.
+The repository has no thesis datasets, so executable protocol 1.0.0 neither
+reruns nor claims reproduction of thesis results or historical runtimes. It
+includes no competitor methods. Prospective F-2.0.0 names competitors and
+external-data requirements but contains no implementation, data, result, or
+comparative claim.
 
 If real thesis data become available, keep them external. Optional retrieval
 and execution scripts must record source URLs, licensing, checksums, immutable

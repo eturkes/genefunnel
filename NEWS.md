@@ -38,6 +38,10 @@
 - Adds an explicit-version protocol dispatcher and SHA-256 index that freeze
   protocol 1.0.0's runner/manifest/fixture closure without an implicit latest
   alias or new dependency.
+- Prospectively freezes design-only validation protocol F-2.0.0: separate bulk
+  RNA, pseudobulk RNA, and proteomics gates; exact Reactome/method bytes and
+  APIs; same-input/native regimes; matched controls; held-out replication;
+  minimum effects, multiplicity, null tests, exclusions, and RNG namespaces.
 - Locks a dependency-free scaled numerical oracle and paired default-path
   performance protocol before component implementation.
 - Freezes the internal observed-member sensitivity schema, dependency-free

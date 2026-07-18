@@ -520,7 +520,7 @@ claim must therefore rest on its estimand, diagnostics, and validated domain.
 - [x] Add a version-selecting harness plus frozen runner/manifest/fixtures for
   executable protocol `1.0.0`; introduce `2.0.0` only when new methods,
   scenarios, or assertions land.
-- [ ] Pre-specify in that committed protocol target assays, aggregation level,
+- [x] Pre-specify in that committed protocol target assays, aggregation level,
   primary/secondary hypotheses and endpoints, minimum effects, independent
   replication, exclusions, multiplicity, unit of inference, preprocessing,
   gene-set versions, coverage policy, competitor versions/APIs, and seeds
@@ -564,6 +564,20 @@ synthetic resource workloads. It makes no comparative, external, biological,
 or thesis-reproduction claim. The first new method, scenario, or assertion in
 the pre-specified scientific programme must therefore enter committed protocol
 `2.0.0`, leaving `1.0.0` immutable and executable.
+
+Design-only protocol `F-2.0.0` now freezes 184 machine-checked fields before
+comparative implementation, data selection, molecular-value access, or scoring.
+It separates bulk RNA, donor-level pseudobulk RNA, and bulk proteomics gates;
+fixes biological units, TMM-CPM/linear-proteomics preprocessing, Reactome 97
+bytes and coverage, exact sum/mean/singscore/GSVA/ssGSEA APIs, matched random
+controls, development/held-out roles, exclusions, null testing, seeds, and
+secondary failure envelopes. Exact-size controls make sum and mean ranks
+identical, so disagreement aborts and one ablation-superiority hypothesis is
+tested. The 15 co-primary hypotheses use one-sided Bonferroni familywise 0.05;
+no assay stratum, native pipeline, simulation, or secondary endpoint rescues
+another. `F-2.0.0` remains outside the executable index: an opaque-byte data
+supplement and a post-development/pre-heldout implementation supplement must
+land before comparative execution.
 
 **Go:** the protocol's combined primary-task rule, minimum effects, multiplicity
 control, and independent replication pass against sum/mean and relevant methods,

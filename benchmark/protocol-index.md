@@ -43,3 +43,9 @@ repair requires a new registered patch version with preserved scientific
 meaning; any new method, scenario, or assertion starts protocol `2.0.0` and is
 committed before its comparative result is inspected. Old version files remain
 immutable and executable.
+
+Prospective design `F-2.0.0` is now tracked separately in
+[`validation-protocol.tsv`](validation-protocol.tsv). It names future methods,
+assays, and assertions but has no runner, data, or results, so it is not an
+executable index entry. Registration waits for its byte-pinned data and
+implementation supplements; dispatch continues to expose only `1.0.0`.

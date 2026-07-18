@@ -1390,3 +1390,44 @@ implementing or inspecting a comparative result. A2/C gates remain separately
 host-admission blocked.
 Risks/blockers: SHA validation is intentionally not an authenticity mechanism.
 Existing non-LF checkouts must honor tracked attributes before byte validation.
+
+2026-07-18 | frontier execution 33 | commit `HEAD`
+Scope: freeze Workstream F's prospective scientific design before selecting
+external studies, opening molecular values, implementing competitors, or
+computing a comparative score.
+Changed: design-only protocol `F-2.0.0`; 184-row SHA-256-pinned registry;
+dependency-free semantic/resolution-IV validator; CI byte-mutation rejection;
+PLAN/benchmark/NEWS/index documentation. Separate non-rescuing gates cover bulk
+RNA, donor-level pseudobulk RNA, and bulk proteomics. The protocol fixes
+biological units, meaningful-zero preprocessing, Reactome 97 bytes, 70% common
+coverage, exact method APIs, 100 matched controls/task, development/held-out
+roles, exclusions, hierarchical bootstrap, null permutation tests, secondary
+failure envelopes, simulation factors, seeds, and evidence retention. Registry
+SHA-256 = `00a3a9f5e1cd6f709fc3ecdbad111f938b80c849c1c6071d134db41e7c63361c`.
+Verified: current Bioconductor 3.23 repository bytes = edgeR 4.10.1 SHA-256
+`6f3e8ee8...0057a`, GSVA 2.6.3 SHA-256 `94a2d2da...ad95` at commit
+`f209b338...ebf9d`, and singscore 1.32.0 SHA-256 `b4ffcbcb...fd5a` at
+commit `120a1f98...fd1`. Reactome 97 Ensembl/UniProt/pathway-list hashes match
+the registry. Validator returns 184 rows, six methods, 15 co-primary
+hypotheses, and 221,184 planned simulation measurements; all main effects,
+two-factor products, and three-factor products balance in the registered
+128-run design. Appended-byte mutation rejects. Complete benchmark/aggregation/
+sensitivity CI smoke passes. Full-vignette source build and rebuilt-tarball
+`R CMD check --no-manual` = `Status: OK`.
+Decisions: exact-size matched controls make sum/mean target ranks identical;
+their disagreement aborts and one 0.05 superiority gate represents both. The
+three current comparators are singscore, GSVA, and ssGSEA; PLAGE's arbitrary
+sign, redundant z-score, group-level ORA, and direct-cell methods are excluded
+prospectively. Fifteen one-sided lower bounds use Bonferroni familywise 0.05
+(`p=0.05/15`); current-method noninferiority margin = 0.03. Source/task/role
+selection precedes retrieval; opaque bytes may then be hashed before parsing.
+`F-2.0.0` stays outside the executable index until data and implementation
+supplements exist.
+Remaining: commit. Then select and commit candidate development/held-out study
+roles without molecular-value access, retrieve opaque archives for exact
+F-2.0.1 bytes, and only afterward implement F-2.0.2 on development data. A2/C
+performance gates remain independently blocked by host-load admission.
+Risks/blockers: the high replication/coverage/matched-control standard may
+validly leave an assay stratum ineligible. No replacement after value access or
+cross-stratum rescue is permitted; scarcity narrows the domain rather than the
+threshold.

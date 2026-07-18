@@ -16,11 +16,45 @@ stopifnot(
         c("performance", "controlled")
     )
 )
+source(file.path(benchmark_dir, "validation-protocol.R"), local = TRUE)
+validation_protocol <- validation_protocol_validate(dirname(benchmark_dir))
+stopifnot(
+    identical(validation_protocol$protocol_version, "F-2.0.0"),
+    identical(validation_protocol$registry_rows, 184L),
+    identical(
+        validation_protocol$claim_strata,
+        c("bulk_rnaseq", "pseudobulk_rnaseq", "bulk_proteomics")
+    ),
+    identical(
+        validation_protocol$methods,
+        c("genefunnel", "sum", "mean", "singscore", "gsva", "ssgsea")
+    ),
+    identical(validation_protocol$co_primary_hypotheses, 15L),
+    identical(validation_protocol$simulation_rows, 221184L),
+    identical(validation_protocol$executable, FALSE)
+)
 output_root <- Sys.getenv(
     "GENEFUNNEL_BENCHMARK_OUTPUT",
     file.path(benchmark_dir, "results", "ci-smoke")
 )
 unlink(output_root, recursive = TRUE, force = TRUE)
+validation_protocol_mutation_rejected <- function() {
+    scratch <- file.path(output_root, "validation-protocol-adversary")
+    on.exit(unlink(scratch, recursive = TRUE, force = TRUE), add = TRUE)
+    dir.create(file.path(scratch, "benchmark"), recursive = TRUE)
+    target <- file.path(scratch, "benchmark", "validation-protocol.tsv")
+    copied <- file.copy(file.path(
+        benchmark_dir, "validation-protocol.tsv"
+    ), target)
+    if (!copied) return(FALSE)
+    connection <- file(target, open = "ab")
+    writeBin(as.raw(10L), connection)
+    close(connection)
+    inherits(try(
+        validation_protocol_validate(scratch), silent = TRUE
+    ), "try-error")
+}
+stopifnot(validation_protocol_mutation_rejected())
 benchmark_protocol_mutation_rejected <- function() {
     scratch <- file.path(output_root, "protocol-index-adversary")
     on.exit(unlink(scratch, recursive = TRUE, force = TRUE), add = TRUE)
