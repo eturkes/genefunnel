@@ -1,3 +1,5 @@
+<!-- Assisted-by: OpenAI Codex. -->
+
 # genefunnel 0.99.0
 
 ## New features
@@ -38,6 +40,8 @@
 
 - Adds a durable scientific specification for the equation, value and coverage
   semantics, invariants, computational equivalence, and limitations.
+- Records the proved magnitude/balance factorization, prior-art boundary, and
+  pre-implementation component semantics without changing the public API.
 - Adds an executable BiocStyle vignette covering canonical examples,
   caller-controlled coverage, dense/sparse matrices, and parallel execution.
 - Expands function help and the README with the complete public contract and

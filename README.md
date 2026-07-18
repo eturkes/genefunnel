@@ -75,6 +75,9 @@ an arbitrary positive shift changes the score and is not a valid workaround.
 
 - [Scientific specification](inst/SCIENTIFIC_SPEC.md) - equation, value and
   coverage semantics, invariants, and limitations.
+- [Component proof and contract](inst/COMPONENTS_SPEC.md) - prior art, exact
+  factorization, edge semantics, and numerical boundaries for prospective
+  additive diagnostics; no component API is implemented yet.
 - [Vignette](vignettes/genefunnel.Rmd) - canonical examples, dense/sparse use,
   coverage policies, and serial/parallel execution.
 - [Benchmark protocol](https://github.com/eturkes/genefunnel/blob/main/benchmark/README.md)

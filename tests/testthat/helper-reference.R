@@ -51,6 +51,57 @@ reference_score <- function(values) {
             sum(observed[below_center])
 }
 
+reference_components <- function(values) {
+    stopifnot(
+        is.numeric(values),
+        length(values) >= 2L,
+        !any(is.infinite(values)),
+        !any(values < 0, na.rm = TRUE)
+    )
+
+    observed <- values[!is.na(values)]
+    effective_size <- length(observed)
+    observed_sum <- sum(observed)
+    facts <- list(
+        effective_size = effective_size,
+        observed_sum = observed_sum,
+        observed_fraction = effective_size / length(values)
+    )
+
+    if (effective_size < 2L) {
+        return(c(facts, list(
+            score = NA_real_,
+            penalty = NA_real_,
+            balance = NA_real_
+        )))
+    }
+    if (!is.finite(observed_sum)) {
+        stop("ordinary component oracle requires a finite observed sum")
+    }
+
+    if (observed_sum == 0) {
+        return(c(facts, list(
+            score = 0,
+            penalty = 0,
+            balance = NA_real_
+        )))
+    }
+
+    center <- observed_sum / effective_size
+    penalty <- effective_size / (2 * (effective_size - 1L)) *
+        sum(abs(observed - center))
+    shares <- observed / observed_sum
+    total_variation <- 0.5 * sum(abs(shares - 1 / effective_size))
+    balance <- 1 - effective_size / (effective_size - 1L) *
+        total_variation
+
+    c(facts, list(
+        score = observed_sum * balance,
+        penalty = penalty,
+        balance = balance
+    ))
+}
+
 reference_memberships <- function(gene_sets, features) {
     unique_members <- lapply(gene_sets, function(members) {
         members[!duplicated(members)]

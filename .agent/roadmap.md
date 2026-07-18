@@ -390,3 +390,29 @@ Remaining: maintainer chooses candidate freeze versus intentional reopening;
 issue/PR AI disclosure and reviewed tag/release remain external release gates.
 Risks/blockers: A1 research can proceed, but PLAN execution order blocks public
 API/dependency work until the release lane is explicitly closed or deferred.
+
+2026-07-18 | frontier execution 2 | commit `HEAD`
+Scope: intentionally reopen candidate scope; complete A1 theorem + component
+semantics before public/native implementation.
+Changed: release lane records the maintainer decision and defers submission/tag
+gates; installed `COMPONENTS_SPEC.md` proves the score factorization, fixes cell
+semantics + numerical status contract, audits mathematical/ecological/pathway
+prior art, and commits interpretation cases; independent share/TV R oracle +
+property tests cover missingness, zeros, bounds, symmetry, homogeneity,
+concavity, and Pietra/Bulla identities; README/NEWS/core spec link the evidence.
+Verified: primary papers + current official singscore/GSVA APIs; full local
+testthat suite; strict GFM → MathML render with all seven display equations;
+source tarball contains both installed specifications + theorem tests; `R CMD
+check --no-manual` = `Status: OK`; offline Rd/link/vignette checks pass;
+tarball BiocCheck = 0 errors/0 warnings/6 advisory notes.
+Decisions: candidate deliberately reopened; external submission/release waits
+for stabilized new scope. `balance` is exactly Bulla's established evenness
+index and the normalized Pietra/Hoover complement - neither index nor
+normalization is novel. Retain `balance` as the arithmetic field name; restrict
+claims to GeneFunnel factorization, implementation/audit value, and held-out
+biology. Core score remains authoritative; A1 oracle covers ordinary values.
+Remaining: A2 begins with committed safe-region/error + performance protocols
+and a scaled/higher-precision oracle, then one-pass prototype/native work.
+Risks/blockers: Bulla balance depends on effective support/member identity;
+scaled/unavailable/ill-conditioned sidecars are specified but unimplemented;
+diagnostic biological value remains an unvalidated hypothesis.

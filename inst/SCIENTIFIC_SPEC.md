@@ -174,3 +174,9 @@ accounts analytically for implicit zeros. Work is split into bounded column
 chunks for BiocParallel execution. These storage and scheduling choices are
 implementation details: they must preserve the equation, missing-value rules,
 names, and ordering above.
+
+## Prospective additive diagnostics
+
+`COMPONENTS_SPEC.md` records the proved magnitude/balance factorization and the
+ratified pre-implementation contract for a future additive diagnostic API. It
+does not change the scorer or coverage helper described here.

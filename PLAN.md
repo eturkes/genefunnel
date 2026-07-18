@@ -84,14 +84,16 @@ This exposes four aligned facts already latent in the kernel:
 - **arithmetic penalty** \(T-F\), equal to \(T(1-B)\) when \(T>0\); and
 - **effective size** \(n\): sample-specific observed member count.
 
-`Balance` is the working term; `coherence` is avoided because it commonly means
-cross-sample correlation. When \(T=0\), \(F=0\) but \(p\) and \(B\) are
-undefined: report `NA`, not “perfect balance.” The normalized total-variation
-index has prior art in inequality/concentration measurement. Novelty, if any,
-must concern this exact decomposition's biological use, not invention of the
-index. Balance also depends on effective size, retained member identity,
-gene-specific abundance/dynamic range, and measurement noise; it is not
-automatically comparable across those changes.
+`Balance` is the working field term; `coherence` is avoided because it commonly
+means cross-sample correlation. When \(T=0\), \(F=0\) but \(p\) and \(B\) are
+undefined: report `NA`, not “perfect balance.” Mathematically, \(B\) is exactly
+[Bulla's evenness index](https://doi.org/10.2307/3545713) and the normalized
+complement of the Pietra/Hoover quantity. Neither the index nor its
+normalization is novel. Any novelty must concern this exact GeneFunnel
+factorization, implementation, and validated biological use. Balance also
+depends on effective size, retained member identity, gene-specific abundance/
+dynamic range, and measurement noise; it is not automatically comparable
+across those changes.
 
 The score is symmetric, positively homogeneous, and concave. For compatible
 vectors \(x_j\), non-negative weights \(w_j\) summing to one, projection
@@ -140,12 +142,15 @@ the pre-submission candidate scope.
 - [x] Record green cross-platform CI at exact innovation baseline `c789a23`:
   [Actions run `29461199816`](https://github.com/eturkes/genefunnel/actions/runs/29461199816)
   passed all seven jobs after the S3-spoofing fix.
-- [ ] Maintainer chooses one: freeze candidate scope until review completes, or
-  intentionally reopen it around new public work.
+- [x] Maintainer intentionally reopened the candidate around new public work on
+  2026-07-17.
 - [ ] Disclose non-trivial `Assisted-by: OpenAI Codex` provenance in the
-  Bioconductor issue and pull request.
+  Bioconductor issue and pull request after the reopened scope stabilizes.
 - [ ] Create a release/tag only after maintainer review; claim Bioconductor
   availability only after acceptance.
+
+The latter two submission gates are deferred, not waived, while the reopened
+scope proceeds through the evidence gates below.
 
 ## 5. Workstream A - transparent components
 
@@ -154,12 +159,12 @@ distributed signal” without changing the GeneFunnel score.
 
 ### A1 - theorem and semantics
 
-- [ ] Complete a prior-art audit covering normalized total variation,
+- [x] Complete a prior-art audit covering normalized total variation,
   Hoover/Pietra-style indices, mean absolute deviation, pathway variability,
   and existing gene-set decomposition APIs.
-- [ ] Add a proof note and independent R oracle for the factorization, bounds,
+- [x] Add a proof note and independent R oracle for the factorization, bounds,
   homogeneity, concavity, and zero edge case.
-- [ ] Ratify, test, and document these plan-level component semantics before
+- [x] Ratify, test, and document these plan-level component semantics before
   native work:
   - `effective_size` and `observed_sum` are factual even when fewer than two
     members remain;
@@ -168,18 +173,18 @@ distributed signal” without changing the GeneFunnel score.
     cell; and
   - sample-specific observed fraction uses globally matched size as its
     denominator and remains distinct from declared-set coverage.
-- [ ] Define a representability contract for extreme finite inputs. A score can
+- [x] Define a representability contract for extreme finite inputs. A score can
   fit in an R double even when its mathematical observed sum/penalty does not;
   representable sum and penalty can also cancel, and a true nonzero balance can
   underflow. The score remains authoritative. Diagnostics must use explicit
   scaled/unavailable/ill-conditioned status, never silently return infinity or
   make the ordinary score path fail.
-- [ ] Use the exact retained-row universe, aggregate warning, set/sample order,
+- [x] Use the exact retained-row universe, aggregate warning, set/sample order,
   and names of `genefunnel()`. Globally unscoreable sets remain available
   through `gene_set_coverage()` rather than appearing as diagnostic-only rows.
-- [ ] Document that balance measures evenness, not co-expression, regulation,
+- [x] Document that balance measures evenness, not co-expression, regulation,
   pathway truth, or preprocessing invariance.
-- [ ] Define committed interpretation cases with known mass, balance, and
+- [x] Define committed interpretation cases with known mass, balance, and
   support manipulations that the scalar score alone cannot distinguish.
 
 ### A2 - one-pass prototype
