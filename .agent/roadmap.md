@@ -543,3 +543,16 @@ Remaining: implement/run the exact `C-1.0.1` paired resource/timing harness;
 complete A2's separately locked performance gate when host load/core <= 0.25.
 Risks/blockers: validation/hash cost may defeat the 15% benefit gate; current
 host load remains ineligible; remote supported-OS evidence awaits push.
+
+2026-07-18 | frontier execution 6 amendment | commit `HEAD`
+Scope: make the compiled-catalogue machine manifest fixture-complete pre-run.
+Changed: protocol `C-1.0.2` adds fixed dense zero/missing fractions, sparse
+stored-missing fraction, and unmatched/duplicate strides already described in
+prose; no endpoint, threshold, seed, dimension, repeat, or order changed.
+Verified: required-field/types/ranges, disjoint feasibility, exact 50,000
+canonical memberships, and balanced orders across all four rows.
+Decisions: keep scientific workload constants in the hashed manifest rather
+than latent runner code; version before any runner/result exists.
+Remaining: implement and smoke the `C-1.0.2` harness; full run awaits a clean,
+quiescent Linux host.
+Risks/blockers: unchanged strict benefit gate + global load blocker.

@@ -1,6 +1,6 @@
 <!-- Assisted-by: OpenAI Codex. -->
 
-# Compiled catalogue spike protocol C-1.0.1
+# Compiled catalogue spike protocol C-1.0.2
 
 **Frozen before implementation results.** Runtime control = named-list
 `genefunnel()` at the exact spike parent; candidate = internal compiled path at
@@ -14,6 +14,13 @@ disjoint low-overlap memberships from 20,000 features. The feature universe is
 now 50,000, exactly matching that membership count; endpoints, thresholds,
 seeds, orders, and every other fixture dimension remain fixed. No implementation
 or performance result was inspected when this correction was committed.
+
+`C-1.0.2` is a pre-run manifest-completeness correction: the already described
+zero/missingness and duplicate/unmatched fixtures now have explicit TSV columns
+for their fractions/strides. Values are dense zero `0.35`, dense cell missing
+`0.01`, sparse stored missing `0.05`, unmatched stride `20`, and duplicate
+stride `25`. All other protocol state remains unchanged; no runner or protocol
+result existed when this correction was committed.
 
 ## Question and unit
 
@@ -31,9 +38,10 @@ Synthetic fixtures test computation only and support no biological claim.
   final member with a unique absent identifier; every 25th appends a duplicate
   of its first member. Stable deduplication therefore retains exactly 25
   canonical members per set for the memory denominator.
-- Dense = 24 bulk-shaped samples; sparse = 240 samples at 3% stored density.
-  Existing deterministic generators supply non-negative finite values, exact
-  zeros, and sample-specific `NA`/`NaN`. Inputs and five batches reuse identical
+- Dense = 24 bulk-shaped samples, 35% exact zeros, and 1% sample-specific
+  `NA`/`NaN`; sparse = 240 samples at 3% stored density with 5% of stored cells
+  missing. Existing deterministic generators supply non-negative finite values.
+  Inputs and five batches reuse identical
   feature order and catalogue; batch `k` uses matrix seed `matrix_seed + k - 1`
   while dimensions and names stay compatible.
 - Primary execution uses explicit `SerialParam()` to isolate catalogue work.
