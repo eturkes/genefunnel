@@ -59,14 +59,15 @@ aggregation_kang_verified_files <- function(data_dir, manifest) {
     aggregation_verify_data_files(selected, files)
 }
 
-aggregation_kang_preprocessing_facts <- function(inputs, analysis) {
+aggregation_kang_preprocessing_facts <- function(inputs, analysis, registry) {
     collapsed <- analysis$collapsed$facts
     data.frame(
         fact = c(
             "raw_barcodes", "raw_duplicate_barcodes", "metadata_cells",
             "gene_rows", "nonempty_gene_rows", "unique_symbols",
             "duplicate_symbol_rows", "aggregate_columns", "collapsed_nonzero",
-            "catalogue_pathways", "retained_pathways"
+            "catalogue_pathways", "retained_pathways",
+            "missing_cell_type_labels", "registered_singlet_cells"
         ),
         value = c(
             sum(inputs$barcodes$batch_sizes), inputs$barcodes$raw_duplicates,
@@ -74,7 +75,8 @@ aggregation_kang_preprocessing_facts <- function(inputs, analysis) {
             collapsed$nonempty_gene_rows, collapsed$unique_symbols,
             collapsed$duplicate_symbol_rows, collapsed$aggregate_columns,
             collapsed$collapsed_nonzero, nrow(inputs$catalogue$manifest),
-            length(inputs$catalogue$sets)
+            length(inputs$catalogue$sets), sum(is.na(inputs$metadata$cell)),
+            sum(aggregation_kang_retained_cells(inputs$metadata, registry))
         ),
         stringsAsFactors = FALSE, check.names = FALSE
     )
@@ -164,11 +166,12 @@ aggregation_kang_write_analysis <- function(
     output_dir,
     inputs,
     analysis,
-    metadata
+    metadata,
+    registry
 ) {
     benchmark_write_tsv(inputs$matrix_facts, file.path(output_dir, "matrix-facts.tsv"))
     benchmark_write_tsv(
-        aggregation_kang_preprocessing_facts(inputs, analysis),
+        aggregation_kang_preprocessing_facts(inputs, analysis, registry),
         file.path(output_dir, "preprocessing-facts.tsv")
     )
     benchmark_write_tsv(analysis$units$manifest, file.path(output_dir, "unit-manifest.tsv"))
@@ -230,7 +233,9 @@ tryCatch({
     metadata <- aggregation_kang_metadata(
         repo_root, head, package, analysis, files
     )
-    aggregation_kang_write_analysis(output_dir, inputs, analysis, metadata)
+    aggregation_kang_write_analysis(
+        output_dir, inputs, analysis, metadata, registry
+    )
     benchmark_write_session_info(
         file.path(output_dir, "session-info.txt"),
         c("genefunnel", "Matrix", "BiocParallel", "Rcpp", "RcppArmadillo")

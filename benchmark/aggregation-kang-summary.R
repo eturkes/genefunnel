@@ -451,6 +451,20 @@ aggregation_kang_validate_parser_smoke <- function(directory) {
     invisible(TRUE)
 }
 
+aggregation_kang_validate_filter_smoke <- function(registry) {
+    metadata <- data.frame(
+        ind = c("101", "101"), stim = c("ctrl", "ctrl"),
+        cell = c("B cells", NA_character_),
+        multiplets = c("singlet", "singlet"),
+        stringsAsFactors = FALSE, check.names = FALSE
+    )
+    stopifnot(identical(
+        aggregation_kang_retained_cells(metadata, registry),
+        c(TRUE, FALSE)
+    ))
+    invisible(TRUE)
+}
+
 aggregation_kang_validate_result_smoke <- function(result, registry) {
     stopifnot(
         nrow(result$units$manifest) == 96L,
@@ -533,6 +547,7 @@ aggregation_validate_kang_smoke <- function(registry, audit) {
     dir.create(directory)
     on.exit(unlink(directory, recursive = TRUE, force = TRUE), add = TRUE)
     aggregation_kang_validate_parser_smoke(directory)
+    aggregation_kang_validate_filter_smoke(registry)
     fixture <- aggregation_kang_smoke_fixture(registry)
     result <- aggregation_kang_analyze(fixture, registry, audit)
     misaligned <- fixture

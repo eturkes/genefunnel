@@ -101,8 +101,7 @@ aggregation_kang_read_metadata <- function(path, joined) {
     )
     required <- c("ind", "stim", "cell", "multiplets")
     valid <- all(required %in% names(value)) &&
-        identical(rownames(value), joined) &&
-        all(vapply(value[required], function(field) !anyNA(field), logical(1L)))
+        identical(rownames(value), joined)
     if (!valid) {
         stop("Kang metadata schema or barcode alignment failed.", call. = FALSE)
     }
@@ -223,7 +222,10 @@ aggregation_kang_unit_grid <- function(registry) {
 }
 
 aggregation_kang_retained_cells <- function(metadata, registry) {
-    metadata$ind %in% aggregation_kang_donors(registry) &
+    complete <- stats::complete.cases(metadata[c(
+        "ind", "stim", "cell", "multiplets"
+    )])
+    complete & metadata$ind %in% aggregation_kang_donors(registry) &
         metadata$stim %in% aggregation_registry_vector(
             registry, "kang", "conditions"
         ) & metadata$cell %in% aggregation_registry_vector(

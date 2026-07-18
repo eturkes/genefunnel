@@ -913,3 +913,23 @@ Remaining: commit, execute the four pinned payloads from the clean snapshot,
 adversarially reconstruct endpoints, replay, and track the compact result.
 Risks/blockers: fixed data may fail parsing, eligibility, stability, held-out,
 or sign-test gates; no observed result may alter B-1.0.3.
+
+2026-07-18 | frontier execution 17 | commit `HEAD`
+Scope: repair the Kang metadata boundary exposed by the first pinned run before
+any pathway score or endpoint was calculated.
+Changed: exact required columns + barcode order remain structural gates;
+missing author classification labels now follow the frozen registered-cell/
+singlet filter and are explicitly excluded. The retained-cell predicate is
+total (no `NA` output), and preprocessing evidence counts missing cell-type
+labels plus all registered singlet candidates before unit eligibility.
+Verified: all 29,065 author metadata row names exactly equal the frozen joined
+barcode order; required fields exist; only `cell` has missing values (9 rows),
+which are outside the filter. The corrected boundary yields 23,981 registered
+singlet candidates. Fabricated missing-label, malformed matrix/barcode,
+misalignment, zero-eligibility, endpoint, and evidence-writer controls pass.
+Decisions: unknown classification is an excluded biological label, not schema
+corruption. This implements the committed `registered ... only` filter without
+changing a threshold, donor, pathway, or decision rule; no endpoint was visible.
+Remaining: commit the repair, rerun pinned inputs from that clean snapshot, then
+audit/replay and track the result.
+Risks/blockers: later parsing or scientific gates can still fail independently.
