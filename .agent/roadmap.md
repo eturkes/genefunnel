@@ -1015,3 +1015,37 @@ after the host satisfies its frozen quiescence admission rule.
 Risks/blockers: algebra alone establishes no predictive reliability. Public
 promotion remains conditional on representation invariance and pre-specified
 held-out incremental-effect/technical-repeat gates.
+
+2026-07-18 | frontier execution 21 | commit `HEAD`
+Scope: freeze E-1.0.0's internal schema, numerical contract, profiling rule,
+controlled reliability design, held-out models, and rejection thresholds before
+implementing or calculating a package sensitivity diagnostic.
+Changed: 90-row byte-pinned machine registry + normative protocol + fail-closed
+parser/design validator; PLAN closes the pre-specification item; sensitivity
+spec adds current deletion/leading-edge/dispersion/missing-gene/refinement prior
+art and a narrow novelty boundary. The internal seven-field matrix schema uses
+exact common-power-of-two arbitrary-integer score numerators: all deletion
+numerators share one denominator, so sign/order/ties are exact before ordinary
+double conversion. A fixed profile gates optimization research. Controlled
+Poisson/NB/dropout repeats cross 5,760 latent profiles with 345,600 independently
+masked global-absence/sample-missing rows and five abundance/detection mask
+mechanisms.
+Verified: registry MD5 `09d9429ae18f64ba00b3bd84955ad71d`;
+5,760 scenarios; 345,600 feature rows; 5,760 repeat rows; 576 scenarios in each
+of ten folds; every mask leaves >=3 members; 172,800 mask seeds are unique and
+in R's integer range. An intentional byte mutation aborts before design use.
+Complete benchmark/controlled/aggregation/CellBench/Kang/sensitivity-protocol
+smoke passes. Clean source build passes; rebuilt-tarball
+`R CMD check --no-manual` = `Status: OK`; every new function is <=40 lines.
+Decisions: the baseline includes normalized score (existing balance), making
+the increment stricter than coverage/set-size/sum/support alone. Feature-loss
+and controlled-repeat median held-out RMSE reductions must each reach 10% with
+a one-sided bootstrap lower bound >=5%; neither rescues the other. Synthetic
+dropout is a stress operator, not a meaningful-zero or real-repeat claim. A
+complete E-1.0.0 pass permits only a newly frozen external stage, never export.
+Remaining: commit; implement the exact brute compact prototype and exhaustive
+schema/oracle/storage/backend tests, then run the fixed profile before any
+sorted-prefix/native optimization. A2 remains independently load-blocked.
+Risks/blockers: arbitrary-integer brute recomputation may be slow by design;
+the profile decides whether optimization work is justified. Either predictive
+gate may fail, selecting the no-public-API fallback without changing algebra.

@@ -432,8 +432,16 @@ assay coverage, without “correcting” the result.
   unobserved value is unbounded. Caller-supplied limits support deterministic
   identification/sensitivity bounds; probabilistic intervals require a declared
   sampling model and belong to a later inferential project.
-- [ ] Pre-specify held-out split, reliability endpoint, baseline model, minimum
+- [x] Pre-specify held-out split, reliability endpoint, baseline model, minimum
   incremental effect, repeats, and uncertainty before calculating diagnostics.
+
+Protocol `E-1.0.0` is frozen before implementation or diagnostic results. It
+fixes an internal compact schema, dependency-free exact dyadic deletion oracle,
+5,760 controlled latent scenarios, 345,600 independently masked feature-loss
+rows, ten held-out profile folds, two controlled measurement repeats, baseline
+and augmented models, cluster bootstrap, and co-primary 10%/5% incremental
+prediction gates. A pass permits only a separately frozen external stage; a
+failure selects the no-public-API fallback.
 
 **Go:** summaries are reproducible, representation-invariant, and pass the
 pre-specified held-out incremental-effect and technical-repeat thresholds.

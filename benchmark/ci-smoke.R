@@ -186,8 +186,18 @@ source(file.path(benchmark_dir, "aggregation-kang.R"), local = TRUE)
 source(file.path(benchmark_dir, "aggregation-kang-summary.R"), local = TRUE)
 aggregation_validate_kang_smoke(aggregation_registry, aggregation_audit)
 
+source(file.path(benchmark_dir, "sensitivity-protocol.R"), local = TRUE)
+sensitivity_protocol <- sensitivity_validate_protocol(dirname(benchmark_dir))
+stopifnot(
+    identical(sensitivity_protocol$registry_rows, 90L),
+    identical(sensitivity_protocol$scenarios, 5760L),
+    identical(sensitivity_protocol$feature_rows, 345600L),
+    identical(sensitivity_protocol$technical_rows, 5760L),
+    identical(sensitivity_protocol$scenarios_per_fold, 576L)
+)
+
 cat(
-    "Benchmark and aggregation-protocol smoke checks passed: ",
+    "Benchmark, aggregation, and sensitivity-protocol smoke checks passed: ",
     normalizePath(output_root),
     "\n",
     sep = ""

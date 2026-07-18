@@ -11,9 +11,10 @@ contributions, sampling uncertainty, or a correction to the GeneFunnel score.
 
 The frozen score and input semantics in `SCIENTIFIC_SPEC.md` remain
 authoritative. This specification adds no public function and fixes no return
-schema. A later prototype must reproduce the quantities below, settle their
-binary64 representation contract before implementation, and pass held-out
-reliability gates before public promotion.
+schema. Protocol E-1.0.0 fixes an internal compact schema, exact dyadic-rational
+brute oracle, binary64 availability contract, and controlled held-out gates
+before implementation. A later public interface still requires external
+evidence and a separate scope decision.
 
 The delete-one construction resembles the operation used by the jackknife, but
 gene-set members are not assumed to be independent and identically distributed
@@ -67,8 +68,8 @@ For \(n\ge3\), let
 i^*=\min\operatorname*{arg\,max}_{i=1,\ldots,n}|\Delta_i|,
 \]
 
-where the minimum is canonical member order. The prospective compact summary
-contains these quantities, with final API names still unfrozen:
+where the minimum is canonical member order. The compact mathematical summary
+contains these quantities:
 
 - effective size \(n\);
 - member identifier \(i^*\);
@@ -133,12 +134,14 @@ prevent contribution-like interpretations and sign erasure.
 
 ## Numerical and interpretation boundary
 
-The exact definition is over real arithmetic. A later implementation must
-freeze how it represents underflowed differences or cases where rounded full
-and deleted scores cancel before it computes any diagnostic results. It must
-never return infinity, turn a true nonzero delta into a silent zero, or make
-the ordinary `genefunnel()` path allocate sensitivity outputs. The core score
-remains authoritative.
+The exact definition is over real arithmetic. Protocol E-1.0.0 represents each
+binary64 input as an exact common-power-of-two integer and compares signed
+deletion numerators exactly. Sign, order, and ties therefore do not come from
+subtracting rounded scores. A nonzero summary that cannot be represented as an
+ordinary finite/nonzero double is explicitly unavailable; it never becomes
+infinity or false zero. The prototype has no scaled sidecar. The ordinary
+`genefunnel()` path allocates no sensitivity output, and its score remains
+authoritative.
 
 Sensitivity depends on input units, preprocessing, effective size, retained
 member identities, gene-specific abundance and dynamic range, measurement
@@ -148,6 +151,27 @@ inferential uncertainty. Whether it predicts held-out feature-loss error or
 technical-repeat instability is an empirical question governed by a frozen
 protocol, not implied by this algebra.
 
+## Prior art and novelty boundary
+
+Audit date: 2026-07-18. This targeted, non-systematic audit covers primary
+method papers relevant to deletion, gene-set member diagnostics, missing-gene
+stability, and subset refinement. It is not an exhaustive review or patent
+search.
+
+| Area | Prior art | Boundary here |
+|---|---|---|
+| Delete-one resampling | [Efron and Stein (1981)](https://doi.org/10.1214/aos/1176345462) | Classical jackknife variance work treats observations as sampling units. Gene-set members are not assigned that role here; no bias, variance, confidence, or influence-function inference follows. |
+| Leading-edge members | [Subramanian et al. (2005)](https://doi.org/10.1073/pnas.0506580102) | GSEA's leading edge is a phenotype/ranked-list subset driving an enrichment peak. It is not a deterministic deletion delta for one GeneFunnel cell. |
+| Per-sample score dispersion | [Foroutan et al. (2018)](https://doi.org/10.1186/s12859-018-2435-4) | `singscore` reports rank-score dispersion. That is useful API precedent but not score change after deleting a member. |
+| Missing-gene benchmarks | [Toro-Dominguez et al. (2025)](https://doi.org/10.1093/bib/bbaf684) | Their multi-method benchmark shows that missing genes can destabilize some single-sample scores. It does not supply a per-cell diagnostic that predicts held-out GeneFunnel error. |
+| Gene-set stability/refinement | [Abou Choucha and Pasquier (2026)](https://doi.org/10.1038/s41598-026-48119-9) | MEAST uses SVD scores plus a genetic algorithm to optimize active subsets across cell groups. GeneFunnel sensitivity neither learns/refines a set nor calls selected members stable or high-contributing. |
+
+Delete-one perturbation, member ranking, dispersion, missing-gene robustness,
+and gene-set refinement are established ideas. Any claim is restricted to the
+exact GeneFunnel full-minus-deleted quantity, its faithful compact
+implementation, and predictive value that survives pre-specified held-out
+gates. A largest-sensitivity member is not a novel biomarker or biological core.
+
 ## Executable evidence
 
 `tests/testthat/helper-sensitivity-reference.R` implements direct brute-force
@@ -155,3 +179,6 @@ deletion from the normative equation without package code.
 `test-sensitivity-theorem.R` locks the canonical cases, support rules, sign,
 tie-break, bounds, homogeneity, common-shift behavior, permutation behavior,
 and non-additivity before an optimized or public implementation exists.
+`benchmark/sensitivity-protocol.md` and its machine registry fix the internal
+schema, exact-arithmetic boundary, controlled masks/repeats, folds, models,
+uncertainty, and rejection rules before a package diagnostic is calculated.

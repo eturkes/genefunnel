@@ -203,6 +203,25 @@ the 16 correlations, donor directions, and exact sign-test failure. Workstream
 B's ordered external validation is complete; no public audit or perturbation
 claim follows.
 
+## Observed-member sensitivity
+
+Protocol [`E-1.0.0`](sensitivity-protocol.md) fixes the internal compact schema,
+exact dyadic-rational brute oracle, profile-before-optimization rule, controlled
+feature masks, measurement repeats, held-out folds, models, bootstrap, and
+incremental prediction gates before a package sensitivity value exists. Check
+the registry's exact grid without generating a diagnostic:
+
+```sh
+Rscript --vanilla -e \
+  'source("benchmark/sensitivity-protocol.R"); \
+   print(sensitivity_validate_protocol("."))'
+```
+
+The registry contains 5,760 latent scenarios, 345,600 feature-loss rows, 5,760
+controlled-repeat rows, and exactly 576 scenarios per held-out fold. This first
+stage is synthetic and internal: even a complete pass cannot support export or
+a claim about real technical/biological replicates.
+
 ## Generated artifacts
 
 Every runner writes:

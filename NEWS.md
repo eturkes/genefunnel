@@ -37,6 +37,10 @@
   digests and environment metadata.
 - Locks a dependency-free scaled numerical oracle and paired default-path
   performance protocol before component implementation.
+- Freezes the internal observed-member sensitivity schema, dependency-free
+  exact dyadic deletion oracle, profile-before-optimization rule, controlled
+  feature-loss/measurement-repeat design, held-out models, bootstrap, and
+  rejection gates before package diagnostics exist.
 - Implements dependency-free scaled double-double native diagnostics for
   overflow, cancellation, and underflow cases while keeping the ordinary score
   authoritative.
