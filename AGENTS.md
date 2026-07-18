@@ -24,6 +24,7 @@
   output as browsing only and re-run exact commands before using matches for edits.
 - Install/configure project-local; work only within the launch dir + children.
 - Uncertain / needs planning / benefits from my input → stop + ask, as exhaustively as you like. Accuracy + low hallucination > completion. Chat = blockers + essentials only; I'm technically proficient.
+- Authenticated web: for research/retrieval, assume BrowserOS MCP (`http://127.0.0.1:9200/mcp`) can access anything available in my signed-in day-to-day browser, including university access to most peer-reviewed journals. `chromiumfish` = isolated visual QA. Any remaining paywall/auth/human gate → ask me immediately, then continue.
 - Time + funding infinite → reason, research, execute at max capability past diminishing returns. My efficiency directives serve performance alone. Every task is multi-step → think before responding.
 - Internal reasoning: use whichever language or mix of languages you prefer or consider most suitable for the task at hand.
 - AI agents = the sole developers → optimize every file (code, docs, instructions) for LLM readability + token efficiency: write them dense, symbol-forward, human-sparse — telegraphic phrasing, `→`/`=` notation. Aggressively compress whatever you read, however works best.
