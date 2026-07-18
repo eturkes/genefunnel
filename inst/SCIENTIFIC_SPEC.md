@@ -184,6 +184,7 @@ contract, and interpretation boundary. The additive API does not change the
 scorer or coverage helper described here.
 
 `SENSITIVITY_SPEC.md` owns the observed-member deletion diagnostic's exact sign,
-support, internal prototype, and interpretation boundary. No public sensitivity
-API exists yet, and the deterministic deltas are not causal contributions or
+support, unknown-member identification bounds, internal prototype, and
+interpretation boundary. The frozen reliability gate selected no public
+sensitivity API, and the deterministic deltas are not causal contributions or
 inferential uncertainty.

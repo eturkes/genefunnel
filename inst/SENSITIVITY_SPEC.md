@@ -120,6 +120,68 @@ The deltas are not additive attributions. In general,
 \(\Delta_i\) is not the member's measured value or a separable term of the
 score.
 
+## Unknown-member identification
+
+An unknown member is a canonically declared identifier whose value is absent
+for the cell, either because its feature row is globally unmatched or its cell
+is `NA`/`NaN`. A measured zero is observed and is not an unknown. Undeclared
+features remain outside the gene-set estimand. The score and deletion diagnostic
+omit unknown members; they neither impute them nor treat them as zero.
+
+Non-negativity alone assigns each unknown value the set \([0,\infty)\), so no
+unknown coordinate has a finite upper bound. This does not always make the
+complete-data score unbounded. Let finite observed values \(x\) have length
+\(r\), sum \(T\), and let \(q\) unknown members all take value \(L\), with
+\(m=r+q\ge2\). Once \(L\) is large enough,
+
+\[
+F_m(x,L\mathbf1_q)=
+\frac{q(q-1)}{m-1}L+\frac{r+2q-1}{m-1}T.
+\]
+
+For \(q=1\) and \(r\ge1\), the first coefficient is zero: the score plateaus at
+\((r+1)T/r\), even though the missing value remains unidentified. For
+\(q\ge2\), the coefficient is positive and the complete-data score is
+unbounded. A finite score plateau therefore must not be presented as a bound
+on the missing member, evidence for zero imputation, or reliability.
+
+Finite caller limits produce deterministic bounds without adding a sampling
+claim. For componentwise \(0\le \ell_j\le z_j\le u_j<\infty\), define complete
+corners \(y^L=(x,\ell)\) and \(y^U=(x,u)\). The score is coordinatewise
+nondecreasing: increasing one coordinate by \(h\) shifts its centered residual
+by \(h(1-1/m)\), every other residual by \(-h/m\), and can increase total
+absolute deviation by at most \(2h(m-1)/m\). The score increase is therefore
+non-negative. Consequently,
+
+\[
+F_m(y^L)\le F_m(x,z)\le F_m(y^U)
+\]
+
+is the sharp score identification interval over the closed box.
+
+For \(m\ge3\), each potential complete-data deletion delta has the finite outer
+enclosure
+
+\[
+F_m(y^L)-F_{m-1}(y^U_{-i})
+\le \Delta_i(x,z) \le
+F_m(y^U)-F_{m-1}(y^L_{-i}).
+\]
+
+This enclosure is valid but need not be sharp because its two score extrema can
+require different unknown vectors. Member ranking, the selected largest member,
+and compact summaries remain unidentified unless they agree throughout the
+feasible box. Any future implementation must key limits to canonical member
+identifiers, retain their units/preprocessing and source, distinguish global
+absence from sample missingness, and expose assumption-dependent bounds rather
+than a corrected score. The failed E-1.0.0 reliability gate does not justify
+such a public interface.
+
+Finite limits are constraints, not a probability distribution. Probability,
+confidence, or credible intervals require an explicit joint value and
+missingness model, dependence assumptions, a fitting/validation protocol, and
+an inferential target. That belongs to a separately pre-specified project.
+
 ## Canonical cases
 
 | Canonical observed values | Deletion deltas | Selected member | Signed / normalized delta | Median absolute delta |
@@ -194,7 +256,9 @@ gates. A largest-sensitivity member is not a novel biomarker or biological core.
 deletion from the normative equation without package code.
 `test-sensitivity-theorem.R` locks the canonical cases, support rules, sign,
 tie-break, bounds, homogeneity, common-shift behavior, permutation behavior,
-and non-additivity before an optimized or public implementation exists.
+non-additivity, coordinate monotonicity, unknown-member non-identification, and
+finite-limit score bounds/delta enclosures before a public implementation
+exists.
 `test-sensitivity-exact.R` checks the limb arithmetic against independent
 integer identities, round-trips binary64 across its exponent domain, proves
 exact ordering under subtract-rounded tie drift, and checks score-numerator and

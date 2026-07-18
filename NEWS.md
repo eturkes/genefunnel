@@ -117,6 +117,10 @@
 - Fixes the exact observed-member deletion sensitivity, canonical support,
   sign, compact summaries, algebraic properties, and non-causal boundary before
   any public reliability API or empirical diagnostic result exists.
+- Proves the unknown-member boundary: non-negativity leaves every absent value
+  unidentified, one missing member can yield a finite score plateau, and two or
+  more can make the score unbounded. Finite caller caps give sharp score bounds
+  and conservative deletion-delta enclosures without probabilistic meaning.
 - Adds an executable BiocStyle vignette covering canonical examples,
   caller-controlled coverage, dense/sparse matrices, and parallel execution.
 - Expands function help and the README with the complete public contract and

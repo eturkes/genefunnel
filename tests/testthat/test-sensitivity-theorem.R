@@ -118,3 +118,91 @@ test_that("deletion deltas are not additive score contributions", {
     expect_equal(sum(deltas), 5.5)
     expect_false(isTRUE(all.equal(sum(deltas), score)))
 })
+
+test_that("the score is coordinatewise nondecreasing", {
+    set.seed(20260719)
+    for (iteration in seq_len(200L)) {
+        values <- stats::rexp(sample(2:12, 1L), rate = 0.4)
+        index <- sample.int(length(values), 1L)
+        increment <- stats::runif(1L, min = 0, max = 20)
+        increased <- values
+        increased[[index]] <- increased[[index]] + increment
+
+        expect_gte(
+            sensitivity_score_reference(increased) + 1e-13 * sum(increased),
+            sensitivity_score_reference(values)
+        )
+    }
+})
+
+test_that("non-negativity alone does not identify unknown members", {
+    observed <- c(A = 1, B = 2, C = 4)
+    total <- sum(observed)
+    one_threshold <- 4 * max(observed) - total
+
+    expect_equal(
+        sensitivity_score_reference(c(observed, U = one_threshold)),
+        4 * total / 3
+    )
+    expect_equal(
+        sensitivity_score_reference(c(observed, U = 1000)),
+        4 * total / 3,
+        tolerance = 1e-12
+    )
+
+    for (limit in c(10, 100, 1000)) {
+        expect_equal(
+            sensitivity_score_reference(c(observed, U = limit, V = limit)),
+            limit / 2 + 3 * total / 2,
+            tolerance = 1e-12
+        )
+    }
+
+    for (observed_size in 1:5) {
+        observed <- seq_len(observed_size)^2
+        total <- sum(observed)
+        for (unknown_size in 1:5) {
+            complete_size <- observed_size + unknown_size
+            limit <- max(
+                (complete_size * max(observed) - total) / unknown_size,
+                total / observed_size
+            ) + 1
+            expected <- unknown_size * (unknown_size - 1) /
+                (complete_size - 1) * limit +
+                (observed_size + 2 * unknown_size - 1) /
+                (complete_size - 1) * total
+            expect_equal(
+                sensitivity_score_reference(c(
+                    observed, rep(limit, unknown_size)
+                )),
+                expected,
+                tolerance = 1e-12
+            )
+        }
+    }
+})
+
+test_that("finite member limits bound scores and complete-data deltas", {
+    observed <- c(A = 1, B = 2, C = 4)
+    lower <- c(U = 0, V = 0)
+    upper <- c(U = 3, V = 5)
+    score_bounds <- sensitivity_score_bounds_reference(observed, lower, upper)
+    delta_bounds <- sensitivity_delta_enclosure_reference(
+        observed, lower, upper
+    )
+
+    expect_equal(score_bounds, c(lower = 3, upper = 11.25))
+    set.seed(20260720)
+    for (iteration in seq_len(200L)) {
+        unknown <- stats::runif(length(lower), min = lower, max = upper)
+        names(unknown) <- names(lower)
+        values <- c(observed, unknown)
+        score <- sensitivity_score_reference(values)
+        deltas <- sensitivity_deltas_reference(values)
+
+        expect_gte(score, score_bounds[["lower"]] - 1e-14)
+        expect_lte(score, score_bounds[["upper"]] + 1e-14)
+        expect_true(all(deltas >= delta_bounds["lower", ] - 1e-14))
+        expect_true(all(deltas <= delta_bounds["upper", ] + 1e-14))
+    }
+})

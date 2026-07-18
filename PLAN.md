@@ -429,7 +429,7 @@ assay coverage, without “correcting” the result.
   technical-replicate instability beyond coverage, set size, observed sum, and
   effective size. Characterize biological-replicate variation separately; it
   can be real signal rather than error.
-- [ ] Keep unknown-member uncertainty honest: with only non-negativity, an
+- [x] Keep unknown-member uncertainty honest: with only non-negativity, an
   unobserved value is unbounded. Caller-supplied limits support deterministic
   identification/sensitivity bounds; probabilistic intervals require a declared
   sampling model and belong to a later inferential project.
@@ -483,6 +483,16 @@ fraction, abundance/detection mechanism, and both absence encodings as a
 study-composition-dependent failure envelope; they cannot rescue the endpoints.
 Biological-replicate variation was deliberately not tested or classified as
 error.
+
+Unknown-member identification is now exact at the contract level. Every absent
+coordinate remains unbounded under non-negativity alone. With one unknown, the
+complete-data score eventually plateaus despite the unidentified value; with
+two or more unknowns, a common increasing value makes the score unbounded.
+Finite caller-supplied componentwise limits give a sharp deterministic score
+interval and finite conservative deletion-delta enclosures. They identify no
+probabilities or member ranking, and the failed reliability gate leaves these
+as theorem/reference-test evidence rather than a public interface. Probabilistic
+intervals remain a separately modeled inferential project.
 
 **Go:** summaries are reproducible, representation-invariant, and pass the
 pre-specified held-out incremental-effect and technical-repeat thresholds.

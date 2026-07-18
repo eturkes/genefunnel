@@ -75,3 +75,37 @@ sensitivity_summary_reference <- function(values, members = NULL) {
         median_absolute_delta = stats::median(abs(deltas))
     )
 }
+
+sensitivity_score_bounds_reference <- function(observed, lower, upper) {
+    stopifnot(
+        length(lower) == length(upper),
+        length(observed) + length(lower) >= 2L,
+        all(is.finite(c(observed, lower, upper))),
+        all(c(observed, lower, upper) >= 0),
+        all(lower <= upper)
+    )
+    c(
+        lower = sensitivity_score_reference(c(observed, lower)),
+        upper = sensitivity_score_reference(c(observed, upper))
+    )
+}
+
+sensitivity_delta_enclosure_reference <- function(observed, lower, upper) {
+    lower_values <- c(observed, lower)
+    upper_values <- c(observed, upper)
+    stopifnot(
+        length(lower) == length(upper), length(lower_values) >= 3L,
+        all(is.finite(c(lower_values, upper_values))),
+        all(c(lower_values, upper_values) >= 0), all(lower <= upper)
+    )
+    result <- vapply(seq_along(lower_values), function(index) {
+        c(
+            lower = sensitivity_score_reference(lower_values) -
+                sensitivity_score_reference(upper_values[-index]),
+            upper = sensitivity_score_reference(upper_values) -
+                sensitivity_score_reference(lower_values[-index])
+        )
+    }, numeric(2L))
+    colnames(result) <- names(lower_values)
+    result
+}

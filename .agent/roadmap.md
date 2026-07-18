@@ -1326,3 +1326,34 @@ an exact identification argument and executable tests. Retry A2 only after its
 independent host-load admission passes.
 Risks/blockers: negative predictive evidence does not invalidate the deletion
 algebra, but it bars reliability/export claims under the frozen decision rule.
+
+2026-07-18 | frontier execution 31 | commit `HEAD`
+Scope: close Workstream E's unknown-member uncertainty item without reviving
+the empirically rejected public interface.
+Changed: normative identification section; independent reference score-bound
+and deletion-enclosure functions; randomized coordinate-monotonicity/finite-box
+tests; exact plateau/divergence fixtures; PLAN/scientific-spec/README/NEWS
+closure. Canonical unknown = declared globally unmatched or cell-missing member;
+measured zero remains observed and undeclared features remain outside scope.
+Verified: for observed length `r`, sum `T`, and `q` equal unknown values `L`,
+the large-`L` score equals `q(q-1)L/(r+q-1) +
+(r+2q-1)T/(r+q-1)` across 25 `r`/`q` combinations. Thus `q=1` plateaus at
+`(r+1)T/r` while every coordinate remains unidentified; `q>=2` is unbounded.
+Two hundred randomized coordinate increases never lower the score. Two hundred
+points inside a fixed two-unknown box remain within its sharp corner score
+interval and all five conservative complete-data deletion-delta enclosures.
+Focused theorem suite and complete benchmark/aggregation/sensitivity CI smoke
+pass; full-vignette source build and rebuilt-tarball
+`R CMD check --no-manual` = `Status: OK`.
+Decisions: finite caller component caps are assumptions in score units. Score
+corner bounds are sharp by coordinate monotonicity; separate-extrema delta
+enclosures are finite but may be non-sharp. Feasible-box disagreement leaves
+member selection/compact summaries unidentified. Constraints imply no
+probability, confidence, missingness mechanism, imputation, or corrected score.
+No package API follows after E-1.0.0 failed.
+Remaining: commit. Workstream E then ends at its internal-oracle fallback. A2
+remains host-admission blocked; next
+unblocked PLAN frontier requires selection after reconciling independent lanes.
+Risks/blockers: a finite score with one unknown is easy to misstate as an
+identified missing value; the specification and exact plateau test lock that
+distinction.

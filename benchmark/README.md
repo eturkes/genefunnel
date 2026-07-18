@@ -302,7 +302,10 @@ target. The tracked [`negative result`](sensitivity-controlled-result.md),
 [`endpoint table`](sensitivity-controlled-result.tsv), and
 [`thinning curves`](sensitivity-controlled-curves.tsv) preserve provenance and
 the study-composition-dependent failure envelope. Biological replicates were
-not evaluated. Validate the compact evidence with:
+not evaluated. The specification separately proves what can be bounded when a
+caller supplies finite limits for genuinely unknown members; the controlled
+thinning grid never supplies or validates those limits. Validate the compact
+evidence with:
 
 ```sh
 Rscript --vanilla -e \
