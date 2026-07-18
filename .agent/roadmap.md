@@ -505,3 +505,18 @@ quiescent host. A2's locked performance gate remains blocked at load/core above
 0.25.
 Risks/blockers: the strict 15% all-workload gate may honestly reject compiled
 scoring; custom parsing needs adversarial bounds; biological H1 remains open.
+
+2026-07-18 | frontier execution 5 amendment | commit `HEAD`
+Scope: correct compiled-catalogue protocol feasibility before results.
+Changed: protocol `C-1.0.1` raises the feature universe from 20,000 to 50,000,
+making its fixed 2,000 x 25 low-overlap memberships exactly disjoint-capable;
+all endpoints, thresholds, seeds, orders, sample/set dimensions, and resource
+denominators remain unchanged.
+Verified: existing deterministic low-overlap constructor constraint
+`sets * size <= features`; all four TSV rows; balanced order codes; Markdown +
+whitespace.
+Decisions: version the correction rather than silently rewriting `C-1.0.0`;
+commit before implementation/performance evidence, so no observed result can
+influence it.
+Remaining: internal spike + runner, then `C-1.0.1` smoke/full gates.
+Risks/blockers: strict benefit gate and host quiescence remain unchanged.

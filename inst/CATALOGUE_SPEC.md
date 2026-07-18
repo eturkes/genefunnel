@@ -4,7 +4,7 @@
 
 **Status:** internal research contract, schema `GFCAT-1`, formula `GF-1`.
 No function or class described here is a supported public API. Promotion waits
-for protocol `C-1.0.0`; failure retains the named-list path and may retain only
+for protocol `C-1.0.1`; failure retains the named-list path and may retain only
 provenance machinery.
 
 ## Purpose and authority

@@ -1,6 +1,6 @@
 <!-- Assisted-by: OpenAI Codex. -->
 
-# Compiled catalogue spike protocol C-1.0.0
+# Compiled catalogue spike protocol C-1.0.1
 
 **Frozen before implementation results.** Runtime control = named-list
 `genefunnel()` at the exact spike parent; candidate = internal compiled path at
@@ -8,6 +8,12 @@ the eventual result commit. [`catalogue-protocol.tsv`](catalogue-protocol.tsv)
 is the machine manifest. Any change to fixture meaning, endpoint, threshold,
 repeat schedule, or multiplicity rule requires a new protocol version recorded
 before inspecting replacement results.
+
+`C-1.0.1` is a pre-result feasibility correction: `C-1.0.0` requested 50,000
+disjoint low-overlap memberships from 20,000 features. The feature universe is
+now 50,000, exactly matching that membership count; endpoints, thresholds,
+seeds, orders, and every other fixture dimension remain fixed. No implementation
+or performance result was inspected when this correction was committed.
 
 ## Question and unit
 
@@ -19,8 +25,8 @@ Synthetic fixtures test computation only and support no biological claim.
 
 ## Fixed fixtures
 
-- 20,000 exact ordered features; 2,000 sets; canonical set size 25 = 50,000
-  memberships before overlap. Low overlap uses the existing disjoint-cycle
+- 50,000 exact ordered features; 2,000 sets; canonical set size 25 = 50,000
+  memberships before overlap. Low overlap uses the existing disjoint
   constructor; high overlap shares 75% of each set. Every 20th set replaces its
   final member with a unique absent identifier; every 25th appends a duplicate
   of its first member. Stable deduplication therefore retains exactly 25
