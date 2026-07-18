@@ -338,10 +338,15 @@ genefunnel_components <- function(
     invisible(value)
 }
 
-.order_component_chunks <- function(chunks, n_columns) {
+.order_component_chunks <- function(
+    chunks,
+    n_columns,
+    calculation = "component"
+) {
     if (length(chunks) == 0L) {
         stop(
-            "Internal parallel component calculation returned no chunks.",
+            "Internal parallel ", calculation,
+            " calculation returned no chunks.",
             call. = FALSE
         )
     }
@@ -349,7 +354,8 @@ genefunnel_components <- function(
     expected_ids <- seq_along(chunks)
     if (!identical(unname(sort(chunk_ids)), expected_ids)) {
         stop(
-            "Internal parallel component calculation returned invalid ",
+            "Internal parallel ", calculation,
+            " calculation returned invalid ",
             "chunk identifiers.",
             call. = FALSE
         )
@@ -365,7 +371,8 @@ genefunnel_components <- function(
             identical(first[-1L], last[-length(last)] + 1L))
     if (!valid_ranges) {
         stop(
-            "Internal parallel component calculation returned invalid ",
+            "Internal parallel ", calculation,
+            " calculation returned invalid ",
             "column ranges.",
             call. = FALSE
         )

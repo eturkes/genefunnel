@@ -1049,3 +1049,40 @@ sorted-prefix/native optimization. A2 remains independently load-blocked.
 Risks/blockers: arbitrary-integer brute recomputation may be slow by design;
 the profile decides whether optimization work is justified. Either predictive
 gate may fail, selecting the no-public-API fallback without changing algebra.
+
+2026-07-18 | frontier execution 22 | commit `HEAD`
+Scope: implement E-1.0.0's exact brute compact sensitivity prototype without
+creating a public interface or changing the authoritative scoring path.
+Changed: dependency-free base-2^26 arbitrary integers; exact binary64 dyadic
+decomposition; independently recomputed full/deleted score numerators; exact
+delta sign, magnitude order, ties, and midpoint median; error-certified ordinary
+double conversion; explicit semantic/raw/normalized statuses; fixed aligned
+matrix schema through bounded dense/sparse BiocParallel iteration. PLAN closes
+only the compact-prototype item. Shared chunk ordering now names sensitivity
+failures accurately.
+Verified: focused sensitivity suite passes. Independent small-integer arithmetic
+and 200 randomized integer deletion identities agree exactly; >1,000 finite
+binary64 values round-trip across normal/subnormal exponents; a hex-literal
+fixture proves canonical exact ordering where subtract-rounded scores select the
+later member; wide homogeneous exponents, smallest subnormal, maximum finite,
+signed zero, randomized direct recomputation, stable duplicate/unmatched/
+missing support, integer/dense/sparse Matrix, and serial/two-worker SOCK paths
+pass. Every new package function is <=40 source lines. Complete benchmark/
+aggregation/sensitivity-protocol smoke passes. Clean source build passes;
+rebuilt-tarball `R CMD check --no-manual` = `Status: OK`.
+Decisions: the brute implementation remains the correctness oracle and stores no
+member cube. A nonzero raw summary outside the frozen relative-error contract
+makes all raw/member fields unavailable; normalization remains separately
+statused when raw fields are ordinary. Exact zero is positive zero, all-zero
+ties choose the first canonical member, and sets with two global matches stay
+aligned as sample-level `not_applicable`. No reliability or biological claim
+follows from implementation correctness.
+Remaining: commit; run the fixed serial E profile before any optimization. If
+the frozen >60 s / >50% exact-arithmetic rule admits optimization, validate any
+candidate byte-for-byte/status-for-status against this brute oracle first; then
+execute the controlled feature-loss/repeat gates. Retry A2 only under its
+independent quiescence gate.
+Risks/blockers: brute deletion is intentionally quadratic in observed members;
+the pending frozen profile, not intuition, determines whether that warrants a
+second implementation. Predictive gates may still select the no-public-API
+fallback.

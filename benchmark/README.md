@@ -208,8 +208,10 @@ claim follows.
 Protocol [`E-1.0.0`](sensitivity-protocol.md) fixes the internal compact schema,
 exact dyadic-rational brute oracle, profile-before-optimization rule, controlled
 feature masks, measurement repeats, held-out folds, models, bootstrap, and
-incremental prediction gates before a package sensitivity value exists. Check
-the registry's exact grid without generating a diagnostic:
+incremental prediction gates; it was frozen before a package sensitivity value
+existed. The unexported exact brute prototype now implements the compact schema,
+while the fixed profile and empirical gates remain pending. Check the registry's
+exact grid without generating a diagnostic:
 
 ```sh
 Rscript --vanilla -e \

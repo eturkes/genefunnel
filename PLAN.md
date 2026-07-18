@@ -414,7 +414,7 @@ assay coverage, without “correcting” the result.
 - [x] Define exact leave-one-observed-member-out deltas for gene-set/sample
   cells with at least three observed members; call them sensitivity, never
   causal contribution.
-- [ ] Prototype compact summaries first: largest absolute delta and member,
+- [x] Prototype compact summaries first: largest absolute delta and member,
   signed delta, delta normalized by observed sum where defined, median absolute
   delta, and effective size. Break largest-delta ties by canonical member order.
   Full member-by-set-by-sample arrays require an explicit sink.
@@ -442,6 +442,15 @@ rows, ten held-out profile folds, two controlled measurement repeats, baseline
 and augmented models, cluster bootstrap, and co-primary 10%/5% incremental
 prediction gates. A pass permits only a separately frozen external stage; a
 failure selects the no-public-API fallback.
+
+The first prototype is now unexported and deliberately brute-force. It returns
+only the frozen aligned matrices, compares every sign/order/tie as an exact
+dyadic rational, and marks nonzero summaries unavailable when binary64 cannot
+represent them within the frozen bound. Independent integer/equation oracles,
+full-exponent fixtures, exact-tie drift, canonical support, missingness,
+dense/sparse/integer storage, and serial/SOCK execution are locked in tests.
+The fixed profile, optimization decision, controlled prediction gates, and any
+public interface remain pending.
 
 **Go:** summaries are reproducible, representation-invariant, and pass the
 pre-specified held-out incremental-effect and technical-repeat thresholds.

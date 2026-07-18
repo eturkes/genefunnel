@@ -2,19 +2,20 @@
 
 # GeneFunnel observed-member sensitivity specification
 
-This document fixes Workstream E's mathematical diagnostic before an API or
-empirical result exists. It defines deterministic score changes caused by
-deleting one currently observed gene-set member. It does not define causal
-contributions, sampling uncertainty, or a correction to the GeneFunnel score.
+This document fixed Workstream E's mathematical diagnostic before an
+implementation or empirical result existed. It defines deterministic score
+changes caused by deleting one currently observed gene-set member. It does not
+define causal contributions, sampling uncertainty, or a correction to the
+GeneFunnel score.
 
 ## Status and scope
 
 The frozen score and input semantics in `SCIENTIFIC_SPEC.md` remain
-authoritative. This specification adds no public function and fixes no return
-schema. Protocol E-1.0.0 fixes an internal compact schema, exact dyadic-rational
-brute oracle, binary64 availability contract, and controlled held-out gates
-before implementation. A later public interface still requires external
-evidence and a separate scope decision.
+authoritative. Protocol E-1.0.0 fixed the internal compact schema, exact
+dyadic-rational brute oracle, binary64 availability contract, and controlled
+held-out gates before implementation. The package now contains that unexported
+prototype; this specification adds no public function. A later public interface
+still requires external evidence and a separate scope decision.
 
 The delete-one construction resembles the operation used by the jackknife, but
 gene-set members are not assumed to be independent and identically distributed
@@ -179,6 +180,13 @@ deletion from the normative equation without package code.
 `test-sensitivity-theorem.R` locks the canonical cases, support rules, sign,
 tie-break, bounds, homogeneity, common-shift behavior, permutation behavior,
 and non-additivity before an optimized or public implementation exists.
+`test-sensitivity-exact.R` checks the limb arithmetic against independent
+integer identities, round-trips binary64 across its exponent domain, proves
+exact ordering under subtract-rounded tie drift, and checks score-numerator and
+wide-exponent conversion. `test-sensitivity-api.R` locks the compact schema,
+statuses, direct randomized recomputation, canonical support, extreme values,
+storage representations, and serial/SOCK identity.
 `benchmark/sensitivity-protocol.md` and its machine registry fix the internal
 schema, exact-arithmetic boundary, controlled masks/repeats, folds, models,
-uncertainty, and rejection rules before a package diagnostic is calculated.
+uncertainty, and rejection rules; they were committed before a package
+diagnostic was calculated.

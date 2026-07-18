@@ -40,7 +40,11 @@
 - Freezes the internal observed-member sensitivity schema, dependency-free
   exact dyadic deletion oracle, profile-before-optimization rule, controlled
   feature-loss/measurement-repeat design, held-out models, bootstrap, and
-  rejection gates before package diagnostics exist.
+  rejection gates before package diagnostics existed.
+- Adds an unexported exact brute-force observed-member sensitivity prototype
+  with compact aligned summaries, explicit representability status, exact
+  canonical ties, bounded matrix iteration, and dense/sparse serial/SOCK
+  identity. Public promotion remains gated by the frozen empirical protocol.
 - Implements dependency-free scaled double-double native diagnostics for
   overflow, cancellation, and underflow cases while keeping the ordinary score
   authoritative.
@@ -89,7 +93,7 @@
   any group-level API is implemented.
 - Fixes the exact observed-member deletion sensitivity, canonical support,
   sign, compact summaries, algebraic properties, and non-causal boundary before
-  any reliability API or empirical diagnostic result exists.
+  any public reliability API or empirical diagnostic result exists.
 - Adds an executable BiocStyle vignette covering canonical examples,
   caller-controlled coverage, dense/sparse matrices, and parallel execution.
 - Expands function help and the README with the complete public contract and
