@@ -1,6 +1,6 @@
 <!-- Assisted-by: OpenAI Codex. -->
 
-# Aggregation-audit protocol B-1.0.0
+# Aggregation-audit protocol B-1.0.1
 
 **Frozen:** 2026-07-18, before a group-audit implementation or validation
 result. [`aggregation-protocol.tsv`](aggregation-protocol.tsv) is the machine
@@ -17,6 +17,14 @@ This protocol separates four questions:
 
 The theorem can remain true when every empirical gate fails. Synthetic and
 observational results support only the claims assigned below.
+
+`B-1.0.1` is a schema-only implementation-review correction. `B-1.0.0`
+promised the affected units required by `AGGREGATION_SPEC.md`, but its
+`removed_members` table had no unit column. The first local red/green prototype
+fixtures exposed that guarantee gap before any synthetic, downloaded-data, or
+threshold result. The table now records `unit`; unmatched members use `NA`, and
+missing members get one row per affected unit. Data bytes, designs, splits,
+endpoints, thresholds, decision rules, and every other field remain unchanged.
 
 ## Prototype schema
 
@@ -55,8 +63,9 @@ The result is a fixed-order unclassed list of four unclassed data frames:
    declared set.
 2. `weights`: one row per input unit, preserving matrix order. All-zero groups
    have `effective_weight = NA`; otherwise inactive units have zero.
-3. `removed_members`: zero or more rows in group/set/declared-member order;
-   reason is `"unmatched"` or `"missing"`.
+3. `removed_members`: zero or more rows in group/set/declared-member/unit
+   order; reason is `"unmatched"` or `"missing"`. Unmatched rows have
+   `unit = NA_character_`; missing rows identify each affected active unit.
 4. `unit_scores`: one row per eligible group/set/active unit, preserving unit
    order.
 

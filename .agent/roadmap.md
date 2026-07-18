@@ -654,3 +654,22 @@ without changing `B-1.0.0` after results.
 Risks/blockers: severe dropout/protocol effects may deliberately reject H2;
 data-derived mixture sets and pathway identifier mapping require audited stable
 ties/alignment; no theorem guarantees curve accuracy or biological utility.
+
+2026-07-18 | frontier execution 9 amendment | commit `HEAD`
+Scope: close a group-audit reporting guarantee gap found during first local
+implementation fixtures, before any empirical/protocol endpoint result.
+Changed: protocol `B-1.0.1` adds `unit` to `removed_members`; unmatched rows use
+`NA`, while missing rows enumerate affected active units in declared-member/
+unit order. All external bytes, factors, seeds, splits, endpoints, thresholds,
+and decisions remain identical to `B-1.0.0`.
+Verified: registry = 60 unique rows; exact 124,416-row synthetic expansion and
+resolution-IV checks unchanged; all eight cached external artifacts still
+match 81,600,675 declared bytes + SHA-256; Markdown/local-link whitespace.
+Decisions: version the correction openly because initial red/green prototype
+tests had run; the correction repairs the already-ratified theorem contract and
+cannot benefit any unseen scientific outcome.
+Remaining: update the internal prototype/detail tests to `B-1.0.1`, complete
+adversarial/oracle verification, then run empirical gates without protocol
+changes.
+Risks/blockers: detail volume can grow with member x missing-unit occurrences;
+summary removal count remains unique members and must not be inferred from rows.
