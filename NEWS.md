@@ -52,6 +52,9 @@
 - Adds a clean-commit, isolated-install synthetic audit runner with deterministic
   fork-safe generation, resumable identity-checked checkpoints, paired model/
   bootstrap summaries, full failed-endpoint retention, and artifact hashes.
+- Records the complete 124,416-measurement controlled result: every frozen
+  synthetic gate passed, while severe-dropout diagnostics remain comparable to
+  the planted complementarity effect and preclude a robustness claim.
 
 ## Documentation
 

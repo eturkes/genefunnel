@@ -757,3 +757,34 @@ all 124,416 measurements from that clean commit, adversarially audit artifacts,
 then record every passed/failed gate without changing B-1.0.2.
 Risks/blockers: full runtime and checkpoint volume are not yet measured; severe
 dropout may exclude pairs or reject curve/stability/incremental gates by design.
+
+2026-07-18 | frontier execution 12 | commit `HEAD`
+Scope: execute, adversarially audit, and compactly retain B-1.0.2's frozen
+controlled factorial result.
+Changed: tracked exact ten-endpoint result + provenance/failure-envelope note;
+PLAN checks only the controlled factorial item; README, NEWS, and aggregation
+spec distinguish a synthetic PASS from dropout robustness or biology. The
+ignored full bundle contains 62,208 paired latent scenarios, 124,416 measured
+rows, 2,000 bootstraps, 486 resumable checkpoints, and all model/audit facts.
+Verified: clean source commit
+`d1cbf1510af3bc27d6baf14e3433866449645a77`; protocol SHA-256
+`aec8fd4e3e49b953e5ca75e0c2059c1d68436409def0dfd3d351b4ad8a49356f`;
+data SHA-256
+`ca6dedb4957fa6ef3c21649d342996d1d482cf6f3203e4f2f9bab0bbf1a823e8`;
+124,331 eligible measurements, 85 zero-observed-unit measurements, and 85
+model-excluded pairs. Curve median/q90 error = 0.0102821/0.182020; overall +
+three archetype A/B Spearman = 0.929844/0.919627/0.930966/0.936522; null
+median/q95 = 0.000149946/0.0182094; median fold RMSE reduction/bootstrap 95%
+lower = 0.218438/0.210229. Every threshold passed. Binary replay of all
+checkpoints reproduced endpoint/fold/prediction/bootstrap/coefficient tables
+within `5e-16`; 14/14 artifact hashes matched.
+Decisions: controlled co-primary status = PASS. At 0.5 dropout, q90 curve error
+= 0.304640 and median observed/latent gap = 0.153459/0.053335; the marginal
+dropout gap rise 0.09762 is comparable with complementarity 0-to-1's 0.10728.
+Treat this as the PLAN fallback concern: retain a severe-dropout warning and no
+robustness/public/biological claim, regardless of the aggregate gate pass.
+Remaining: implement and run the pinned CellBench CEL-seq2 training/SORT-seq
+held-out mixture gate, then Kang/Reactome technical and donor gates; keep the
+prototype internal.
+Risks/blockers: external preprocessing/alignment may fail closed; CellBench or
+Kang can still reject H2, and no threshold may move in response.

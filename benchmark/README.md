@@ -140,6 +140,13 @@ valid completed result: the runner records `FAIL` and exits successfully. A
 schema, provenance, installation, arithmetic, or orchestration failure aborts.
 Generated evidence remains ignored under `benchmark/results/`.
 
+The complete B-1.0.2 execution from clean commit `d1cbf15` passed every frozen
+synthetic gate. Its compact tracked
+[`result`](aggregation-synthetic-result.md) and
+[`endpoint table`](aggregation-synthetic-result.tsv) also retain the severe-
+dropout failure envelope: controlled success does not establish dropout
+robustness or biological validity.
+
 ## Generated artifacts
 
 Every runner writes:

@@ -198,6 +198,9 @@ Internal `.aggregation_audit()` implements the frozen additive four-table
 schema: eligibility reasons, effective weights/support, authoritative aggregate
 and unit scores, formula gap, normalized status, identity residual, and removed
 member/unit facts. It remains unexported. Factorial and empirical thresholds
-are frozen in benchmark protocol `B-1.0.2`. The tracked synthetic runner and CI
-smoke implement its generator/model mechanics; full controlled and empirical
-evidence remains prospective.
+are frozen in benchmark protocol `B-1.0.2`. The full controlled run passed all
+co-primary gates, but its severe-dropout diagnostic was comparable with the
+planted complementarity effect and does not support a robustness claim. The
+tracked result records that failure envelope. CellBench cross-protocol mixtures
+and Kang donor-replicated perturbation evidence remain prospective, so the
+prototype stays internal.

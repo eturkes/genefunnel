@@ -254,7 +254,7 @@ cancellation of different member patterns.
 - [x] Verify zero gap for proportional member profiles, positive gap for planted
   complementary profiles, the broader no-opposing-deviation equality case,
   permutation invariance, and non-negativity within numerical tolerance.
-- [ ] Run a pre-specified factorial experiment over mixture proportion, library
+- [x] Run a pre-specified factorial experiment over mixture proportion, library
   depth, dropout, gene-set size, overlap, outliers, weights, and aggregation
   level. Vary gene baselines, dynamic ranges, variances, and correlations;
   separate depth effects from member-pattern cancellation; stratify complexes,
@@ -262,6 +262,14 @@ cancellation of different member patterns.
 - [ ] Validate first on known artificial mixtures or purified populations, then
   on perturbation data with biological replicates and donor-level inference;
   never treat cells as independent donors.
+
+Protocol B-1.0.2's complete controlled result passed every frozen co-primary
+gate; see the tracked [result and failure envelope](benchmark/aggregation-synthetic-result.md).
+Its 0.5-dropout stratum nevertheless inflated the marginal median observed gap
+by 0.09762 versus 0.10728 from complementarity 0 to 1, and its 90th-percentile
+curve error was 0.30464. This meets the qualitative fallback concern closely
+enough to require a severe-dropout warning and blocks any robustness claim;
+the external mixture and donor gates remain open.
 
 **Go:** gap meets the protocol's pre-specified curve-error,
 replicate-stability, and incremental-effect thresholds under controlled
