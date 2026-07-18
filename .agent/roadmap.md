@@ -583,3 +583,22 @@ passes. A2's independent gate remains open under the same host constraint.
 Risks/blockers: smoke compiled/list ratios are intentionally non-evidentiary and
 show validation overhead can dominate tiny fixtures; final smoke load/core
 oscillates across the strict `0.25` boundary (`0.214-0.276`).
+
+2026-07-18 | frontier execution 7 gate attempt | candidate `315ab7f`
+Scope: attempt exact compiled-catalogue gate `C-1.0.2` without weakening its
+environment or decision rules.
+Changed: no implementation/protocol; prepared and verified separate Git-archive
+installs for list baseline `a573c12` and compiled candidate `315ab7f` with
+SHA-256 source + installed-tree markers; retained ignored raw rejection evidence.
+Verified: clean exact HEAD; 13/13 fixed correctness assertions; gate admitted at
+load/core `0.14375`; six complete full-workload pairs (36 isolated workers, 12
+merged observations) have exact list/compiled output digests; all load checks
+through repeat 2 `sparse_low` pass. Before repeat 2 `sparse_high`, load/core rises
+to `0.2875`; machine decision = `all_pass=FALSE`,
+`performance_claim=FALSE`, reason `quiescence_rejection:before-r2-sparse_high`.
+Decisions: partial timings are inadmissible and receive no threshold summary;
+the fixed 20-repeat gate restarts from zero on an adequately quiescent host.
+Remaining: rerun C's full gate, then check its benchmark box only if every
+correctness/timing/resource bound passes; A2's independent gate also remains.
+Risks/blockers: this host crossed the ceiling after six of 80 required pairs;
+completion needs sustained load/core <= `0.25`, not a momentary quiet start.
