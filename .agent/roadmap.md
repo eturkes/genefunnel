@@ -969,3 +969,22 @@ Remaining: continue PLAN at the next unchecked executable item; no Workstream B
 empirical gate remains.
 Risks/blockers: none for B execution; public promotion requires a newly frozen
 future protocol, not reinterpretation of B-1.0.3.
+
+2026-07-18 | frontier execution 19 | candidate `2694d56`
+Scope: resume A2's exact default-path performance gate after Workstream B.
+Changed: no package/protocol/threshold. Prepared new fingerprinted Git-archive
+installs for locked baseline `9b60a3e` and clean current candidate `2694d56`.
+Verified: four-repeat smoke = 16/16 paired score digests/shapes/environments
+exact; baseline/candidate median manager allocations are byte-identical in all
+four workloads; RSS stays inside smoke bounds; machine smoke decision passes.
+The first full-gate admission sampled load/core 0.25625 and a fresh restart
+sampled 0.30125, both above the frozen 0.25 ceiling. Both rejected before the
+first timing; no partial performance estimate exists.
+Decisions: retain A2 unchecked and make no equivalence claim from smoke. Keep
+the prepared snapshots as rejection provenance; refresh the candidate marker at
+the then-current clean HEAD before a sustained-quiescence restart. Crossing the
+admission boundary by a small amount is still a rejection.
+Remaining: rerun all 30 pairs/workload from zero when every load check can pass.
+Proceed meanwhile to Workstream E's non-performance definition/protocol work.
+Risks/blockers: external host load remains the sole A2 execution blocker; the
+gate can also reject later if load rises after admission.
