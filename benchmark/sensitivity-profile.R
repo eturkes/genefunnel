@@ -2,6 +2,73 @@
 
 SENSITIVITY_PROFILE_VERSION <- "E-P-1.0.0"
 SENSITIVITY_PROFILE_MD5 <- "ff86e032b7a766be20c5d61d940991ab"
+SENSITIVITY_PROFILE_RESULT_MD5 <- "bfe706bc325fffa3d33b985df962ebc7"
+
+sensitivity_profile_result_fields <- function() {
+    c(
+        "protocol_version", "parent_protocol", "candidate_id",
+        "source_archive_sha256", "installed_manifest_md5", "fixture_md5",
+        "output_md5", "repeats", "elapsed_1_sec", "elapsed_2_sec",
+        "elapsed_3_sec", "median_elapsed_sec", "rprof_elapsed_sec",
+        "sample_interval_sec", "total_samples", "exact_samples",
+        "exact_sample_share", "allocation_elapsed_sec", "manager_r_alloc_bytes",
+        "manager_r_alloc_events", "output_identity_pass", "measurement_complete",
+        "elapsed_trigger", "exact_trigger", "optimization_eligible",
+        "performance_claim", "rprof_sha256", "rprofmem_sha256",
+        "artifact_manifest_sha256", "host_cpu", "logical_cores",
+        "memory_total_kib", "r_version", "Matrix_version",
+        "BiocParallel_version"
+    )
+}
+
+sensitivity_profile_read_result <- function(root = ".") {
+    path <- file.path(root, "benchmark", "sensitivity-profile-result.tsv")
+    if (!identical(unname(tools::md5sum(path)), SENSITIVITY_PROFILE_RESULT_MD5)) {
+        stop("Sensitivity profile result identity is invalid.", call. = FALSE)
+    }
+    result <- utils::read.delim(
+        path,
+        stringsAsFactors = FALSE,
+        check.names = FALSE,
+        colClasses = "character"
+    )
+    if (!identical(names(result), sensitivity_profile_result_fields()) ||
+        nrow(result) != 1L || anyNA(result) || any(!nzchar(unlist(result)))) {
+        stop("Sensitivity profile result schema is invalid.", call. = FALSE)
+    }
+    result
+}
+
+sensitivity_profile_validate_result <- function(root = ".") {
+    result <- sensitivity_profile_read_result(root)
+    numeric_fields <- c(
+        "repeats", "elapsed_1_sec", "elapsed_2_sec", "elapsed_3_sec",
+        "median_elapsed_sec", "rprof_elapsed_sec", "sample_interval_sec",
+        "total_samples", "exact_samples", "exact_sample_share",
+        "allocation_elapsed_sec", "manager_r_alloc_bytes",
+        "manager_r_alloc_events", "logical_cores", "memory_total_kib"
+    )
+    numbers <- setNames(
+        as.numeric(unlist(result[numeric_fields], use.names = FALSE)),
+        numeric_fields
+    )
+    flags <- unlist(result[c(
+        "output_identity_pass", "measurement_complete", "elapsed_trigger",
+        "exact_trigger", "optimization_eligible", "performance_claim"
+    )], use.names = FALSE)
+    elapsed <- unname(numbers[c("elapsed_1_sec", "elapsed_2_sec", "elapsed_3_sec")])
+    valid <- result$protocol_version == SENSITIVITY_PROFILE_VERSION &&
+        grepl("^[0-9a-f]{40}$", result$candidate_id) && all(is.finite(numbers)) &&
+        numbers[["repeats"]] == 3 && numbers[["median_elapsed_sec"]] == median(elapsed) &&
+        isTRUE(all.equal(
+            numbers[["exact_sample_share"]],
+            numbers[["exact_samples"]] / numbers[["total_samples"]],
+            tolerance = 1e-15
+        )) &&
+        identical(flags, c("TRUE", "TRUE", "TRUE", "TRUE", "TRUE", "FALSE"))
+    if (!isTRUE(valid)) stop("Sensitivity profile result is invalid.", call. = FALSE)
+    result
+}
 
 sensitivity_profile_read <- function(root = ".") {
     path <- file.path(root, "benchmark", "sensitivity-profile-protocol.tsv")

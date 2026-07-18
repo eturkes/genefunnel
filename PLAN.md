@@ -449,8 +449,10 @@ dyadic rational, and marks nonzero summaries unavailable when binary64 cannot
 represent them within the frozen bound. Independent integer/equation oracles,
 full-exponent fixtures, exact-tie drift, canonical support, missingness,
 dense/sparse/integer storage, and serial/SOCK execution are locked in tests.
-The fixed profile, optimization decision, controlled prediction gates, and any
-public interface remain pending.
+The fixed profile records median elapsed 213.585 seconds and exact-arithmetic
+stack share 0.999403. Both frozen optimization triggers pass, so an optimized
+implementation is eligible only after full brute equivalence. Controlled
+prediction gates and any public interface remain pending.
 
 Profile supplement `E-P-1.0.0` records that E-1.0.0 left its deterministic
 value/member constructors and pass boundaries implicit, then byte-pins them

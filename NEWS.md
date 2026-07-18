@@ -49,6 +49,9 @@
   passes before profiling, with isolated clean-SHA installation, output identity,
   CPU/allocation attribution, environment capture, and an optimization-only
   decision runner.
+- Records the fixed exact-brute profile: median call 213.585 seconds and
+  exact-arithmetic stack share 0.999403 both cross their frozen optimization
+  triggers. The result makes no performance, reliability, or public-API claim.
 - Implements dependency-free scaled double-double native diagnostics for
   overflow, cancellation, and underflow cases while keeping the ordinary score
   authoritative.

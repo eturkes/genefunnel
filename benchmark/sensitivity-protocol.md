@@ -153,6 +153,11 @@ optimized candidate must first match the exact brute result/status on every
 fixed and randomized cell. No speed result can relax correctness or promote
 the API.
 
+The tracked [`E-P-1.0.0 result`](sensitivity-profile-result.md) records median
+elapsed 213.585 seconds and exact-stack share 0.999402883221019. Both branches
+cross their frozen strict thresholds; optimization research is eligible. The
+result sets `performance_claim = FALSE` and changes no reliability gate.
+
 ## Controlled design
 
 The full Cartesian design uses registry order, with the first field varying

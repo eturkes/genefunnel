@@ -210,8 +210,11 @@ exact dyadic-rational brute oracle, profile-before-optimization rule, controlled
 feature masks, measurement repeats, held-out folds, models, bootstrap, and
 incremental prediction gates; it was frozen before a package sensitivity value
 existed. The unexported exact brute prototype now implements the compact schema,
-while the fixed profile and empirical gates remain pending. Check the registry's
-exact grid without generating a diagnostic:
+while the empirical reliability gates remain pending. The tracked
+[`fixed profile`](sensitivity-profile-result.md) records median elapsed 213.585 s
+and exact-stack share 0.999403, so both frozen optimization triggers pass. This
+permits implementation research only. Check the registry's exact grid without
+generating a diagnostic:
 
 ```sh
 Rscript --vanilla -e \

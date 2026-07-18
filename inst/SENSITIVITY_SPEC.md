@@ -191,4 +191,6 @@ schema, exact-arithmetic boundary, controlled masks/repeats, folds, models,
 uncertainty, and rejection rules; they were committed before a package
 diagnostic was calculated. Profile supplement `E-P-1.0.0` transparently closes
 the parent's previously implicit fixture/pass mechanics after implementation
-but before a fixed profile call; it changes no empirical gate.
+but before a fixed profile call; it changes no empirical gate. Its tracked
+result makes exact-oracle-preserving optimization eligible and no reliability
+or public-interface claim.

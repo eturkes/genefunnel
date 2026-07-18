@@ -1119,3 +1119,33 @@ the fixed median or exact share crosses its parent threshold.
 Risks/blockers: allocation tracing may add substantial runtime/log volume but is
 not a timing observation. The descriptive profile is machine-specific and can
 authorize optimization research only, never a reliability claim.
+
+2026-07-18 | frontier execution 24 | commit `HEAD`
+Scope: execute E-P-1.0.0's fixed exact-brute profile once from its clean runner
+commit and apply the frozen optimization-only decision.
+Changed: tracked compact Markdown/machine result plus byte-pinned result parser;
+PLAN/protocol/spec/README/NEWS now distinguish completed profiling from pending
+correctness-gated optimization and empirical reliability work.
+Verified: candidate `37120c125efbdaf3e2c3b30e8049465c4874460b` installed
+from Git archive SHA-256
+`714bac6613456dcc29940be2940821949248d6ee7bb54f10754510fdb3e41082`;
+installed manifest MD5 `d85cf5751d014f656f2b980ccffbb371`; fixed fixture MD5
+`32fa8d4843d024765a4adfc676793dbe`. Three elapsed calls = 239.364,
+197.017, 213.585 s; median = 213.585 s. The separate 10 ms CPU pass has
+23,446 samples, 23,432 exact stacks, share 0.999402883221019. Allocation
+pass = 607,529 numeric events / 378,561,864 cumulative manager R bytes. All
+five results share MD5 `3d9635e779a9ed1eee453a2a04596369`; every core
+artifact hash re-verifies. Raw Rprof/Rprofmem SHA-256 values are retained in the
+tracked result. Result registry MD5 = `bfe706bc325fffa3d33b985df962ebc7`.
+Decisions: elapsed >60 s = TRUE; exact share >0.50 = TRUE; optimization eligible
+= TRUE; performance claim = FALSE. Profile/allocation overhead is excluded from
+primary timing. Machine-specific cost cannot imply reliability or API value.
+The exact brute implementation remains the oracle and fallback.
+Remaining: commit the result; implement a simpler exact optimized algorithm,
+then require result/status identity across all fixed/random/extreme/storage/
+backend tests plus the frozen workload before adoption. Only afterward execute
+the E-1.0.0 controlled feature-loss and measurement-repeat gates. A2 remains
+independently load-blocked.
+Risks/blockers: optimization may fail equivalence or prove too complex to
+maintain, in which case retain the brute internal oracle. Even successful
+optimization cannot rescue failed predictive gates or justify export.
