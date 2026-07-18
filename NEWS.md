@@ -46,6 +46,9 @@
 - Adds an unexported, fail-closed aggregation-audit prototype with explicit
   weights, support/missingness facts, identity residuals, and independent
   randomized-oracle coverage; empirical promotion gates remain open.
+- Freezes the controlled audit runner's shared-latent RNG, measurement/dropout,
+  cross-validation, model, quantile, and bootstrap execution rules before any
+  synthetic or downloaded-data result.
 
 ## Documentation
 

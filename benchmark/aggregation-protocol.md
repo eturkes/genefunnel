@@ -1,12 +1,13 @@
 <!-- Assisted-by: OpenAI Codex. -->
 
-# Aggregation-audit protocol B-1.0.1
+# Aggregation-audit protocol B-1.0.2
 
-**Frozen:** 2026-07-18, before a group-audit implementation or validation
-result. [`aggregation-protocol.tsv`](aggregation-protocol.tsv) is the machine
-registry and [`aggregation-data.tsv`](aggregation-data.tsv) pins every external
-byte. An endpoint, threshold, split, factor, source, preprocessing rule, or
-schema change requires a new version committed before replacement results.
+**Frozen:** 2026-07-18. `B-1.0.0` preceded implementation; `B-1.0.2` precedes
+every synthetic or downloaded-data observation/result. The
+[`machine registry`](aggregation-protocol.tsv) and
+[`data manifest`](aggregation-data.tsv) are authoritative. An endpoint,
+threshold, split, factor, source, preprocessing rule, or schema change requires
+a new version committed before replacement results.
 
 This protocol separates four questions:
 
@@ -25,6 +26,15 @@ fixtures exposed that guarantee gap before any synthetic, downloaded-data, or
 threshold result. The table now records `unit`; unmatched members use `NA`, and
 missing members get one row per affected unit. Data bytes, designs, splits,
 endpoints, thresholds, decision rules, and every other field remain unchanged.
+
+`B-1.0.2` closes execution degrees of freedom found while designing the first
+synthetic runner: it separates one shared latent seed from two measurement
+seeds; defines the overlap, subunit/dropout, zero-total, and covariate
+operators; and fixes fold assignment, factor encoding, QR alias handling,
+quantiles, and a paired prediction-error bootstrap. It changes no API field,
+factor level, external byte/URL, endpoint, threshold, or decision rule. This
+amendment was committed before generating a synthetic measurement, fitting a
+validation model, or reading downloaded data.
 
 ## Prototype schema
 
@@ -143,8 +153,11 @@ Signs select, respectively:
 | G - measured subunits pooled per unit | 1 | 16 |
 
 This gives 62,208 latent scenarios. Independent measurement replicates `A`
-and `B` give exactly 124,416 observations. Seeds are `18072027 + scenario row`
-for replicate A and plus 1,000,000 for B. Scenario generation uses base R only.
+and `B` give exactly 124,416 observations. For latent integer ID `s`, their
+measurement seeds are `18072027 + s` and `19072027 + s`; both share latent
+seed `20072027 + s`. Generation resets base R's
+`Mersenne-Twister`/`Inversion`/`Rejection` RNG for each seed, so worker count
+cannot change a row.
 
 ### Latent profiles
 
@@ -172,20 +185,24 @@ x_{ki}\leftarrow x_{ki}
 -\sigma^2[\rho l_i^2+(1-\rho)]/2\}.
 $$
 
-Complex-like rows reuse one perturbation vector across units, preserving an
-exact latent no-cancellation control before an outlier. When overlap is 0.5,
-the first half of members is multiplied by a bounded second alternating
-unit/member programme in `[0.75, 1.25]`; complex-like rows reuse that programme
+The latent RNG draws all `u` values, then `e` in unit-major order. Complex-like
+rows reuse the first `u` and first `e` row across units, preserving an exact
+latent no-cancellation control before an outlier. When overlap is 0.5, let
+$a_i=(-1)^{i-1}$ and $b_k=(-1)^{k-1}$; the first member half is multiplied by
+$1+0.25a_ib_k$. Complex-like rows set every $b_k=1$, reusing the programme
 across units. The outlier, when active, multiplies `x[1, 1]` by 20. Finally each
 unit is rescaled to total 1,000,000. The latent target $R^*$ is the exact
-reference audit of these compatible profiles.
+independent reference audit of these compatible profiles.
 
 For each measured unit, multinomial draws allocate the fixed library depth.
-The 16-subunit condition divides the integer depth as evenly as possible,
-applies dropout independently within each subunit, and sums subunits. The
-one-subunit condition applies dropout once. Nonzero observed totals are
-rescaled to 1,000,000; total-zero rows are recorded ineligible. Raw total and
-detected-member fraction remain covariates.
+Subunit sizes are the integer quotient plus one for the first remainder
+subunits. In unit then subunit order, each multinomial draw is followed by
+independent member-level Bernoulli dropout that zeroes the whole post-count
+member value; subunits are then summed. Any zero-total unit makes the
+measurement ineligible. Otherwise each unit is rescaled to 1,000,000.
+`raw_total` is the post-dropout count sum over units/members;
+`detected_fraction` is the fraction of post-dropout unit-member cells above
+zero.
 
 ### Primary endpoints
 
@@ -203,6 +220,27 @@ detected-member fraction remain covariates.
   Train on replicate A outside a fold and predict replicate B inside it. Median
   fold RMSE reduction must be `>= 10%`; a 2,000-replicate scenario-stratified
   bootstrap 95% lower bound must be `>= 5%`.
+
+All descriptive quantiles use R type 8. For one-indexed 32-run factorial and
+1,944-row core indices `f` and `c`, the fold is
+`1 + (((f - 1) + 3 * (c - 1)) %% 10)`; paired A/B measurements share it. Each
+declared factor level differs by at most seven scenarios across folds. Modeling
+retains only pairs with defined finite targets and predictors. The four
+continuous baseline columns are aggregate score, raw total, detected fraction,
+and maximum weight.
+Every declared design field is a factor in registry level order:
+`archetype`, member/unit count, weight profile, depth, dropout,
+complementarity, baseline, dynamic range, log SD, correlation, overlap,
+outlier, and subunit count. A global treatment matrix fixes columns across
+folds. Base R `lm.fit` supplies QR least squares; aliased coefficients are zero
+for prediction. Fold reduction is `(baseline RMSE - augmented RMSE) / baseline
+RMSE`.
+
+The 2,000 bootstrap replicates use seed `21072027`. Each replicate resamples
+held-out B scenarios with replacement inside each fold, reuses the frozen
+cross-validation predictions, recomputes ten reductions, and takes their
+median. The one-sided 95% lower bound is the type-8 0.025 quantile. Models are
+not refit inside this prediction-error bootstrap.
 
 All four are co-primary intersection gates. Factor-stratified errors and
 coefficients are reported without rescuing a failed gate. The 0.5-dropout

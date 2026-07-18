@@ -3,7 +3,7 @@
 # Aggregation-gap proof and pre-API contract
 
 **Status:** theorem/design contract ratified 2026-07-18; an internal prototype
-implements protocol `B-1.0.1`, but no public aggregation function exists. The
+implements protocol `B-1.0.2`, but no public aggregation function exists. The
 frozen scorer remains governed by `SCIENTIFIC_SPEC.md`. This document owns
 Workstream B's estimand, eligibility, missingness, terminology, and novelty
 boundary.
@@ -198,4 +198,4 @@ Internal `.aggregation_audit()` implements the frozen additive four-table
 schema: eligibility reasons, effective weights/support, authoritative aggregate
 and unit scores, formula gap, normalized status, identity residual, and removed
 member/unit facts. It remains unexported. Factorial and empirical thresholds
-are frozen in benchmark protocol `B-1.0.1`; their evidence remains prospective.
+are frozen in benchmark protocol `B-1.0.2`; their evidence remains prospective.

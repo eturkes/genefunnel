@@ -18,7 +18,7 @@ The separate [`components-protocol.md`](components-protocol.md) and
 default-path performance gates without changing scientific protocol 1.0.0.
 
 Workstream B's separate
-[`aggregation protocol B-1.0.1`](aggregation-protocol.md), machine
+[`aggregation protocol B-1.0.2`](aggregation-protocol.md), machine
 [`registry`](aggregation-protocol.tsv), and exact external
 [`data manifest`](aggregation-data.tsv) freeze the internal audit schema,
 controlled factorial, known-mixture validation, donor split, endpoints, and

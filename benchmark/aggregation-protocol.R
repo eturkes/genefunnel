@@ -1,10 +1,10 @@
 # Assisted-by: OpenAI Codex.
 
-AGGREGATION_PROTOCOL_VERSION <- "B-1.0.1"
+AGGREGATION_PROTOCOL_VERSION <- "B-1.0.2"
 AGGREGATION_PROTOCOL_SHA256 <-
-    "a4b24dafb240710de68123fce7d345ee9cea0fa317344fd3602c2774fafff19f"
+    "aec8fd4e3e49b953e5ca75e0c2059c1d68436409def0dfd3d351b4ad8a49356f"
 AGGREGATION_DATA_SHA256 <-
-    "901863b6b6c1fc8b4b8acefbef6850df665d333143c975a374db54a077440ed4"
+    "ca6dedb4957fa6ef3c21649d342996d1d482cf6f3203e4f2f9bab0bbf1a823e8"
 
 aggregation_read_registry <- function(path) {
     if (!identical(
@@ -251,15 +251,34 @@ aggregation_synthetic_design <- function(registry) {
         1000000L,
         0L
     )
+    latent_offset <- as.integer(aggregation_registry_value(
+        registry,
+        "synthetic",
+        "latent_seed_offset"
+    ))
+    design$latent_seed <- base_seed + latent_offset + rows
+    fold_count <- as.integer(aggregation_registry_value(
+        registry,
+        "synthetic",
+        "cv_folds"
+    ))
+    factorial_index <- 1L + (rows - 1L) %% nrow(factorial)
+    core_index <- 1L + (rows - 1L) %/% nrow(factorial)
+    design$fold <- 1L + (
+        factorial_index - 1L + 3L * (core_index - 1L)
+    ) %% fold_count
+    design$latent_id <- sprintf("B-S%06d", rows)
     design$scenario_id <- sprintf(
         "B-S%06d-%s",
         rows,
         design$measurement_replicate
     )
     design <- design[c(
-        "scenario_id", "seed", "measurement_replicate",
+        "scenario_id", "latent_id", "seed", "latent_seed", "fold",
+        "measurement_replicate",
         setdiff(names(design), c(
-            "scenario_id", "seed", "measurement_replicate"
+            "scenario_id", "latent_id", "seed", "latent_seed", "fold",
+            "measurement_replicate"
         ))
     )]
     rownames(design) <- NULL
@@ -269,11 +288,25 @@ aggregation_synthetic_design <- function(registry) {
         "synthetic",
         "scenario_count"
     ))
+    first_replicate <- seq.int(1L, nrow(design), by = 2L)
+    second_replicate <- first_replicate + 1L
+    paired <- identical(
+        design$latent_id[first_replicate],
+        design$latent_id[second_replicate]
+    ) && identical(
+        design$latent_seed[first_replicate],
+        design$latent_seed[second_replicate]
+    ) && identical(
+        design$fold[first_replicate],
+        design$fold[second_replicate]
+    )
     if (!identical(nrow(core), 1944L) ||
         !identical(nrow(factorial), 32L) ||
         !identical(nrow(latent), 62208L) ||
         !identical(nrow(design), expected) || anyDuplicated(design$scenario_id) ||
-        any(design$seed > .Machine$integer.max)) {
+        any(design$seed > .Machine$integer.max) ||
+        any(design$latent_seed > .Machine$integer.max) ||
+        any(design$fold < 1L | design$fold > fold_count) || !paired) {
         stop("Aggregation synthetic design dimensions are invalid.", call. = FALSE)
     }
     design

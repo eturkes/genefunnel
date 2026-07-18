@@ -121,7 +121,7 @@ stopifnot(any(grepl("no claim that a thesis analysis was reproduced", controlled
 source(file.path(benchmark_dir, "aggregation-protocol.R"), local = TRUE)
 aggregation_protocol <- aggregation_validate_protocol(dirname(benchmark_dir))
 stopifnot(
-    identical(aggregation_protocol$registry_rows, 60L),
+    identical(aggregation_protocol$registry_rows, 79L),
     identical(aggregation_protocol$data_files, 8L),
     identical(aggregation_protocol$synthetic_rows, 124416L),
     identical(aggregation_protocol$latent_scenarios, 62208)

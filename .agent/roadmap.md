@@ -700,3 +700,29 @@ then the pinned CellBench mixture and Kang/Reactome validations without changing
 Risks/blockers: empirical H2 may fail one or every co-primary threshold; this R
 prototype materializes one retained group/set block and is evidence machinery,
 not a performance or public-API commitment.
+
+2026-07-18 | frontier execution 10 amendment | commit `HEAD`
+Scope: remove synthetic execution degrees of freedom before any empirical row.
+Changed: protocol `B-1.0.2` keeps the B-1.0.1 API, factors, external bytes,
+endpoints, thresholds, and decisions; it fixes a shared latent RNG distinct from
+A/B measurement seeds, exact overlap/subunit/dropout/zero-total/covariate
+operators, paired factor-balanced folds, categorical main-effect encoding,
+deterministic QR alias handling, type-8 quantiles, and a within-fold paired
+prediction-error bootstrap. The data manifest version changes; its eight URLs,
+byte counts, and artifact SHA-256 values do not.
+Verified: registry = 79 unique rows + matching SHA-256; design = 62,208 paired
+latent scenarios/124,416 measurements; ten latent fold counts differ by at most
+two and every declared main-effect level by at most seven; all eight cached
+artifacts still match 81,600,675 bytes + declared SHA-256; benchmark/controlled
+CI smoke and standalone documentation pass.
+Decisions: rejected the first latent-ID modulo fold rule before use because it
+perfectly confounded fold parity with the OA baseline factor; mix one-indexed
+core and factorial-run indices instead. Bootstrap resamples paired held-out
+prediction errors without refitting; all ten CV fits remain the primary model
+procedure. No synthetic measurement, model fit, or downloaded-data read
+preceded this amendment (manifest hash verification reads bytes only).
+Remaining: implement, adversarially smoke-test, and commit the B-1.0.2 runner;
+only then execute all controlled rows and record every passed/failed endpoint.
+Risks/blockers: regression aliasing is expected because maximum weight is fixed
+by declared design factors; frozen pivoted QR chooses one prediction-equivalent
+coefficient representation, so coefficients are descriptive rather than causal.
