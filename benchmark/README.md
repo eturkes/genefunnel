@@ -13,6 +13,10 @@ All fixtures are synthetic, deterministic, generated without network access,
 and scored from an installed package in fresh R processes. Generated evidence
 belongs under `benchmark/results/` and stays untracked.
 
+The separate [`components-protocol.md`](components-protocol.md) and
+[`components-protocol.tsv`](components-protocol.tsv) freeze A2's numerical and
+default-path performance gates without changing scientific protocol 1.0.0.
+
 ## Install
 
 ```sh
@@ -75,6 +79,36 @@ members; high-overlap sets share 75% of their members. Serial and parallel
 variants reuse fixture seeds and must produce identical serialized score
 digests.
 
+## Component default-path comparison
+
+Prepare exact locked-baseline/current-candidate libraries, backed by the same
+dependency library:
+
+```sh
+R_LIBS_USER="$PWD/.agent/R-library" Rscript --vanilla \
+  benchmark/prepare-components.R \
+  --output="$PWD/.agent/tmp/components-comparison"
+```
+
+The preparer archives exact Git trees, installs them separately, and records
+source plus installed-tree fingerprints. Exercise orchestration with:
+
+```sh
+R_LIBS_USER="$PWD/.agent/R-library" Rscript --vanilla \
+  benchmark/run-components.R \
+  --baseline-library="$PWD/.agent/tmp/components-comparison/baseline-library" \
+  --candidate-library="$PWD/.agent/tmp/components-comparison/candidate-library" \
+  --mode=smoke
+```
+
+Gate mode additionally requires the locked full baseline SHA and the full
+candidate SHA. Its 30 paired/interleaved repeats, workloads, one-sided timing
+interval, allocation/RSS limits, and rejection policy are fixed in the
+component protocol. Smoke mode uses reduced matrices and four repeats; it
+checks orchestration and identity only and cannot support a performance claim.
+Gate mode is Linux-only and aborts when recorded one-minute load per logical
+CPU exceeds the protocol's quiescence limit.
+
 ## Generated artifacts
 
 Every runner writes:
@@ -90,6 +124,16 @@ The performance runner additionally writes `runs.tsv`, `summary.tsv`, and a
 `runs/` directory containing each isolated fixture manifest, allocation trace,
 stdout/stderr, and external resource measurement. The controlled runner writes
 `results.tsv` and `summary.tsv`.
+
+The component comparison additionally writes `packages.tsv`, paired
+`pairs.tsv`, `load.tsv`, and `decision.tsv`. Every worker verifies that
+`genefunnel` loaded from its assigned baseline/candidate library. Unlike the
+general performance runner below, the component timer uses no concurrent RSS
+sampler; passive GNU-time process RSS is its resource gate.
+
+The preparer writes `installations.tsv`, exact source archives, install logs,
+per-library provenance markers, and installed-package tree fingerprints. Gate
+mode recomputes the source and installed fingerprints before any worker runs.
 
 `Rprofmem()` reports cumulative manager-side R allocations, not retained or
 native allocation. On Linux, a 10 ms `/proc` sampler records aggregate resident

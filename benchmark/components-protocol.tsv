@@ -1,0 +1,5 @@
+protocol_version	scenario_id	storage	overlap	backend	backend_workers	n_features	n_samples	n_sets	set_size	matrix_seed	set_seed	density	zero_fraction	cell_missing_fraction	stored_missing_fraction	timed_calls	order_code
+A2-1.0.0	dense_low	dense	low	serial	1	20000	240	1000	20	1741	1743	NA	0.35	0.01	NA	5	CBBCCBBCCCBBCBCCCCCCCBBCBBBBBB
+A2-1.0.0	dense_high	dense	high	serial	1	20000	240	1000	20	1741	1744	NA	0.35	0.01	NA	5	CCBBBCCCBCBCCBBCCCBBBCBCBBCBCB
+A2-1.0.0	sparse_low	sparse	low	serial	1	20000	1200	1000	20	1742	1743	0.03	NA	NA	0.05	5	BCBBBCBCCBBBCCCCBBBBCCCCBCCBBC
+A2-1.0.0	sparse_high	sparse	high	serial	1	20000	1200	1000	20	1742	1744	0.03	NA	NA	0.05	5	CBBBCCCBCBCBBBBCCCCCBBBBCBCCBC

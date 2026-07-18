@@ -416,3 +416,36 @@ and a scaled/higher-precision oracle, then one-pass prototype/native work.
 Risks/blockers: Bulla balance depends on effective support/member identity;
 scaled/unavailable/ill-conditioned sidecars are specified but unimplemented;
 diagnostic biological value remains an unvalidated hypothesis.
+
+2026-07-18 | frontier execution 3 | commit `HEAD`
+Scope: freeze A2 numerical/status + default-path performance evidence before
+native/public implementation.
+Changed: protocol `A2-1.0.0` fixes the component result schema, availability/
+conditioning states, safe-region budget, extreme fixtures, four dense/sparse
+performance workloads, five-call warm estimator, 30 balanced randomized pair
+orders, 5% one-sided timing bound, allocation/RSS gates, and Linux quiescence
+rule; exact Git-snapshot preparer fingerprints source + installed trees;
+dependency-free scaled double-double R oracle covers ~2,000-bit exponent spans.
+Verified: 57 tests/1,888 expectations; ordinary + overflow/cancellation/
+underflow/subnormal identities; prepared-library smoke = exact digests,
+environment identity, allocation/RSS capture, and decision pass; malformed/
+outside-repo preparation rejected; documentation checks pass; source build +
+`R CMD check --no-manual` = `Status: OK`; tarball BiocCheck = 0 errors/0
+warnings/6 advisory notes.
+Calibration: an identical-binary 30-pair first-call run failed three of four 5%
+bounds (upper ratios 1.091-1.144) while host load reached 10-27 on 8 CPUs; an
+earlier design also let the RSS sampler contend with timing. These negative
+controls invalidated cold timing as the primary endpoint, isolated passive RSS,
+and added fail-closed `load/core <= 0.25` checks. Current saturated host is
+correctly rejected; smoke timings carry no performance claim.
+Decisions: core score remains authoritative; direct binary64 reconstruction is
+required only in the pre-fixed safe region; ordinary zero never masquerades as
+scaled underflow; Rmpfr's GMP/MPFR dependency surface is unnecessary for the
+finite test oracle; cold timing remains recorded context while the warm paired
+interval gates default-path regression.
+Remaining: implement one-pass dense/sparse component accumulators + additive R
+API; verify native outputs/status across representations/backends; run the exact
+locked baseline/candidate gate on a clean, quiescent Linux host.
+Risks/blockers: no component API exists yet; final warm equivalence evidence
+cannot be claimed from the currently saturated host; the native extreme-value
+certificate and biological value remain unimplemented/unvalidated.

@@ -32,6 +32,8 @@
   term would overflow on those platforms.
 - Adds a reproducible synthetic benchmark harness with identity-checked output
   digests and environment metadata.
+- Locks a dependency-free scaled numerical oracle and paired default-path
+  performance protocol before component implementation.
 - Adds a versioned controlled-science protocol covering analytic score cases,
   sparse/dense identity, partial coverage, missingness, and independence, with
   machine-readable results and regenerated Markdown reports.

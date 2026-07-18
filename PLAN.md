@@ -189,6 +189,13 @@ distributed signal” without changing the GeneFunnel score.
 
 ### A2 - one-pass prototype
 
+- [x] Freeze protocol `A2-1.0.0` before implementation: exact result/status
+  shape, numerical safe region and tolerance, extreme fixtures, runtime/
+  allocation/RSS workloads, paired repeat schedule, estimators, uncertainty,
+  and rejection rules.
+- [x] Add a dependency-free, platform-independent scaled double-double oracle
+  covering total/penalty overflow, unsafe cancellation, balance underflow,
+  subnormals, and semantic edge states.
 - [ ] Prototype `genefunnel_components()` as an additive API returning a named
   list of aligned base matrices for ordinary values plus an aligned, documented
   representation/status for extreme components.

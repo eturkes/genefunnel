@@ -2,9 +2,10 @@
 
 # GeneFunnel component contract and proof note
 
-**Status:** ratified pre-implementation contract, 2026-07-17. No component API
-exists yet. This document constrains the additive prototype; it does not change
-`genefunnel()` or `gene_set_coverage()`.
+**Status:** ratified pre-implementation contract, 2026-07-17; A2 numerical and
+performance protocol locked 2026-07-18. No component API exists yet. This
+document constrains the additive prototype; it does not change `genefunnel()`
+or `gene_set_coverage()`.
 
 The frozen scorer remains governed by `SCIENTIFIC_SPEC.md`. Terms here apply to
 the exact matched, observed gene-set/sample vector used by that scorer.
@@ -147,6 +148,16 @@ Undefined and unavailable values use an `NA` pair. `unavailable` means no
 trustworthy ordinary or scaled diagnostic could be certified; it never changes
 the score.
 
+Protocol `A2-1.0.0` fixes the public nesting and matrix types. The fixed-order
+result fields are `score`, `observed_sum`, `penalty`, `balance` (base double
+matrices), `effective_size` (base integer matrix), `observed_fraction` (base
+double matrix), `status`, and `scaled`. `status` contains aligned base character
+matrices `semantic`, `observed_sum`, `penalty`, `balance`, and `conditioning`.
+`scaled` contains `observed_sum`, `penalty`, and `balance`, each with aligned
+double `mantissa` and integer `exponent` matrices. The repository's
+`benchmark/components-protocol.md` records the pre-implementation performance
+and rejection gates.
+
 For $F>0$, direct subtraction has condition number
 
 $$
@@ -154,9 +165,10 @@ $$
 $$
 
 A cell is `ill_conditioned` whenever rounding-error bounds cannot certify both
-$T-Q$ and $TB$ as reconstructions of the authoritative score. The A2
-protocol must commit a concrete safe region and tolerance before testing native
-outputs. Outside that region, scaled identities and status - not direct
+$T-Q$ and $TB$ as reconstructions of the authoritative score. Protocol
+`A2-1.0.0` conservatively fixes the safe region using binary64 unit roundoff,
+effective size, and $\kappa_{-}$; it also fixes the tolerance before native
+outputs exist. Outside that region, scaled identities and status - not direct
 binary64 equality - are required.
 
 ## Interpretation cases
@@ -222,4 +234,7 @@ and biological utility demonstrated under pre-specified held-out validation.
 oracle based on shares and total variation. `test-components-theorem.R` checks
 the factorization, Pietra/Bulla equivalence, bounds, homogeneity, concavity,
 zero semantics, missingness facts, and the committed interpretation cases.
-Extreme scaled arithmetic belongs to A2's higher-precision/scaled oracle.
+`helper-scaled-reference.R` adds a platform-independent double-double
+significand with an explicit binary exponent; its A2 tests cover total/penalty
+overflow, unsafe cancellation, balance underflow, subnormals, and semantic
+edge states without a new package dependency.
