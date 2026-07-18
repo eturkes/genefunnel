@@ -278,10 +278,10 @@ every result can identify the catalogue and feature universe that produced it.
   row-to-set adjacency, schema/formula version, and deterministic content
   fingerprints. Expose no mutators; copy canonical state and fully validity-check
   every use.
-- [ ] Reject stale reuse on any feature identity/order mismatch. A fingerprint
+- [x] Reject stale reuse on any feature identity/order mismatch. A fingerprint
   supports content identity and quick mismatch detection; it never replaces
   exact safety checks.
-- [ ] Keep the named-list API authoritative. Prototype compiled scoring behind a
+- [x] Keep the named-list API authoritative. Prototype compiled scoring behind a
   separate entry point; the frozen `genefunnel()` never accepts this object.
 - [ ] Make serialization platform-independent and versioned. Research the hash
   implementation, maintenance, licensing, and supported platforms before
@@ -294,10 +294,10 @@ every result can identify the catalogue and feature universe that produced it.
   catalogue/version and preprocessing labels, coverage-policy label, backend,
   and result digest. Unknown metadata stays unknown; the sidecar never changes
   or attributes origin to the core matrix implicitly.
-- [ ] Separate a portable R-side adjacency representation from ephemeral native
+- [x] Separate a portable R-side adjacency representation from ephemeral native
   per-process caches. Define SOCK worker initialization/reuse and never
   serialize a native pointer.
-- [ ] Reject malformed/tampered objects before scoring and verify portable
+- [x] Reject malformed/tampered objects before scoring and verify portable
   serialization plus fresh/reused SOCK workers.
 - [ ] Benchmark compilation, validation, serialization, worker initialization,
   warm/cold scoring, cumulative repeated-call time, object size, and RSS

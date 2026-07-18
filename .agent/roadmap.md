@@ -520,3 +520,26 @@ commit before implementation/performance evidence, so no observed result can
 influence it.
 Remaining: internal spike + runner, then `C-1.0.1` smoke/full gates.
 Risks/blockers: strict benefit gate and host quiescence remain unchanged.
+
+2026-07-18 | frontier execution 6 | commit `HEAD`
+Scope: implement the internal compiled-catalogue safety/portability spike.
+Changed: unexported constructor + separate scorer preserve the named-list API;
+`GFCAT-1` uses bounded big-endian framing and standard SHA-256; complete use-time
+validation rejects stale features and mutated schema/members/mappings/coverage/
+adjacency/fingerprints before native scoring; portable integer adjacency and
+custom bytes contain no pointer/environment.
+Verified: fixed cross-process SHA vectors; Latin-1/UTF-8/bytes round trips;
+corrupt/truncated/trailing/impossible-length and valid-digest mapping tamper;
+12 randomized dense/sparse/list identities; fresh + reused two-worker SOCK;
+full fixed low/high catalogue object = 181.9 B/membership and wire = 51.0
+B/membership (limits 256/192);
+full suite = 75 tests/3,387 expectations; source build; installed-tarball
+`R CMD check --no-manual` = `Status: OK`; standalone documentation; tarball
+BiocCheck = 0 errors/0 warnings (advisory notes only).
+Decisions: keep all functions/classes internal until `C-1.0.1` passes; validate
+derived state + fingerprints on every use; rebuild mappings during decode;
+retain the custom float-free format instead of long-term R serialization.
+Remaining: implement/run the exact `C-1.0.1` paired resource/timing harness;
+complete A2's separately locked performance gate when host load/core <= 0.25.
+Risks/blockers: validation/hash cost may defeat the 15% benefit gate; current
+host load remains ineligible; remote supported-OS evidence awaits push.
