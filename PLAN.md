@@ -133,6 +133,7 @@ a specific cancellation pattern, not generic heterogeneity.
   score-then-aggregate.
 - **H3 - reliability:** deterministic deletion/thinning sensitivity predicts
   score error under held-out feature loss and technical-repeat instability.
+  Rejected for frozen controlled design E-1.0.0; see Workstream E.
 - **H4 - catalogue reuse:** compiled catalogues amortize repeated matching and
   adjacency construction without changing any score.
 - **H5 - block scale:** block source/sink execution bounds scoring buffers
@@ -418,13 +419,13 @@ assay coverage, without “correcting” the result.
   signed delta, delta normalized by observed sum where defined, median absolute
   delta, and effective size. Break largest-delta ties by canonical member order.
   Full member-by-set-by-sample arrays require an explicit sink.
-- [ ] Add deterministic/seeded coverage-thinning curves stratified by member
+- [x] Add deterministic/seeded coverage-thinning curves stratified by member
   abundance and detection rate. Distinguish global feature absence, sampled
   deletion, and sample-specific missingness; label assay-derived strata as
   study-composition dependent.
 - [x] Validate an optimized algorithm against brute-force recomputation before
   adopting it; profile before pursuing sorted-prefix or native acceleration.
-- [ ] Test whether diagnostics predict held-out full-data score error and
+- [x] Test whether diagnostics predict held-out full-data score error and
   technical-replicate instability beyond coverage, set size, observed sum, and
   effective size. Characterize biological-replicate variation separately; it
   can be real signal rather than error.
@@ -450,9 +451,9 @@ represent them within the frozen bound. Independent integer/equation oracles,
 full-exponent fixtures, exact-tie drift, canonical support, missingness,
 dense/sparse/integer storage, and serial/SOCK execution are locked in tests.
 The fixed profile records median elapsed 213.585 seconds and exact-arithmetic
-stack share 0.999403. Both frozen optimization triggers pass, so an optimized
-implementation is eligible only after full brute equivalence. Controlled
-prediction gates and any public interface remain pending.
+stack share 0.999403. Both frozen optimization triggers passed; the adopted
+optimized implementation then passed full brute equivalence. This established
+calculation identity only, not reliability.
 
 Profile supplement `E-P-1.0.0` records that E-1.0.0 left its deterministic
 value/member constructors and pass boundaries implicit, then byte-pins them
@@ -470,17 +471,25 @@ Controlled execution supplement `E-C-1.0.0` prospectively closes the parent's
 implicit R draw calls, row order, predictor encoding/scaling, bootstrap draw
 order, clean-install, checkpoint, and output mechanics. It changes none of
 E-1.0.0's scientific dimensions, targets, gates, or claim boundary.
-The implemented observation layer now produces deterministic full/partial A
-and independent B measurements, package scores, exact partial-input
-diagnostics, paired encoding facts, and fail-closed fixed-schema rows. The full
-held-out model/bootstrap layer and clean-archive resumable runner are now also
-implemented and adversarially smoke-tested. The full controlled execution and
-both reliability decisions remain pending.
+The clean [controlled result](benchmark/sensitivity-controlled-result.md) from
+candidate `5920ea9` completes all 5,760 scenarios, 345,600 feature-loss rows,
+5,760 controlled-repeat rows, ten held-out folds, and both 2,000-replicate
+bootstraps. Feature-loss median RMSE reduction/lower bound is
+0.00110097/0.000407703; controlled-repeat reduction/lower bound is
+0.0193130/0.0112902. All four values fail the frozen 0.10/0.05 gates, so H3 is
+rejected for this controlled design and the public API is omitted. The tracked
+[30-row thinning curves](benchmark/sensitivity-controlled-curves.tsv) retain
+fraction, abundance/detection mechanism, and both absence encodings as a
+study-composition-dependent failure envelope; they cannot rescue the endpoints.
+Biological-replicate variation was deliberately not tested or classified as
+error.
 
 **Go:** summaries are reproducible, representation-invariant, and pass the
 pre-specified held-out incremental-effect and technical-repeat thresholds.
 **Fallback:** if they do not outperform simple coverage/effective-size facts,
 retain targeted adversarial tests and omit the public API.
+
+**Decision:** fallback selected by E-1.0.0.
 
 ## 10. Workstream F - external scientific validation
 

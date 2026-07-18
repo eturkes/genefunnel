@@ -371,3 +371,15 @@ increment, and controlled-repeat increment must all pass. Failure selects the
 PLAN fallback: keep targeted adversarial tests and omit a public sensitivity
 API. A complete pass permits only a new protocol for external technical-repeat
 and held-out scientific evaluation; it does not itself justify export.
+
+## Result
+
+The complete tracked [`E-1.0.0 result`](sensitivity-controlled-result.md) from
+clean candidate `5920ea9` retained all 345,600 feature-loss and 5,760
+controlled-repeat rows. Feature-loss median fold RMSE reduction/bootstrap lower
+bound was 0.00110097/0.000407703; controlled-repeat reduction/lower bound was
+0.0193130/0.0112902. All four values fail their frozen 0.10/0.05 requirements.
+The 30 tracked thinning-curve rows are descriptive, study-composition-dependent
+artificial deletions and cannot rescue the co-primary failure. The fallback is
+therefore selected: retain exact internal adversarial tests, omit the public
+API, and make no technical- or biological-replicate reliability claim.

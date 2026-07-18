@@ -1295,3 +1295,34 @@ compact decision/result, apply PLAN's go/fallback checks, and leave A2 pending
 until its independent host-load admission passes.
 Risks/blockers: full exact observations are compute-heavy. Either co-primary
 endpoint may validly fail and select the internal/no-public-API fallback.
+
+2026-07-18 | frontier execution 30 | commit `HEAD`
+Scope: execute E-1.0.0/E-C-1.0.0's complete clean controlled gate once, retain
+compact machine-checkable evidence, and apply its frozen promotion decision.
+Changed: tracked four-row endpoint registry, 30-row thinning-curve registry,
+negative-result report, MD5-pinned readers/validators, reproducible curve
+derivation, CI identity checks, and PLAN/spec/README/NEWS decision updates.
+Verified: clean candidate `5920ea920e0e0e85659485c26f8096a61f08ea40`;
+5,760 scenarios, 345,600 feature rows, 5,760 repeat rows, ten folds, and 2,000
+bootstraps/target; no row/status exclusion. Feature point/lower =
+0.00110096903481236/0.000407703024787973; technical point/lower =
+0.0193130175530074/0.0112902067740653; all fail 0.10/0.05. All 20 core artifact
+hashes reverify; artifact-manifest SHA-256 =
+`73872ce7576643fef4db48f9994e1b17180647117887090191f6c19423ec2038`;
+checkpoint hash-stream SHA-256 =
+`0a6ebe60a6d5c22c263eecd17f53de3be2c5b36804533d533de386af7e87296e`.
+Tracked result/curve MD5 = `107c7f8363097bdddd11bafe2d37ff83`/
+`0384f16f78b62101a0ead916d0a30100`; curves reproduce from full raw rows within
+5e-16. Independent endpoint recomputation differs by <=6.6e-17. Complete
+benchmark/aggregation/sensitivity CI smoke passes; full-vignette source build
+and rebuilt-tarball `R CMD check --no-manual` = `Status: OK`.
+Decisions: reject H3 for this frozen synthetic design; select exact internal
+oracle + no-public-API fallback. Curves are study-composition-dependent
+artificial deletion descriptions, never rescue endpoints. Controlled repeats
+support no external technical-repeat claim; biological replicates were not
+tested or classified as error.
+Remaining: commit; close Workstream E's unknown-member uncertainty item with
+an exact identification argument and executable tests. Retry A2 only after its
+independent host-load admission passes.
+Risks/blockers: negative predictive evidence does not invalidate the deletion
+algebra, but it bars reliability/export claims under the frozen decision rule.

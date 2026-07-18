@@ -14,8 +14,10 @@ The frozen score and input semantics in `SCIENTIFIC_SPEC.md` remain
 authoritative. Protocol E-1.0.0 fixed the internal compact schema, exact
 dyadic-rational brute oracle, binary64 availability contract, and controlled
 held-out gates before implementation. The package now contains that unexported
-prototype; this specification adds no public function. A later public interface
-still requires external evidence and a separate scope decision.
+prototype; this specification adds no public function. The complete frozen
+controlled test failed both co-primary prediction gates, selecting the internal
+oracle/no-public-API fallback. Any later public interface requires a newly
+scoped protocol, external evidence, and a separate scope decision.
 
 The delete-one construction resembles the operation used by the jackknife, but
 gene-set members are not assumed to be independent and identically distributed
@@ -159,8 +161,11 @@ member identities, gene-specific abundance and dynamic range, measurement
 noise, and the meaningful-zero assumption. It is not causal attribution,
 feature importance, biological necessity, assay-independent reliability, or
 inferential uncertainty. Whether it predicts held-out feature-loss error or
-technical-repeat instability is an empirical question governed by a frozen
-protocol, not implied by this algebra.
+technical-repeat instability was an empirical question governed by the frozen
+protocol, not implied by this algebra. E-1.0.0 answered it negatively in its
+controlled design: neither augmented model approached the pre-specified
+incremental prediction threshold. Biological-replicate variation remains a
+different, untested estimand that may contain real signal rather than error.
 
 ## Prior art and novelty boundary
 
@@ -215,4 +220,11 @@ held-out model can consume a row.
 The model/runner layer records training-only scaling, zero-SD drops, QR aliases,
 fixed predictions, scenario-cluster bootstrap draws, all descriptive strata,
 isolated source/install fingerprints, resumable checkpoints, and artifact
-hashes. Its smoke uses planted targets and has no empirical meaning.
+hashes. Its smoke uses planted targets and has no empirical meaning. The
+complete tracked [`controlled result`](../benchmark/sensitivity-controlled-result.md)
+retains all 345,600 feature-loss and 5,760 repeat rows. Feature-loss median
+fold reduction/bootstrap lower bound was 0.00110097/0.000407703 and controlled-
+repeat reduction/lower bound was 0.0193130/0.0112902; every value failed its
+0.10/0.05 requirement. The deterministic thinning curves remain descriptive,
+study-composition-dependent artificial deletion evidence and cannot rescue a
+failed endpoint. The exact diagnostic stays an internal adversarial-test oracle.

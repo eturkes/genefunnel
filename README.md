@@ -103,7 +103,8 @@ an arbitrary positive shift changes the score and is not a valid workaround.
   art, and interpretation boundaries for the prospective group audit.
 - [Observed-member sensitivity pre-public-API contract](inst/SENSITIVITY_SPEC.md)
   - exact leave-one-observed-member-out deltas, canonical support, compact
-  unexported prototype, invariants, and non-causal interpretation boundary.
+  unexported prototype, invariants, frozen negative reliability result, and
+  non-causal interpretation boundary.
 - [Vignette](vignettes/genefunnel.Rmd) - canonical examples, dense/sparse use,
   coverage policies, and serial/parallel execution.
 - [Benchmark protocol](https://github.com/eturkes/genefunnel/blob/main/benchmark/README.md)

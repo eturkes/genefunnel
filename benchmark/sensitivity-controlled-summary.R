@@ -373,6 +373,57 @@ sensitivity_controlled_strata <- function(cross_validation, registry, kind) {
     result
 }
 
+sensitivity_controlled_curve_row <- function(feature, rows, candidate) {
+    data.frame(
+        parent_protocol = SENSITIVITY_PROTOCOL_VERSION,
+        execution_protocol = SENSITIVITY_CONTROLLED_VERSION,
+        source_git_head = candidate,
+        removed_fraction = feature$removed_fraction[rows[[1L]]],
+        mask_mechanism = feature$mask_mechanism[rows[[1L]]],
+        absence_mode = feature$absence_mode[rows[[1L]]],
+        rows = length(rows), median_feature_loss = stats::median(feature$target[rows]),
+        quantile90_feature_loss = sensitivity_controlled_quantile(
+            feature$target[rows], 0.9
+        ),
+        median_largest_absolute_delta_over_sum = stats::median(
+            feature$largest_absolute_delta_over_sum[rows]
+        ),
+        median_absolute_delta_over_sum = stats::median(
+            feature$median_absolute_delta_over_sum[rows]
+        ),
+        median_declared_coverage = stats::median(feature$declared_coverage[rows]),
+        median_observed_fraction = stats::median(feature$observed_fraction[rows]),
+        zero_total_rows = sum(feature$zero_total[rows] == 1L),
+        study_composition_dependent = TRUE, rescue_endpoint = FALSE,
+        stringsAsFactors = FALSE, check.names = FALSE
+    )
+}
+
+sensitivity_controlled_curves <- function(feature, candidate) {
+    fields <- c("removed_fraction", "mask_mechanism", "absence_mode")
+    if (any(!fields %in% names(feature)) ||
+        !grepl("^[0-9a-f]{40}$", candidate)) {
+        stop("Sensitivity controlled curve input is invalid.", call. = FALSE)
+    }
+    key <- interaction(feature[fields], drop = TRUE, lex.order = TRUE)
+    groups <- split(seq_len(nrow(feature)), key)
+    result <- do.call(rbind, lapply(groups, function(rows) {
+        sensitivity_controlled_curve_row(feature, rows, candidate)
+    }))
+    mechanism <- c(
+        "uniform", "low_abundance", "high_abundance", "low_detection",
+        "high_detection"
+    )
+    order <- order(
+        match(result$removed_fraction, c(0.125, 0.25, 0.5)),
+        match(result$mask_mechanism, mechanism),
+        match(result$absence_mode, c("global_absence", "sample_missing"))
+    )
+    result <- result[order, , drop = FALSE]
+    rownames(result) <- NULL
+    result
+}
+
 sensitivity_controlled_summary <- function(
     feature_rows, technical_rows, endpoints, feature_bootstrap, technical_bootstrap
 ) {

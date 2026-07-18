@@ -210,7 +210,8 @@ exact dyadic-rational brute oracle, profile-before-optimization rule, controlled
 feature masks, measurement repeats, held-out folds, models, bootstrap, and
 incremental prediction gates; it was frozen before a package sensitivity value
 existed. The unexported exact brute prototype now implements the compact schema,
-while the empirical reliability gates remain pending. The tracked
+and the complete controlled result failed both empirical reliability gates, so
+the public interface is omitted. The tracked
 [`fixed profile`](sensitivity-profile-result.md) records median elapsed 213.585 s
 and exact-stack share 0.999403, so both frozen optimization triggers pass. This
 permits implementation research only. The tracked
@@ -275,8 +276,7 @@ scores, partial-input exact diagnostics, targets, and fixed-schema observation
 rows. CI exercises four size/archetype/noise strata twice, explicitly checks
 row-absence/`NA` identity, and rejects a mutated target.
 
-After committing the controlled runner, execute the full gate only from that
-explicit clean SHA:
+Execute the full gate only from an explicit clean SHA:
 
 ```sh
 candidate_id=$(git rev-parse HEAD)
@@ -293,6 +293,23 @@ replicate cluster bootstrap. Reusing the same output resumes only an identical
 candidate/mode/chunk design; worker count may change without changing rows.
 `--mode=smoke` uses four real observation scenarios plus planted all-factor
 model frames and therefore makes no scientific decision.
+
+The complete run from clean candidate `5920ea9` retained every fixed row and
+failed all four frozen endpoint requirements. Feature-loss median fold RMSE
+reduction/lower bound was 0.00110097/0.000407703; controlled-repeat reduction/
+lower bound was 0.0193130/0.0112902, versus required values 0.10/0.05 for each
+target. The tracked [`negative result`](sensitivity-controlled-result.md),
+[`endpoint table`](sensitivity-controlled-result.tsv), and
+[`thinning curves`](sensitivity-controlled-curves.tsv) preserve provenance and
+the study-composition-dependent failure envelope. Biological replicates were
+not evaluated. Validate the compact evidence with:
+
+```sh
+Rscript --vanilla -e \
+  'source("benchmark/sensitivity-protocol.R"); \
+   source("benchmark/sensitivity-controlled-protocol.R"); \
+   print(sensitivity_controlled_validate_result("."))'
+```
 
 ## Generated artifacts
 

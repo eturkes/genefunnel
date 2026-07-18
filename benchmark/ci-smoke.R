@@ -248,6 +248,19 @@ stopifnot(
     identical(sensitivity_controlled_protocol$protocol_rows, 45L),
     identical(sensitivity_controlled_protocol$parent_protocol, "E-1.0.0")
 )
+sensitivity_controlled_result <- sensitivity_controlled_validate_result(
+    dirname(benchmark_dir)
+)
+stopifnot(
+    identical(sensitivity_controlled_result$endpoints, 4L),
+    identical(sensitivity_controlled_result$curves, 30L),
+    identical(sensitivity_controlled_result$controlled_gate_pass, FALSE),
+    identical(sensitivity_controlled_result$public_api_permitted, FALSE),
+    identical(
+        sensitivity_controlled_result$source_git_head,
+        "5920ea920e0e0e85659485c26f8096a61f08ea40"
+    )
+)
 source(file.path(benchmark_dir, "sensitivity-controlled.R"), local = TRUE)
 sensitivity_controlled_grid <- sensitivity_controlled_design(
     sensitivity_registry
