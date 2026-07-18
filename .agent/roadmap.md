@@ -483,3 +483,25 @@ environment before timing at load/core 1.226 versus the fixed 0.25 ceiling.
 Risks/blockers: external sustained CPU load blocks the performance gate; remote
 macOS/Windows CI awaits the maintainer push; component biological value remains
 an unvalidated H1 hypothesis.
+
+2026-07-18 | frontier execution 5 | commit `HEAD`
+Scope: freeze compiled-catalogue state/wire/performance contracts before spike
+results.
+Changed: `GFCAT-1` specifies copied canonical members/features, exact stale-use
+rejection, fully checked portable integer adjacency, domain-separated SHA-256
+identity, and a bounded custom wire format; protocol `C-1.0.0` fixes four
+dense/sparse overlap workloads, 20 balanced pairs, call-five amortization,
+one-sided 15% minimum improvement, and object/wire/RSS budgets.
+Verified: official R 4.5+ SHA-256 + serialization contracts and current
+Bioconductor 3.23/R 4.6 runtime support; TSV dimensions/seeds/order balance;
+Markdown links/whitespace.
+Decisions: use standard `tools::sha256sum(bytes=)` rather than a third-party,
+system-crypto, or hand-rolled surface; hashes label content while exact checks
+carry reuse safety; float-free wire state eliminates missing/signed-zero
+ambiguity; public APIs wait for spike gates.
+Remaining: implement the internal constructor/scorer/codec + tamper, stale,
+serialization, and fresh/reused SOCK tests; then run `C-1.0.0` on a clean,
+quiescent host. A2's locked performance gate remains blocked at load/core above
+0.25.
+Risks/blockers: the strict 15% all-workload gate may honestly reject compiled
+scoring; custom parsing needs adversarial bounds; biological H1 remains open.

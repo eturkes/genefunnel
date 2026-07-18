@@ -1,0 +1,5 @@
+protocol_version	scenario_id	storage	overlap	features	samples	sets	canonical_set_size	matrix_seed	set_seed	stored_density	batches	workers	repeats	order_code
+C-1.0.0	dense_low	dense	low	20000	24	2000	25	2741	2743	NA	5	1	20	LLLLCCCCLLCCCLCLLCCL
+C-1.0.0	dense_high	dense	high	20000	24	2000	25	2741	2744	NA	5	1	20	LCCLCCLLCCLCCLLLLLCC
+C-1.0.0	sparse_low	sparse	low	20000	240	2000	25	2742	2743	0.03	5	1	20	CLLCCLCLCLCCCCCLLLLL
+C-1.0.0	sparse_high	sparse	high	20000	240	2000	25	2742	2744	0.03	5	1	20	LCCLCCCLCLCCLLLCCLLL

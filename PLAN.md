@@ -273,7 +273,7 @@ a warning about aggregate-then-score behavior.
 **Outcome:** repeated batches reuse exact matching and sparse adjacency safely;
 every result can identify the catalogue and feature universe that produced it.
 
-- [ ] Design a logically immutable compiled object containing canonical
+- [x] Design a logically immutable compiled object containing canonical
   members, exact feature order, integer memberships, coverage facts,
   row-to-set adjacency, schema/formula version, and deterministic content
   fingerprints. Expose no mutators; copy canonical state and fully validity-check
@@ -302,7 +302,7 @@ every result can identify the catalogue and feature universe that produced it.
 - [ ] Benchmark compilation, validation, serialization, worker initialization,
   warm/cold scoring, cumulative repeated-call time, object size, and RSS
   separately with paired/interleaved repeats and uncertainty.
-- [ ] Before implementation, ratify or replace with rationale the planning
+- [x] Before implementation, ratify or replace with rationale the planning
   default: compilation amortizes by call five and the lower confidence bound on
   end-to-end improvement reaches 15%. Set a separate byte-per-membership budget
   for object/RSS growth.
