@@ -195,9 +195,36 @@ stopifnot(
     identical(sensitivity_protocol$technical_rows, 5760L),
     identical(sensitivity_protocol$scenarios_per_fold, 576L)
 )
+source(file.path(benchmark_dir, "sensitivity-profile.R"), local = TRUE)
+sensitivity_profile_protocol <- sensitivity_profile_validate(
+    dirname(benchmark_dir)
+)
+sensitivity_registry <- sensitivity_read_registry(file.path(
+    benchmark_dir,
+    "sensitivity-protocol.tsv"
+))
+sensitivity_smoke_config <- sensitivity_profile_config(
+    sensitivity_registry,
+    "smoke"
+)
+sensitivity_smoke_fixture <- sensitivity_profile_fixture(
+    sensitivity_smoke_config
+)
+stopifnot(
+    identical(sensitivity_profile_protocol$protocol_rows, 26L),
+    identical(sensitivity_profile_protocol$parent_protocol, "E-1.0.0"),
+    identical(dim(sensitivity_smoke_fixture$mat), c(256L, 3L)),
+    identical(length(sensitivity_smoke_fixture$gene_sets), 4L),
+    identical(
+        sensitivity_profile_digest(sensitivity_smoke_fixture),
+        sensitivity_profile_digest(sensitivity_profile_fixture(
+            sensitivity_smoke_config
+        ))
+    )
+)
 
 cat(
-    "Benchmark, aggregation, and sensitivity-protocol smoke checks passed: ",
+    "Benchmark, aggregation, and sensitivity protocol smokes passed: ",
     normalizePath(output_root),
     "\n",
     sep = ""

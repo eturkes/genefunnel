@@ -452,6 +452,11 @@ dense/sparse/integer storage, and serial/SOCK execution are locked in tests.
 The fixed profile, optimization decision, controlled prediction gates, and any
 public interface remain pending.
 
+Profile supplement `E-P-1.0.0` records that E-1.0.0 left its deterministic
+value/member constructors and pass boundaries implicit, then byte-pins them
+before any fixed-workload call. It changes no correctness, controlled-design,
+endpoint, threshold, or promotion rule.
+
 **Go:** summaries are reproducible, representation-invariant, and pass the
 pre-specified held-out incremental-effect and technical-repeat thresholds.
 **Fallback:** if they do not outperform simple coverage/effective-size facts,

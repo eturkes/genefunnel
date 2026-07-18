@@ -1086,3 +1086,36 @@ Risks/blockers: brute deletion is intentionally quadratic in observed members;
 the pending frozen profile, not intuition, determines whether that warrants a
 second implementation. Predictive gates may still select the no-public-API
 fallback.
+
+2026-07-18 | frontier execution 23 | commit `HEAD`
+Scope: make E's fixed profile executable without silently choosing the fixture
+or measurement semantics after observing timing.
+Changed: byte-pinned supplement `E-P-1.0.0` records that parent E-1.0.0 fixed
+dimensions/seeds but omitted constructors/pass boundaries. It now fixes
+column-major unit-rate exponential values, independent within-set sampling,
+stable identifiers, isolated clean-Git installation, three explicit-GC/
+`gcFirst=FALSE` timed calls, separate `Rprof`/`Rprofmem` passes, exact-stack
+attribution, five-output identity, and the unchanged strict 60 s/0.50 OR rule.
+New runner records raw profiles, allocations, environment, source/install
+fingerprints, artifacts, report, and an optimization-only decision.
+Verified: profile registry = 26 unique rows, MD5
+`ff86e032b7a766be20c5d61d940991ab`, parent MD5 remains
+`09d9429ae18f64ba00b3bd84955ad71d`. Deterministic smoke fixture MD5 =
+`6670e2905a56b4c7e612d378ae6d4bcb`; isolated downscaled execution gives one
+output MD5 `8d3a853be4e5ac0a20fb86a659c05530` across timed/CPU/allocation
+passes. The first rehearsal exposed `system.time()`'s implicit GC contaminating
+six of eight samples; freezing `gcFirst=FALSE` before the fixed call gives two
+exact samples of three. Dirty-tree gate rehearsal rejects before output creation.
+Documentation and complete benchmark/controlled/aggregation/sensitivity
+protocol smokes pass; every new function is <=35 source lines.
+Decisions: record the parent omission rather than pretending its seeds uniquely
+defined a fixture. The supplement is prospective for profiling but explicitly
+post-implementation; it changes no reliability design or public-promotion rule.
+CPU attribution counts any sampled stack with a `.gf_` frame. Explicit GC occurs
+before, outside, each measured pass.
+Remaining: commit the supplement/runner, then execute the full profile exactly
+once from that clean SHA and retain its decision. Optimization may begin only if
+the fixed median or exact share crosses its parent threshold.
+Risks/blockers: allocation tracing may add substantial runtime/log volume but is
+not a timing observation. The descriptive profile is machine-specific and can
+authorize optimization research only, never a reliability claim.

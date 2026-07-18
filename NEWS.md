@@ -45,6 +45,10 @@
   with compact aligned summaries, explicit representability status, exact
   canonical ties, bounded matrix iteration, and dense/sparse serial/SOCK
   identity. Public promotion remains gated by the frozen empirical protocol.
+- Byte-pins the previously implicit sensitivity-profile fixture and measurement
+  passes before profiling, with isolated clean-SHA installation, output identity,
+  CPU/allocation attribution, environment capture, and an optimization-only
+  decision runner.
 - Implements dependency-free scaled double-double native diagnostics for
   overflow, cancellation, and underflow cases while keeping the ordinary score
   authoritative.

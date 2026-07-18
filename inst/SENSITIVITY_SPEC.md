@@ -189,4 +189,6 @@ storage representations, and serial/SOCK identity.
 `benchmark/sensitivity-protocol.md` and its machine registry fix the internal
 schema, exact-arithmetic boundary, controlled masks/repeats, folds, models,
 uncertainty, and rejection rules; they were committed before a package
-diagnostic was calculated.
+diagnostic was calculated. Profile supplement `E-P-1.0.0` transparently closes
+the parent's previously implicit fixture/pass mechanics after implementation
+but before a fixed profile call; it changes no empirical gate.

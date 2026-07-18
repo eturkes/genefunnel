@@ -219,6 +219,33 @@ Rscript --vanilla -e \
    print(sensitivity_validate_protocol("."))'
 ```
 
+The parent profile dimensions/seeds omitted exact fixture and measurement-pass
+construction. Byte-pinned execution supplement
+[`E-P-1.0.0`](sensitivity-profile-protocol.tsv) closes that gap after the brute
+implementation but before any fixed profile call. Validate both identities:
+
+```sh
+Rscript --vanilla -e \
+  'source("benchmark/sensitivity-protocol.R"); \
+   source("benchmark/sensitivity-profile.R"); \
+   print(sensitivity_validate_protocol(".")); \
+   print(sensitivity_profile_validate("."))'
+```
+
+After committing the runner, execute the clean-SHA profile with:
+
+```sh
+candidate_id=$(git rev-parse HEAD)
+Rscript --vanilla benchmark/run-sensitivity-profile.R \
+  --mode=gate --candidate-id="$candidate_id" \
+  --output=benchmark/results/sensitivity-profile
+```
+
+Gate mode installs the exact Git archive in an isolated library, records three
+timed calls plus separate CPU/allocation profiles, requires one output digest,
+and applies only the frozen optimization-eligibility rule. Its timing is
+descriptive and cannot promote a reliability API.
+
 The registry contains 5,760 latent scenarios, 345,600 feature-loss rows, 5,760
 controlled-repeat rows, and exactly 576 scenarios per held-out fold. This first
 stage is synthetic and internal: even a complete pass cannot support export or
@@ -245,6 +272,11 @@ The component comparison additionally writes `packages.tsv`, paired
 `genefunnel` loaded from its assigned baseline/candidate library. Unlike the
 general performance runner below, the component timer uses no concurrent RSS
 sampler; passive GNU-time process RSS is its resource gate.
+
+The sensitivity profile writes `manifest.tsv`, three-call `runs.tsv`,
+`profile.tsv`, `allocation.tsv`, `decision.tsv`, raw `Rprof`/`Rprofmem` traces,
+an isolated source/library record, and artifact hashes. Its decision concerns
+optimization eligibility only.
 
 The preparer writes `installations.tsv`, exact source archives, install logs,
 per-library provenance markers, and installed-package tree fingerprints. Gate

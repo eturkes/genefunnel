@@ -135,6 +135,18 @@ sets of 128 members, deterministic dense values/members, and three fresh
 repeats. Record elapsed time, `Rprof()` samples, `Rprofmem()` allocation, output
 digest, and environment. Performance is descriptive.
 
+E-1.0.0 fixed the dimensions and seeds but left the deterministic value/member
+constructors and profiling-pass boundaries implicit. This is a genuine
+execution-specification omission. Byte-pinned supplement
+[`E-P-1.0.0`](sensitivity-profile-protocol.tsv) closes only those degrees of
+freedom after the brute implementation and before any fixed profile call. It
+uses column-major unit-rate exponential values, independent within-set sampling
+without replacement, three GC-separated timed calls, then separate `Rprof()`
+and `Rprofmem()` calls whose five outputs must have one digest. An exact sample
+is a stack containing a `.gf_` frame. The supplement does not retroactively
+claim pre-implementation timing specification and changes no correctness,
+controlled-design, endpoint, or promotion gate.
+
 Optimization work becomes eligible only if the median call exceeds 60 seconds
 or exact deletion arithmetic consumes more than half the sampled time. Any
 optimized candidate must first match the exact brute result/status on every
