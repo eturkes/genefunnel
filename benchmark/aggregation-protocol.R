@@ -1,10 +1,10 @@
 # Assisted-by: OpenAI Codex.
 
-AGGREGATION_PROTOCOL_VERSION <- "B-1.0.2"
+AGGREGATION_PROTOCOL_VERSION <- "B-1.0.3"
 AGGREGATION_PROTOCOL_SHA256 <-
-    "aec8fd4e3e49b953e5ca75e0c2059c1d68436409def0dfd3d351b4ad8a49356f"
+    "c95a2eb91c9e3f8027b461e85ee532a621550038b27f20167b0838dd95c2f7ad"
 AGGREGATION_DATA_SHA256 <-
-    "ca6dedb4957fa6ef3c21649d342996d1d482cf6f3203e4f2f9bab0bbf1a823e8"
+    "c8743b696f3e05fa623d7f3adc19e27b379303e7f0544a88e054aedf528d5a28"
 
 aggregation_read_registry <- function(path) {
     if (!identical(

@@ -788,3 +788,33 @@ held-out mixture gate, then Kang/Reactome technical and donor gates; keep the
 prototype internal.
 Risks/blockers: external preprocessing/alignment may fail closed; CellBench or
 Kang can still reject H2, and no threshold may move in response.
+
+2026-07-18 | frontier execution 13 | commit `HEAD`
+Scope: close external-data execution degrees of freedom before any CellBench or
+Kang profile, selected set, audit metric, correlation, contrast, or endpoint.
+Changed: protocol `B-1.0.3` leaves API/synthetic fields, completed B-1.0.2
+result, eight payloads, thresholds, donors, pathways, and decisions unchanged.
+It fixes CellBench all-row CPM, pooled pure-profile means, common-gene order,
+zero/zero ratio semantics, stable selection, equal-mixture normalization,
+every-group curve gate, 192-condition split/cross-platform units, C sorting,
+and type-8 quantiles. Kang now fixes the two-matrix/barcode join, count/symbol
+collapse, within-cell-type halves, retained-unit weights, GMT filtering/order,
+16 stability units, training direction, held-out zeros, and exact sign tests.
+Verified: pre-endpoint schema audit only - CellBench count/metadata orders are
+exact and each platform has the fixed 4 x 4 mixed composition/amount grid with
+at least three libraries; Kang has 35,635 gene rows and 14,619 + 14,446 matrix
+columns. Concatenated raw barcodes contain 313 cross-file duplicates; base R
+`make.unique(..., sep = "")` exactly reproduces all 29,065 author metadata IDs.
+All eight cached payload sizes/hashes remain unchanged. Registry = 116 unique
+keys; protocol/data SHA-256 =
+`c95a2eb91c9e3f8027b461e85ee532a621550038b27f20167b0838dd95c2f7ad` /
+`c8743b696f3e05fa623d7f3adc19e27b379303e7f0544a88e054aedf528d5a28`.
+Decisions: malformed/alignment failures abort; missing fixed-grid metrics are
+retained scientific FAIL results. Schema/dimension/condition facts were the
+only downloaded contents inspected before this amendment; no external score or
+endpoint exists. B-1.0.2 controlled evidence is inherited without rerunning.
+Remaining: implement/adversarially test the CellBench runner from this committed
+protocol, then execute and record it before implementing Kang.
+Risks/blockers: strict every-group CellBench error gate can fail on one narrow
+amount/composition/set; Kang may lose cell-type units or defined pathways, which
+must fail visibly rather than change eligibility after inspection.

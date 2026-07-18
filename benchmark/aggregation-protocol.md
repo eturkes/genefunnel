@@ -1,9 +1,9 @@
 <!-- Assisted-by: OpenAI Codex. -->
 
-# Aggregation-audit protocol B-1.0.2
+# Aggregation-audit protocol B-1.0.3
 
-**Frozen:** 2026-07-18. `B-1.0.0` preceded implementation; `B-1.0.2` precedes
-every synthetic or downloaded-data observation/result. The
+**Frozen:** 2026-07-18. `B-1.0.0` preceded implementation; `B-1.0.2` preceded
+every synthetic result; `B-1.0.3` precedes every external-data endpoint. The
 [`machine registry`](aggregation-protocol.tsv) and
 [`data manifest`](aggregation-data.tsv) are authoritative. An endpoint,
 threshold, split, factor, source, preprocessing rule, or schema change requires
@@ -35,6 +35,17 @@ quantiles, and a paired prediction-error bootstrap. It changes no API field,
 factor level, external byte/URL, endpoint, threshold, or decision rule. This
 amendment was committed before generating a synthetic measurement, fitting a
 validation model, or reading downloaded data.
+
+`B-1.0.3` closes external execution degrees of freedom before computing a pure
+profile, selecting a data-derived set, running an external-data audit, or
+calculating any CellBench/Kang endpoint. It fixes CellBench zero-abundance
+ranking, equal-mixture normalization, gate units, condition grids, and split
+ordering; and Kang's duplicated cross-file barcode join, sparse-count
+validation, cell-type eligibility, pathway parsing, direction, and exact
+sign-test rules. Only checksums, CSV/Matrix Market/GMT schemas, dimensions,
+identifier alignment, and condition counts were inspected first to establish
+feasibility. All source URLs/payload bytes, synthetic fields/results, API
+fields, thresholds, donor splits, pathways, and decision rules are unchanged.
 
 ## Prototype schema
 
@@ -256,33 +267,52 @@ pinned at one commit in the data manifest. CEL-seq2 is training; SORT-seq is a
 held-out laboratory protocol. Rows marked `outliers` are excluded by the
 authors' supplied metadata. Counts and metadata must align exactly by sample.
 
-Within each platform, every library becomes counts per million. Pure-sample
-means define the three unit profiles. Gene selection uses only CEL-seq2 pure
-profiles and genes present in both platforms:
+Each count table must have unique non-empty Ensembl row identifiers, and count
+columns must be identical in order to metadata rows. Logical `outliers` rows
+are removed. Within each platform, every retained library becomes counts per
+million using its total over all count rows; cross-platform gene filtering
+occurs afterward. The three pure unit profiles are arithmetic mean CPM across
+all retained pure libraries for that platform and cell line, pooling mRNA
+amounts. Common genes follow CEL-seq2 row order and must also occur in
+SORT-seq. Gene selection uses only CEL-seq2 pure profiles in that universe:
 
 - for each cell-line pair and size 8/32/128, take half the largest log2 ratio
   in each direction, advancing through the stable rank to avoid duplicates;
 - for each size, a complex-like control takes genes with the largest minimum
   pure-profile abundance across all three lines.
 
-Ties resolve by Ensembl identifier. This fixes 12 data-derived sets without
-using mixed-sample outcomes.
+For a pair `(first, second)`, positive/zero has ratio `Inf`, zero/positive has
+`-Inf`, and zero/zero is the neutral ratio zero. Rank by decreasing signed
+ratio then Ensembl identifier; choose the first-direction half, then advance
+through the reverse-direction rank while skipping selected identifiers. Pair
+order is H2228/H1975, H2228/HCC827, H1975/HCC827; sizes follow registry order.
+Controls rank decreasing minimum pure CPM then identifier and follow the nine
+pair sets. This fixes 12 sets without using mixed-sample outcomes.
 
-For each mixed library $y$, known proportions $w$ and platform pure profiles
-$q_k$ give reference $R_{ref}$ from the audit. The observed process-control
+For each mixed library $y$, the raw metadata triple must match a registered
+composition exactly. It is normalized to sum one - in particular, the three
+reported `0.33` values become equal audit weights. Those weights and platform
+pure profiles $q_k$ give reference $R_{ref}$ from the audit. Pure libraries
+train profiles only and never enter an endpoint. The observed process-control
 quantity
 
 $$
 R_{obs}=\{F(y)-\sum_kw_kF(q_k)\}/F(y)
 $$
 
-is allowed outside `[0, 1]`: a measured library need not equal the reference
-weighted mean. It is never presented as an API result. Median absolute
-`R_obs - R_ref` by platform/composition/mRNA amount/set must be `<= 0.15`; its
-90th percentile must be `<= 0.30`. Sorted sample identities split technical
-replicates odd/even. The split-half condition/set medians must correlate
-`>= 0.75` within each platform, and complete-condition medians must correlate
-`>= 0.60` between platforms. Both error and stability gates are co-primary.
+is undefined when `F(y) <= 0` and otherwise may leave `[0, 1]`: a measured
+library need not equal the reference weighted mean. It is never an API result.
+
+The error unit is one mixed library/set absolute `R_obs - R_ref`. For every
+fixed platform/composition/mRNA-amount/set group, its median must be `<= 0.15`
+and type-8 90th percentile `<= 0.30`; the error gate requires every group.
+There are four non-pure compositions x four amounts x 12 sets = 192 conditions
+per platform. Within platform/composition/amount, C-locale sorted sample
+identities split odd/even. The 192 matched odd/even condition/set medians must
+have Spearman correlation `>= 0.75` separately in CEL-seq2 and SORT-seq. The
+192 matched complete-condition medians must correlate `>= 0.60` between
+platforms. A missing or undefined fixed-grid metric records scientific `FAIL`;
+malformed input aborts. Error and stability gates are co-primary.
 
 ## Donor-replicated perturbation validation
 
@@ -296,33 +326,47 @@ annotation or cell-level inference is added.
 From the raw tar, the runner extracts only `GSM2560248_2.1.mtx.gz`,
 `GSM2560248_barcodes.tsv.gz`, `GSM2560249_2.2.mtx.gz`, and
 `GSM2560249_barcodes.tsv.gz`. Matrix rows align exactly to the pinned batch-2
-gene table; matrix columns align exactly to the respective barcodes and joined
-author metadata. Any mismatch rejects the run.
+gene table and columns to their respective barcode files. The two raw barcode
+files reuse 313 identifiers. Concatenate them in matrix order and apply base R
+`make.unique(..., sep = "")`; that sequence must identically equal the author
+metadata identifiers. Coordinate entries must be finite, non-negative integer
+counts; duplicate coordinates are summed. Any mismatch rejects the run.
 
-Within donor, condition, and cell type, raw UMI counts are summed and divided
-by retained cell count. Cell types are the audit units; cell-count proportions
-are their weights. This exactly reconstructs the donor-condition mean UMI per
-cell and performs no log transform or unit-specific library normalization.
-Duplicate non-empty gene symbols are summed. A cell type needs at least 40
-cells, with at least 20 in each deterministic sorted-barcode odd/even half.
+Empty gene symbols are discarded; duplicate symbols are summed in first-symbol
+occurrence order. Registered donors, `ctrl`/`stim`, six registered cell types,
+and author-labelled singlets are retained. Within each donor/condition/cell
+type, barcodes sort in C locale and split by odd/even position. A cell type
+needs at least 40 cells and 20 in each half; failure removes that unit from the
+full and both half views. Within each view, raw UMI counts are summed and
+divided by its retained cell count. Cell types are audit units and their cell
+count proportions among retained group cells are weights. This reconstructs
+the donor-condition/view mean UMI per cell without log transformation or
+unit-specific library normalization.
 
 [Reactome v97](https://reactome.org/download/97/ReactomePathways.gmt.zip) is
-pinned rather than `current`. Unique human-symbol sets retaining 8-128 measured
-members are audited. The two pre-specified perturbation pathways are
+pinned rather than `current`. The archive must contain exact member
+`ReactomePathways.gmt`. `R-HSA-` pathways retain unique first-occurrence member
+symbols intersected with collapsed measured symbols; sets of size 8-128 remain
+in GMT order. Full, odd, and even audits use `missing = "reject"`. The two
+pre-specified perturbation pathways are
 `R-HSA-909733` (interferon alpha/beta signaling) and `R-HSA-877300`
 (interferon gamma signaling).
 
-Technical stability is Spearman correlation of half-1/half-2 R across eligible
-pathways within each donor-condition. Its median across 16 donor-conditions
-must be `>= 0.70` and 10th percentile `>= 0.50`.
+Technical stability is Spearman correlation of odd/even normalized gaps across
+common defined pathways within each of the fixed 16 donor-conditions. All 16
+must be defined. Their median must be `>= 0.70` and type-8 10th percentile
+`>= 0.50`.
 
 Training donors are 101, 1015, 1039, and 1256; held-out donors are 107, 1016,
-1244, and 1488. For each primary pathway, training fixes the sign of median
-paired `stim - ctrl` R. Replication requires the same nonzero sign in at least
-three of four held-out donors. This is a held-out descriptive gate, not an
-inferential claim. A biological perturbation claim additionally requires a
-two-sided exact paired sign-test Holm-adjusted `p <= 0.05` across the two
-pathways. Cells and pathways are never substituted for the eight donor units.
+1244, and 1488. Full-view donor contrasts are `stim - ctrl` normalized gap.
+For each primary pathway, training fixes the sign of the four-donor median;
+undefined or exact-zero direction fails. Replication requires the same nonzero
+sign in at least three of four held-out donors. This is a held-out descriptive
+gate, not inference. The separate two-sided exact sign test discards exact-zero
+contrasts, uses a binomial null probability 0.5 (`p = 1` if none remain), and
+Holm-adjusts across the two pathways. A biological effect claim requires the
+held-out rule plus adjusted `p <= 0.05` for both pathways. Cells and pathways
+are never substituted for the eight donor units.
 
 ## Decision and evidence
 
@@ -331,6 +375,10 @@ Kang technical stability must pass before an exported audit is proposed. The
 held-out donor rule must also pass before documentation suggests perturbation
 sensitivity. The adjusted sign-test gate is mandatory for any biological
 effect claim.
+
+The completed B-1.0.2 synthetic result is inherited unchanged: B-1.0.3 alters
+no synthetic field, endpoint, threshold, byte, or implementation used by that
+run. It does not reinterpret the severe-dropout failure envelope.
 
 `run-aggregation-synthetic.R` requires a clean committed tree, installs that
 tree into an isolated temporary library, checks deterministic generator/audit

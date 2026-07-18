@@ -55,6 +55,9 @@
 - Records the complete 124,416-measurement controlled result: every frozen
   synthetic gate passed, while severe-dropout diagnostics remain comparable to
   the planted complementarity effect and preclude a robustness claim.
+- Freezes CellBench and Kang external-data execution details - including
+  zero-abundance ranking, condition-level gate units, duplicated barcode joins,
+  cell-type eligibility, and exact sign tests - before any external endpoint.
 
 ## Documentation
 

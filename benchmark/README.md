@@ -18,7 +18,7 @@ The separate [`components-protocol.md`](components-protocol.md) and
 default-path performance gates without changing scientific protocol 1.0.0.
 
 Workstream B's separate
-[`aggregation protocol B-1.0.2`](aggregation-protocol.md), machine
+[`aggregation protocol B-1.0.3`](aggregation-protocol.md), machine
 [`registry`](aggregation-protocol.tsv), and exact external
 [`data manifest`](aggregation-data.tsv) freeze the internal audit schema,
 controlled factorial, known-mixture validation, donor split, endpoints, and
@@ -119,7 +119,8 @@ CPU exceeds the protocol's quiescence limit.
 
 ## Aggregation synthetic validation
 
-Run the complete frozen B-1.0.2 design only from a clean committed tree:
+Run the complete frozen B-1.0.3 design only from a clean committed tree. Its
+synthetic fields are identical to the completed B-1.0.2 design:
 
 ```sh
 R_LIBS_USER="$PWD/.agent/R-library" Rscript --vanilla \
