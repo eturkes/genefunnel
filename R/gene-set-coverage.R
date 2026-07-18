@@ -125,7 +125,7 @@
 #'   Coverage is `NA` for an empty declared set; a set is scoreable when at
 #'   least two unique members match.
 #'
-#' @seealso [genefunnel()]
+#' @seealso [genefunnel()], [genefunnel_components()]
 #' @export
 #'
 #' @examples

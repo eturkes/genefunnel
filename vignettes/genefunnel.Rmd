@@ -1,7 +1,7 @@
 ---
 title: "GeneFunnel: scientific scoring and practical use"
 author: "Emir Turkes"
-date: "14 July 2026"
+date: "18 July 2026"
 package: genefunnel
 output:
   BiocStyle::html_document:
@@ -124,6 +124,63 @@ stopifnot(
 Equal values score their sum. All-zero sets and sets with only one non-zero
 member score zero. The missing-pair column scores the observed values `c(1, 2)`
 as 2; the last column has only one observed value and returns `NA`.
+
+# Explain score components
+
+`genefunnel_components()` calculates the same authoritative score while
+exposing the arithmetic facts hidden by one scalar. The diagnostic native path
+reads each input chunk once and returns aligned matrices.
+
+```{r components}
+canonical_components <- genefunnel_components(
+    canonical,
+    canonical_sets,
+    BPPARAM = serial
+)
+component_table <- data.frame(
+    sample = colnames(canonical),
+    score = canonical_components$score["three_members", ],
+    observed_sum = canonical_components$observed_sum["three_members", ],
+    penalty = canonical_components$penalty["three_members", ],
+    balance = canonical_components$balance["three_members", ],
+    effective_size = canonical_components$effective_size["three_members", ],
+    observed_fraction = canonical_components$observed_fraction[
+        "three_members",
+    ],
+    row.names = NULL,
+    check.names = FALSE
+)
+knitr::kable(component_table, digits = 3)
+
+stopifnot(
+    identical(canonical_components$score, canonical_scores),
+    identical(
+        unname(canonical_components$observed_sum["three_members", ]),
+        c(12, 0, 4, 3, 4)
+    ),
+    is.na(canonical_components$balance["three_members", "zeros"]),
+    identical(
+        canonical_components$status$semantic[
+            "three_members",
+            "one_observed"
+        ],
+        "too_few_observed"
+    )
+)
+```
+
+For a positive total, `balance` is Bulla's evenness index on the observed
+within-set shares and the exact factorization is `score = observed_sum *
+balance`. It describes arithmetic evenness, not co-expression or pathway
+truth. `observed_fraction` uses globally matched members as its denominator;
+declared-set coverage remains a separate fact.
+
+Finite sums, penalties, or balances can overflow or underflow an R double even
+when the score is representable. `status` distinguishes ordinary, binary-scaled,
+and unavailable diagnostics. A scaled value uses the corresponding `mantissa`
+and `exponent` matrices under `canonical_components$scaled`; ordinary values
+have `NA` there. The `conditioning` matrix marks cells where rounded component
+reconstruction is unsafe.
 
 # Coverage is caller controlled
 

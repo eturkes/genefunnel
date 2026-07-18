@@ -2,10 +2,11 @@
 
 # GeneFunnel component contract and proof note
 
-**Status:** ratified pre-implementation contract, 2026-07-17; A2 numerical and
-performance protocol locked 2026-07-18. No component API exists yet. This
-document constrains the additive prototype; it does not change `genefunnel()`
-or `gene_set_coverage()`.
+**Status:** contract ratified 2026-07-17; A2 numerical and performance protocol
+locked 2026-07-18; additive `genefunnel_components()` prototype implemented
+under that protocol. The locked default-path performance gate remains required
+before A2 closes. This API does not change `genefunnel()` or
+`gene_set_coverage()`.
 
 The frozen scorer remains governed by `SCIENTIFIC_SPEC.md`. Terms here apply to
 the exact matched, observed gene-set/sample vector used by that scorer.
@@ -93,7 +94,7 @@ the dimension, so it must be resolved before an aggregation comparison.
 
 ## Cell and output semantics
 
-The future component function must reuse the scorer's prepared memberships,
+The component function reuses the scorer's prepared memberships,
 retained-set universe, aggregate omission warning, row/sample order, and names.
 Sets with fewer than two globally matched members remain absent and are
 reported only by `gene_set_coverage()`.
@@ -224,7 +225,7 @@ claims; it is not a patent search or exhaustive systematic review.
 | SVD pathway activity | [Tomfohr et al. (2005)](https://doi.org/10.1186/1471-2105-6-225) | PLAGE derives pathway profiles from a cross-sample SVD. It is neither sample-independent nor an exact decomposition of this score. |
 
 **Novelty boundary:** neither $D$ nor $B$ is a new inequality/evenness index;
-$B$ already has the name Bulla's evenness index. Any future claim is restricted
+$B$ already has the name Bulla's evenness index. Any claim is restricted
 to the exact GeneFunnel factorization, its implementation and auditing value,
 and biological utility demonstrated under pre-specified held-out validation.
 
@@ -237,4 +238,7 @@ zero semantics, missingness facts, and the committed interpretation cases.
 `helper-scaled-reference.R` adds a platform-independent double-double
 significand with an explicit binary exponent; its A2 tests cover total/penalty
 overflow, unsafe cancellation, balance underflow, subnormals, and semantic
-edge states without a new package dependency.
+edge states without a new package dependency. `test-components-api.R` verifies
+the native result schema, scaled representation, safe identities, committed
+interpretation cases, missingness, permutations, dense/sparse equivalence, and
+serial/SOCK equivalence against those independent oracles.

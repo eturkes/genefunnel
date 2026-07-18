@@ -7,10 +7,12 @@ Authors@R:
 Description: Computes sample-wise gene set activity scores from non-negative
     feature-by-sample matrices. Each score combines the sum of observed member
     values with a scaled within-set absolute-deviation penalty, independently
-    for every sample and gene set. Dense and sparse matrices, partial feature
-    coverage, sample-specific missing values, and parallel backends are
-    supported. The package performs scoring only; it does not normalize
-    measurements, map identifiers, or perform downstream statistical testing.
+    for every sample and gene set. An additive audit interface reports
+    magnitude, balance, penalty, and observed support without altering the
+    primary score. Dense and sparse matrices, partial feature coverage,
+    sample-specific missing values, and parallel backends are supported. The
+    package performs scoring only; it does not normalize measurements, map
+    identifiers, or perform downstream statistical testing.
 License: GPL (>= 3)
 URL: https://github.com/eturkes/genefunnel
 BugReports: https://github.com/eturkes/genefunnel/issues

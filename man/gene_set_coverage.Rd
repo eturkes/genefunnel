@@ -54,5 +54,5 @@ relaxed <- !is.na(coverage$coverage) &
 names(sets[relaxed])
 }
 \seealso{
-\code{\link[=genefunnel]{genefunnel()}}
+\code{\link[=genefunnel]{genefunnel()}}, \code{\link[=genefunnel_components]{genefunnel_components()}}
 }

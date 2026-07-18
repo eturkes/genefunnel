@@ -2,6 +2,7 @@
 
 export(gene_set_coverage)
 export(genefunnel)
+export(genefunnel_components)
 importClassesFrom(Matrix,dMatrix)
 importClassesFrom(Matrix,sparseMatrix)
 importFrom(Rcpp,evalCpp)

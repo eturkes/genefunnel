@@ -35,10 +35,36 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// calculateComponentsDense
+List calculateComponentsDense(const NumericMatrix& orig_mat, const List& gene_indices);
+RcppExport SEXP _genefunnel_calculateComponentsDense(SEXP orig_matSEXP, SEXP gene_indicesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type orig_mat(orig_matSEXP);
+    Rcpp::traits::input_parameter< const List& >::type gene_indices(gene_indicesSEXP);
+    rcpp_result_gen = Rcpp::wrap(calculateComponentsDense(orig_mat, gene_indices));
+    return rcpp_result_gen;
+END_RCPP
+}
+// calculateComponentsSparse
+List calculateComponentsSparse(const arma::sp_mat& orig_mat, const List& gene_indices);
+RcppExport SEXP _genefunnel_calculateComponentsSparse(SEXP orig_matSEXP, SEXP gene_indicesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::sp_mat& >::type orig_mat(orig_matSEXP);
+    Rcpp::traits::input_parameter< const List& >::type gene_indices(gene_indicesSEXP);
+    rcpp_result_gen = Rcpp::wrap(calculateComponentsSparse(orig_mat, gene_indices));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_genefunnel_calculateScoresDense", (DL_FUNC) &_genefunnel_calculateScoresDense, 2},
     {"_genefunnel_calculateScoresSparse", (DL_FUNC) &_genefunnel_calculateScoresSparse, 2},
+    {"_genefunnel_calculateComponentsDense", (DL_FUNC) &_genefunnel_calculateComponentsDense, 2},
+    {"_genefunnel_calculateComponentsSparse", (DL_FUNC) &_genefunnel_calculateComponentsSparse, 2},
     {NULL, NULL, 0}
 };
 

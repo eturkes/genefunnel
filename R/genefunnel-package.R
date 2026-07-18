@@ -8,11 +8,13 @@
 #' independently from the available member values.
 #'
 #' @details
-#' [genefunnel()] is the primary scorer. [gene_set_coverage()] reports exact
-#' identifier coverage so callers can apply an experiment-specific coverage
-#' policy before scoring. Dense and sparse inputs are supported; zeros are
-#' observed values, `NA` and `NaN` are omitted per sample, and partially
-#' covered sets remain scoreable when at least two unique members match.
+#' [genefunnel()] is the primary scorer. [genefunnel_components()] returns its
+#' score with aligned magnitude, balance, penalty, and effective-support
+#' diagnostics. [gene_set_coverage()] reports exact identifier coverage so
+#' callers can apply an experiment-specific policy before scoring. Dense and
+#' sparse inputs are supported; zeros are observed values, `NA` and `NaN` are
+#' omitted per sample, and partially covered sets remain scoreable when at
+#' least two unique members match.
 #'
 #' GeneFunnel does not normalize or impute measurements, map identifiers,
 #' retrieve gene sets, perform downstream tests, or supply biological
@@ -22,7 +24,8 @@
 #' `system.file("SCIENTIFIC_SPEC.md", package = "genefunnel")` for the durable
 #' mathematical and behavioral contract.
 #'
-#' @seealso [genefunnel()], [gene_set_coverage()], `citation("genefunnel")`
+#' @seealso [genefunnel()], [genefunnel_components()], [gene_set_coverage()],
+#'   `citation("genefunnel")`
 #' @aliases genefunnel-package NULL
 #' @keywords internal
 #' @useDynLib genefunnel, .registration = TRUE

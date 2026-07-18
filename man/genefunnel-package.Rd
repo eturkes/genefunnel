@@ -10,11 +10,13 @@ gene-set-by-sample score matrix. Every gene set and sample is scored
 independently from the available member values.
 }
 \details{
-\code{\link[=genefunnel]{genefunnel()}} is the primary scorer. \code{\link[=gene_set_coverage]{gene_set_coverage()}} reports exact
-identifier coverage so callers can apply an experiment-specific coverage
-policy before scoring. Dense and sparse inputs are supported; zeros are
-observed values, \code{NA} and \code{NaN} are omitted per sample, and partially
-covered sets remain scoreable when at least two unique members match.
+\code{\link[=genefunnel]{genefunnel()}} is the primary scorer. \code{\link[=genefunnel_components]{genefunnel_components()}} returns its
+score with aligned magnitude, balance, penalty, and effective-support
+diagnostics. \code{\link[=gene_set_coverage]{gene_set_coverage()}} reports exact identifier coverage so
+callers can apply an experiment-specific policy before scoring. Dense and
+sparse inputs are supported; zeros are observed values, \code{NA} and \code{NaN} are
+omitted per sample, and partially covered sets remain scoreable when at
+least two unique members match.
 
 GeneFunnel does not normalize or impute measurements, map identifiers,
 retrieve gene sets, perform downstream tests, or supply biological
@@ -25,7 +27,8 @@ See \code{vignette("genefunnel")} for a worked workflow and
 mathematical and behavioral contract.
 }
 \seealso{
-\code{\link[=genefunnel]{genefunnel()}}, \code{\link[=gene_set_coverage]{gene_set_coverage()}}, \code{citation("genefunnel")}
+\code{\link[=genefunnel]{genefunnel()}}, \code{\link[=genefunnel_components]{genefunnel_components()}}, \code{\link[=gene_set_coverage]{gene_set_coverage()}},
+\code{citation("genefunnel")}
 }
 \author{
 \strong{Maintainer}: Emir Turkes \email{emir.turkes@eturkes.com} [copyright holder]

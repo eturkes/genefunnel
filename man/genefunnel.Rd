@@ -93,6 +93,7 @@ Neurofibrillary Tangle-bearing Neurons in Alzheimer's Disease}. PhD thesis,
 University College London.
 }
 \seealso{
-\code{\link[=gene_set_coverage]{gene_set_coverage()}}, \code{vignette("genefunnel")},
+\code{\link[=genefunnel_components]{genefunnel_components()}}, \code{\link[=gene_set_coverage]{gene_set_coverage()}},
+\code{vignette("genefunnel")},
 \code{system.file("SCIENTIFIC_SPEC.md", package = "genefunnel")}
 }

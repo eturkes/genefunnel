@@ -9,3 +9,11 @@ calculateScoresSparse <- function(orig_mat, gene_indices) {
     .Call(`_genefunnel_calculateScoresSparse`, orig_mat, gene_indices)
 }
 
+calculateComponentsDense <- function(orig_mat, gene_indices) {
+    .Call(`_genefunnel_calculateComponentsDense`, orig_mat, gene_indices)
+}
+
+calculateComponentsSparse <- function(orig_mat, gene_indices) {
+    .Call(`_genefunnel_calculateComponentsSparse`, orig_mat, gene_indices)
+}
+

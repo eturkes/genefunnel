@@ -70,6 +70,48 @@ test_that("dense and sparse inputs reach distinct native kernels", {
     expect_identical(calls$sparse[[1L]], sparse)
 })
 
+test_that("component inputs reach distinct one-pass native kernels", {
+    dense <- storage_fixture()
+    sparse <- Matrix::Matrix(dense, sparse = TRUE)
+    gene_indices <- reference_memberships(
+        storage_gene_sets(),
+        rownames(dense)
+    )
+    calls <- new.env(parent = emptyenv())
+    calls$dense <- list()
+    calls$sparse <- list()
+    fake_result <- function(orig_mat, indices) {
+        genefunnel:::.new_component_result(
+            length(indices),
+            ncol(orig_mat)
+        )
+    }
+
+    testthat::local_mocked_bindings(
+        calculateComponentsDense = function(orig_mat, gene_indices) {
+            calls$dense[[length(calls$dense) + 1L]] <- orig_mat
+            fake_result(orig_mat, gene_indices)
+        },
+        calculateComponentsSparse = function(orig_mat, gene_indices) {
+            calls$sparse[[length(calls$sparse) + 1L]] <- orig_mat
+            fake_result(orig_mat, gene_indices)
+        },
+        .package = "genefunnel"
+    )
+
+    genefunnel:::.component_matrix_chunk(dense, gene_indices, "dense")
+    expect_length(calls$dense, 1L)
+    expect_length(calls$sparse, 0L)
+    expect_identical(calls$dense[[1L]], dense)
+
+    calls$dense <- list()
+    genefunnel:::.component_matrix_chunk(sparse, gene_indices, "sparse")
+    expect_length(calls$dense, 0L)
+    expect_length(calls$sparse, 1L)
+    expect_s4_class(calls$sparse[[1L]], "sparseMatrix")
+    expect_identical(calls$sparse[[1L]], sparse)
+})
+
 test_that("dense Matrix and sparse scores agree across storage semantics", {
     dense <- storage_fixture()
     matrix_dense <- Matrix::Matrix(dense, sparse = FALSE)

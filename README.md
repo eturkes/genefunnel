@@ -4,8 +4,9 @@
 
 GeneFunnel calculates sample-wise gene-set scores from non-negative
 feature-by-sample matrices. Each score combines observed magnitude with a
-scaled absolute-deviation penalty. Dense inputs use a dense path; sparse inputs
-remain sparse and retain implicit zeros as observations.
+scaled absolute-deviation penalty. An additive diagnostic API exposes that
+factorization without changing the primary score. Dense inputs use a dense
+path; sparse inputs remain sparse and retain implicit zeros as observations.
 
 GeneFunnel is under development and is not yet available from Bioconductor.
 
@@ -58,6 +59,25 @@ The second sample omits `C = NA` and scores the observed pair `c(1, 2)`.
 Zeros, including implicit sparse zeros, remain in the calculation. A set/sample
 cell with fewer than two observed members returns `NA`.
 
+Inspect magnitude, balance, penalty, and sample-specific support when the
+scalar score needs explanation:
+
+```r
+components <- genefunnel_components(
+    mat,
+    gene_sets[keep],
+    BPPARAM = BiocParallel::SerialParam()
+)
+components$observed_sum
+components$balance
+components$effective_size
+components$status$conditioning
+```
+
+`components$score` is the authoritative `genefunnel()` result. Extreme finite
+diagnostics that do not fit in an R double use the documented binary-scaled
+sidecar; they are never returned silently as infinity or false zero.
+
 Sparse matrices and portable parallel backends use the same API:
 
 ```r
@@ -76,8 +96,8 @@ an arbitrary positive shift changes the score and is not a valid workaround.
 - [Scientific specification](inst/SCIENTIFIC_SPEC.md) - equation, value and
   coverage semantics, invariants, and limitations.
 - [Component proof and contract](inst/COMPONENTS_SPEC.md) - prior art, exact
-  factorization, edge semantics, and numerical boundaries for prospective
-  additive diagnostics; no component API is implemented yet.
+  factorization, API semantics, numerical representation, and interpretation
+  boundaries for `genefunnel_components()`.
 - [Vignette](vignettes/genefunnel.Rmd) - canonical examples, dense/sparse use,
   coverage policies, and serial/parallel execution.
 - [Benchmark protocol](https://github.com/eturkes/genefunnel/blob/main/benchmark/README.md)

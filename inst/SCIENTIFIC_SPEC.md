@@ -175,8 +175,10 @@ chunks for BiocParallel execution. These storage and scheduling choices are
 implementation details: they must preserve the equation, missing-value rules,
 names, and ordering above.
 
-## Prospective additive diagnostics
+## Additive diagnostics
 
-`COMPONENTS_SPEC.md` records the proved magnitude/balance factorization and the
-ratified pre-implementation contract for a future additive diagnostic API. It
-does not change the scorer or coverage helper described here.
+`genefunnel_components()` returns the authoritative score with aligned
+magnitude, balance, penalty, effective-support, numerical-status, and scaled
+representation matrices. `COMPONENTS_SPEC.md` owns its proved factorization,
+contract, and interpretation boundary. The additive API does not change the
+scorer or coverage helper described here.

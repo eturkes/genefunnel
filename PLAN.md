@@ -196,16 +196,16 @@ distributed signal” without changing the GeneFunnel score.
 - [x] Add a dependency-free, platform-independent scaled double-double oracle
   covering total/penalty overflow, unsafe cancellation, balance underflow,
   subnormals, and semantic edge states.
-- [ ] Prototype `genefunnel_components()` as an additive API returning a named
+- [x] Prototype `genefunnel_components()` as an additive API returning a named
   list of aligned base matrices for ordinary values plus an aligned, documented
   representation/status for extreme components.
-- [ ] Extend dense and sparse kernels to emit requested accumulators in one pass;
+- [x] Extend dense and sparse kernels to emit requested accumulators in one pass;
   the ordinary `genefunnel()` path allocates no diagnostic outputs.
-- [ ] Verify both identities in a higher-precision/scaled oracle. Require direct
+- [x] Verify both identities in a higher-precision/scaled oracle. Require direct
   binary64 reconstruction only in a numerically safe region defined before
   tests; explicitly cover total overflow, subtractive cancellation, and balance
   underflow outside it.
-- [ ] Cover missingness, partial coverage, all-zero sets, one-nonzero sets,
+- [x] Cover missingness, partial coverage, all-zero sets, one-nonzero sets,
   signed zero, subnormals/overflow, member permutations, and
   dense/sparse/serial/parallel identity.
 - [ ] Measure default-path runtime, allocation, and RSS against a freshly rerun

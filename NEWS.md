@@ -8,6 +8,9 @@
   with sample-specific omission of `NA` and `NaN` values.
 - Adds `gene_set_coverage()` for exact-match coverage diagnostics and
   caller-controlled filtering.
+- Adds `genefunnel_components()` for aligned score, observed-sum, penalty,
+  balance, effective-size, observed-fraction, status, and scaled numerical
+  diagnostics without changing `genefunnel()`.
 - Supports deterministic, bounded parallel scoring through BiocParallel.
 
 ## User-visible changes from the prototype
@@ -34,6 +37,9 @@
   digests and environment metadata.
 - Locks a dependency-free scaled numerical oracle and paired default-path
   performance protocol before component implementation.
+- Implements dependency-free scaled double-double native diagnostics for
+  overflow, cancellation, and underflow cases while keeping the ordinary score
+  authoritative.
 - Adds a versioned controlled-science protocol covering analytic score cases,
   sparse/dense identity, partial coverage, missingness, and independence, with
   machine-readable results and regenerated Markdown reports.
@@ -43,7 +49,7 @@
 - Adds a durable scientific specification for the equation, value and coverage
   semantics, invariants, computational equivalence, and limitations.
 - Records the proved magnitude/balance factorization, prior-art boundary, and
-  pre-implementation component semantics without changing the public API.
+  component API semantics without changing the primary scorer.
 - Adds an executable BiocStyle vignette covering canonical examples,
   caller-controlled coverage, dense/sparse matrices, and parallel execution.
 - Expands function help and the README with the complete public contract and

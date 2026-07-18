@@ -449,3 +449,37 @@ locked baseline/candidate gate on a clean, quiescent Linux host.
 Risks/blockers: no component API exists yet; final warm equivalence evidence
 cannot be claimed from the currently saturated host; the native extreme-value
 certificate and biological value remain unimplemented/unvalidated.
+
+2026-07-18 | frontier execution 4 | commit `HEAD`
+Scope: implement A2's additive component API and one-pass native diagnostics
+under the locked numerical/result contract.
+Changed: exported `genefunnel_components()` returns the authoritative score plus
+aligned sum, penalty, Bulla balance, effective size/fraction, semantic/
+availability/conditioning status, and canonical binary-scaled sidecars; dense
+and sparse diagnostic kernels read each input chunk once while the score-only
+path allocates no diagnostic matrices; native double-double significands with a
+separate exponent cover the complete finite binary64 input range without a new
+dependency; help, vignette, README, NEWS, and installed specifications now own
+the public and interpretive contract.
+Verified: independent ordinary/scaled oracles; committed interpretation and
+safe-identity cases; sum/penalty overflow, unsafe cancellation, balance
+underflow, subnormals, signed zero, missingness, permutations, dense/sparse,
+serial/SOCK, malformed native calls, and randomized safe cells; full local and
+clean-tarball suites; `R CMD check --no-manual` `Status: OK`; standalone docs;
+benchmark protocol smoke; locked A2 baseline/candidate smoke = 16/16 exact
+score digests/shapes/environments, byte-identical median R allocations, and RSS
+within smoke limits; combined ASan/UBSan and forced 64-bit-`long double` suites;
+tarball BiocCheck = 0 errors/0 warnings (advisory notes only).
+Decisions: the primary score remains independently calculated and authoritative;
+ordinary diagnostics never use infinity or false zero; only out-of-range
+nonzero values receive scaled pairs; undefined diagnostics use explicit
+`unavailable`; retain package version `0.99.0` while reopened submission scope
+stabilizes.
+Remaining: run A2-1.0.0's exact 30-pair default-path timing/allocation/RSS gate
+on a clean, quiescent Linux host, then close A2 only if all four workload bounds
+pass. Current host load materially exceeds the protocol's fail-closed limit, so
+smoke evidence carries no equivalence claim. Gate mode correctly rejected the
+environment before timing at load/core 1.226 versus the fixed 0.25 ceiling.
+Risks/blockers: external sustained CPU load blocks the performance gate; remote
+macOS/Windows CI awaits the maintainer push; component biological value remains
+an unvalidated H1 hypothesis.
