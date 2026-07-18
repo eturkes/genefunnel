@@ -818,3 +818,33 @@ protocol, then execute and record it before implementing Kang.
 Risks/blockers: strict every-group CellBench error gate can fail on one narrow
 amount/composition/set; Kang may lose cell-type units or defined pathways, which
 must fail visibly rather than change eligibility after inspection.
+
+2026-07-18 | frontier execution 14 | commit `HEAD`
+Scope: implement B-1.0.3 CellBench mechanics and evidence runner before reading
+an external pure profile or endpoint.
+Changed: fail-closed CSV/count validation; outlier removal before C-locale
+splits; all-row CPM; platform pure-profile means; exact common-gene order;
+zero-aware stable pair/control set selection; normalized composition reference
+audits; unbounded observed process-control gap; strict 384-group curve summaries;
+192-condition odd/even correlations per platform and cross-platform complete
+correlation. The clean-tree runner verifies four hashes, installs that commit in
+an isolated library, retains every raw/group/condition/endpoint failure, and
+writes session + artifact hashes. Shared clean-install/protocol/artifact helpers
+are deduplicated from the synthetic runner.
+Verified: red source seam failed while the CellBench implementation was absent;
+fabricated integer-count CSVs exercise positive/zero, zero/positive, and
+zero/zero ranks; 12 sets/672 memberships; 768 observations; 384 curve + 384
+condition rows; all five expected endpoints; exact serial audit/scorer use; and
+missing-group scientific failure. Negative-count and reordered-metadata
+fixtures abort at the intended parser boundaries. Synthetic runner help,
+shared file-map smoke, and isolated install/audit/scorer resolution pass; every
+new function is <=40 lines.
+Decisions: selection reads only training pure profiles; held-out profiles cannot
+affect members. Every error stratum must pass rather than letting a global
+average rescue it. Undefined values remain rows and fail the fixed grid; input
+schema/alignment failures abort. Full downloaded-data execution waits for this
+implementation commit, so no CellBench outcome has been inspected.
+Remaining: run documentation + complete benchmark/aggregation smoke, commit,
+then execute the four pinned files and adversarially audit/record every endpoint.
+Risks/blockers: exact data may reject one or both co-primary gates; output must
+remain a process-control result, never biological validation.

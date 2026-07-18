@@ -203,5 +203,6 @@ synthetic contract/result. The full controlled run passed all co-primary gates,
 but its severe-dropout diagnostic was comparable with the planted
 complementarity effect and does not support a robustness claim. The tracked
 result records that failure envelope. CellBench cross-protocol mixtures and
-Kang donor-replicated perturbation evidence remain prospective, so the
-prototype stays internal.
+Kang donor-replicated perturbation evidence remain prospective. A tracked
+CellBench runner implements the frozen parsing, selection, process-control, and
+endpoint mechanics without exporting the prototype.

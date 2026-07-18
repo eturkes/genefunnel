@@ -14,6 +14,7 @@ source(file.path(benchmark_dir, "protocol.R"))
 source(file.path(benchmark_dir, "provenance.R"))
 source(file.path(benchmark_dir, "report.R"))
 source(file.path(benchmark_dir, "aggregation-protocol.R"))
+source(file.path(benchmark_dir, "aggregation-runner.R"))
 source(file.path(benchmark_dir, "aggregation-synthetic.R"))
 source(file.path(benchmark_dir, "aggregation-synthetic-summary.R"))
 
@@ -73,91 +74,6 @@ aggregation_synthetic_options <- function(args) {
     options
 }
 
-aggregation_clean_git_head <- function(root) {
-    head <- benchmark_command_output("git", c("rev-parse", "HEAD"), root)
-    status <- benchmark_command_output(
-        "git",
-        c("status", "--porcelain", "--untracked-files=normal"),
-        root
-    )
-    if (length(head) != 1L || !grepl("^[0-9a-f]{40}$", head[[1L]])) {
-        stop("Cannot resolve the synthetic runner Git commit.", call. = FALSE)
-    }
-    if (length(status) > 0L) {
-        stop(
-            "Full synthetic execution requires a clean committed tree.",
-            call. = FALSE
-        )
-    }
-    head[[1L]]
-}
-
-aggregation_publish_locked_file <- function(source, target, expected_hash) {
-    if (file.exists(target)) {
-        if (!identical(unname(tools::sha256sum(target)), expected_hash)) {
-            stop("Existing synthetic protocol artifact differs.", call. = FALSE)
-        }
-        return(invisible(target))
-    }
-    if (!file.copy(source, target, overwrite = FALSE) ||
-        !identical(unname(tools::sha256sum(target)), expected_hash)) {
-        stop("Cannot publish the synthetic protocol artifact.", call. = FALSE)
-    }
-    invisible(target)
-}
-
-aggregation_publish_locked_tsv <- function(value, target) {
-    temporary <- tempfile("aggregation-manifest-", tmpdir = dirname(target))
-    on.exit(unlink(temporary, force = TRUE), add = TRUE)
-    benchmark_write_tsv(value, temporary)
-    if (file.exists(target)) {
-        if (!identical(
-            unname(tools::sha256sum(target)),
-            unname(tools::sha256sum(temporary))
-        )) {
-            stop("Existing synthetic manifest differs.", call. = FALSE)
-        }
-    } else if (!file.rename(temporary, target)) {
-        stop("Cannot publish the synthetic manifest.", call. = FALSE)
-    }
-    invisible(target)
-}
-
-aggregation_install_package <- function(root, output_dir) {
-    library <- tempfile("aggregation-library-")
-    dir.create(library)
-    published <- FALSE
-    on.exit({
-        if (!published) {
-            unlink(library, recursive = TRUE, force = TRUE)
-        }
-    }, add = TRUE)
-    log <- file.path(output_dir, "installation.log")
-    status <- system2(
-        file.path(R.home("bin"), "R"),
-        c(
-            "CMD", "INSTALL", "--preclean", "--clean",
-            shQuote(paste0("--library=", library)),
-            shQuote(root)
-        ),
-        stdout = log,
-        stderr = log
-    )
-    if (!identical(status, 0L)) {
-        stop("Committed package installation failed; see installation.log.",
-            call. = FALSE)
-    }
-    .libPaths(c(library, .libPaths()))
-    namespace <- loadNamespace("genefunnel", lib.loc = library)
-    result <- list(
-        library = library,
-        namespace = namespace,
-        audit = get(".aggregation_audit", envir = namespace, inherits = FALSE)
-    )
-    published <- TRUE
-    result
-}
-
 aggregation_synthetic_metadata <- function(
     root,
     head,
@@ -198,20 +114,6 @@ aggregation_synthetic_metadata <- function(
         check.names = FALSE
     )
     rbind(metadata, additions)
-}
-
-aggregation_artifact_manifest <- function(output_dir, files) {
-    paths <- file.path(output_dir, files)
-    if (any(!file.exists(paths))) {
-        stop("Synthetic evidence artifacts are incomplete.", call. = FALSE)
-    }
-    data.frame(
-        artifact = files,
-        bytes = as.numeric(file.info(paths)$size),
-        sha256 = unname(tools::sha256sum(paths)),
-        stringsAsFactors = FALSE,
-        check.names = FALSE
-    )
 }
 
 options <- aggregation_synthetic_options(commandArgs(trailingOnly = TRUE))

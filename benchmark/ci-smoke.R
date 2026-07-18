@@ -119,6 +119,7 @@ controlled_report <- readLines(
 stopifnot(any(grepl("no claim that a thesis analysis was reproduced", controlled_report)))
 
 source(file.path(benchmark_dir, "aggregation-protocol.R"), local = TRUE)
+source(file.path(benchmark_dir, "aggregation-runner.R"), local = TRUE)
 aggregation_protocol <- aggregation_validate_protocol(dirname(benchmark_dir))
 stopifnot(
     identical(aggregation_protocol$registry_rows, 116L),
@@ -126,6 +127,15 @@ stopifnot(
     identical(aggregation_protocol$synthetic_rows, 124416L),
     identical(aggregation_protocol$latent_scenarios, 62208)
 )
+stopifnot(identical(
+    names(aggregation_external_file_map(".")),
+    c(
+        "cellbench_celseq2_counts", "cellbench_celseq2_metadata",
+        "cellbench_sortseq_counts", "cellbench_sortseq_metadata",
+        "kang_batch2_counts", "kang_batch2_genes", "kang_batch2_metadata",
+        "reactome_v97"
+    )
+))
 
 source(file.path(benchmark_dir, "aggregation-synthetic.R"), local = TRUE)
 source(
@@ -163,6 +173,13 @@ stopifnot(identical(aggregation_first, aggregation_second))
 aggregation_validate_summary_smoke(
     aggregation_design,
     aggregation_registry
+)
+
+source(file.path(benchmark_dir, "aggregation-cellbench.R"), local = TRUE)
+aggregation_validate_cellbench_smoke(
+    aggregation_registry,
+    aggregation_audit,
+    getExportedValue("genefunnel", "genefunnel")
 )
 
 cat(

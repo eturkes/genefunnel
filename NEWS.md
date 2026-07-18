@@ -58,6 +58,9 @@
 - Freezes CellBench and Kang external-data execution details - including
   zero-abundance ranking, condition-level gate units, duplicated barcode joins,
   cell-type eligibility, and exact sign tests - before any external endpoint.
+- Adds a fail-closed CellBench runner with verified inputs, CEL-seq2-only set
+  selection, isolated package installation, complete fixed-grid error and
+  split/cross-platform stability evidence, and retained scientific failures.
 
 ## Documentation
 

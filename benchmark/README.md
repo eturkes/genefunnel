@@ -148,6 +148,25 @@ synthetic gate. Its compact tracked
 dropout failure envelope: controlled success does not establish dropout
 robustness or biological validity.
 
+## CellBench known-mixture validation
+
+After placing the four exact `RNAmix_celseq2.*` and `RNAmix_sortseq.*` files
+from [`aggregation-data.tsv`](aggregation-data.tsv) in one external directory,
+run only from a clean committed tree:
+
+```sh
+R_LIBS_USER="$PWD/.agent/R-library" Rscript --vanilla \
+  benchmark/run-aggregation-cellbench.R --data-dir="$PWD/.agent/tmp"
+```
+
+The runner verifies all four payload hashes before parsing, installs the exact
+commit into an isolated library, derives 12 sets only from CEL-seq2 pure
+profiles, and retains every library/set error, all 384 fixed error groups, 384
+condition/set medians, and five co-primary endpoint decisions. Missing fixed
+groups or undefined metrics produce a retained scientific `FAIL`; malformed or
+misaligned input aborts. A scientific failure is a completed result and exits
+successfully. Generated output remains ignored under `benchmark/results/`.
+
 ## Generated artifacts
 
 Every runner writes:
@@ -178,6 +197,11 @@ The aggregation runner additionally writes `observations.tsv`, `endpoints.tsv`,
 `fold-results.tsv`, `predictions.tsv`, `model-coefficients.tsv`,
 `bootstrap.tsv`, `strata.tsv`, `summary.tsv`, `installation.log`, atomic
 `checkpoints/`, and `artifacts.tsv`.
+
+The CellBench runner writes verified `data-files.tsv`, `set-manifest.tsv`,
+`set-membership.tsv`, `pure-profiles.tsv`, `references.tsv`,
+`observations.tsv`, `curve-groups.tsv`, `condition-medians.tsv`,
+`endpoints.tsv`, `summary.tsv`, `installation.log`, and `artifacts.tsv`.
 
 ## Compiled catalogue comparison
 
