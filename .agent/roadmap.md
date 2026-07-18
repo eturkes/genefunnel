@@ -602,3 +602,28 @@ Remaining: rerun C's full gate, then check its benchmark box only if every
 correctness/timing/resource bound passes; A2's independent gate also remains.
 Risks/blockers: this host crossed the ceiling after six of 80 required pairs;
 completion needs sustained load/core <= `0.25`, not a momentary quiet start.
+
+2026-07-18 | frontier execution 8 | commit `HEAD`
+Scope: ratify Workstream B's aggregation theorem and pre-API design boundary.
+Changed: exact weighted Jensen/coordinate/opposing-mass identities + equality,
+strictness, bounds, normalization, physical-sum relation, eligibility, default
+rejection/explicit common-support missingness, interpretation, and targeted
+prior-art audit; independent base-R oracle + randomized/edge-case properties;
+PLAN's first six B gates, README, and NEWS now point to the frozen design.
+Verified: 256 randomized weighted fixtures plus proportional/nonproportional
+equality, maximal complementary cancellation, zero-weight exclusion, scaling,
+physical sums, permutations, and zero-denominator behavior; full source suite =
+79 tests/4,927 expectations; standalone documentation; exact source build;
+installed-tarball `R CMD check --no-manual` = `Status: OK`; tarball BiocCheck =
+0 errors/0 warnings (six advisory notes).
+Decisions: weighted mean is primary; zero-weight units leave eligibility before
+value/support checks; `J/F(mean)` is only the aggregate-score discrepancy
+fraction and is `NA` at zero; field term = aggregation gap, never beta
+diversity, generic heterogeneity, complementarity, synergy, coherence, or
+Simpson effect;
+no biological/public novelty claim follows from the exact theorem.
+Remaining: freeze the additive audit schema + controlled/held-out validation
+protocol before implementation results, then prototype and test the group API;
+rerun C and A2 gates only on a host sustaining load/core <= `0.25`.
+Risks/blockers: normalization is unstable near zero and member-scale/noise/
+preprocessing dependent; biological value remains an unvalidated H2 hypothesis.

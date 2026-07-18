@@ -17,6 +17,9 @@ remains recoverable from Git at `c789a23:PLAN.md`.
 - [`inst/SCIENTIFIC_SPEC.md`](inst/SCIENTIFIC_SPEC.md) = normative scoring
   contract. It owns the equation, accepted values, missingness, coverage,
   identifiers, invariants, interpretation, and limitations.
+- [`inst/AGGREGATION_SPEC.md`](inst/AGGREGATION_SPEC.md) = Workstream B's
+  theorem/design contract. It owns the pre-API estimand, eligibility,
+  missingness, terminology, and novelty boundary.
 - `PLAN.md` = hypotheses, future interfaces, sequencing, evidence gates, and
   kill criteria. Unchecked boxes are prospective work, not release promises.
 - [`.agent/roadmap.md`](.agent/roadmap.md) = chronological execution evidence
@@ -226,23 +229,23 @@ new API internal.
 **Outcome:** quantify when weighted aggregation raises GeneFunnel score through
 cancellation of different member patterns.
 
-- [ ] Prove and property-test the weighted Jensen formula independently of the
+- [x] Prove and property-test the weighted Jensen formula independently of the
   native implementation.
-- [ ] Audit prior art on Jensen gaps for inequality/diversity indices,
+- [x] Audit prior art on Jensen gaps for inequality/diversity indices,
   within-versus-pooled diversity decomposition, mixture/Simpson effects, and
   pseudobulk pathway scoring before making a novelty claim.
-- [ ] Freeze the primary estimand as a weighted mean
+- [x] Freeze the primary estimand as a weighted mean
   \(\bar{x}=\sum_jw_jx_j\), \(w_j\ge0\), \(\sum_jw_j=1\), after common
   preprocessing. Homogeneity relates a physical non-negative sum to a scaled
   mean, but preprocessing need not commute with physical pooling. Ignore
   zero-weight units explicitly.
-- [ ] Specify eligibility before an API: non-negative weights, compatible units
+- [x] Specify eligibility before an API: non-negative weights, compatible units
   and preprocessing, identical ordered members, and common observed support.
-- [ ] For missing data, either reject the group or explicitly recompute all
+- [x] For missing data, either reject the group or explicitly recompute all
   terms on a reported common-support intersection. Report removed member
   identities, reject intersections below two, and never turn missing cells into
   zero. Both unit and aggregate scores use the same intersection.
-- [ ] Define normalized gap as \(J/F(\bar{x})\in[0,1]\) when the aggregate score
+- [x] Define normalized gap as \(J/F(\bar{x})\in[0,1]\) when the aggregate score
   is positive and `NA` otherwise; verify whether that normalization answers the
   intended task before freezing it publicly.
 - [ ] Prototype a group-level audit returning aggregate score, weighted unit

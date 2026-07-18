@@ -50,6 +50,9 @@
   semantics, invariants, computational equivalence, and limitations.
 - Records the proved magnitude/balance factorization, prior-art boundary, and
   component API semantics without changing the primary scorer.
+- Records the weighted aggregation-gap theorem, equality condition, normalized
+  discrepancy, eligibility/missingness policy, and prior-art boundary before
+  any group-level API is implemented.
 - Adds an executable BiocStyle vignette covering canonical examples,
   caller-controlled coverage, dense/sparse matrices, and parallel execution.
 - Expands function help and the README with the complete public contract and

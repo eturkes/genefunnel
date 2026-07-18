@@ -98,6 +98,9 @@ an arbitrary positive shift changes the score and is not a valid workaround.
 - [Component proof and contract](inst/COMPONENTS_SPEC.md) - prior art, exact
   factorization, API semantics, numerical representation, and interpretation
   boundaries for `genefunnel_components()`.
+- [Aggregation-gap proof and pre-API contract](inst/AGGREGATION_SPEC.md) -
+  weighted theorem, exact equality condition, eligibility, missingness, prior
+  art, and interpretation boundaries for the prospective group audit.
 - [Vignette](vignettes/genefunnel.Rmd) - canonical examples, dense/sparse use,
   coverage policies, and serial/parallel execution.
 - [Benchmark protocol](https://github.com/eturkes/genefunnel/blob/main/benchmark/README.md)
