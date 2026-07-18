@@ -117,6 +117,29 @@ checks orchestration and identity only and cannot support a performance claim.
 Gate mode is Linux-only and aborts when recorded one-minute load per logical
 CPU exceeds the protocol's quiescence limit.
 
+## Aggregation synthetic validation
+
+Run the complete frozen B-1.0.2 design only from a clean committed tree:
+
+```sh
+R_LIBS_USER="$PWD/.agent/R-library" Rscript --vanilla \
+  benchmark/run-aggregation-synthetic.R --workers=4
+```
+
+The runner installs that exact tree into a temporary isolated library, checks
+four deterministic generator/audit strata, then evaluates 62,208 shared latent
+scenarios with independent A/B measurements. Scenario-local seeds make one- or
+multi-worker results identical. `--chunk-size=N` controls atomic RDS
+checkpoints; rerunning with the same `--output=DIR` safely resumes only when the
+protocol, Git commit, chunk identities, and manifest match.
+
+Outputs include every observation, co-primary endpoint, factor stratum, paired
+fold prediction, QR coefficient/alias fact, 2,000 bootstrap estimates, compact
+summary/report, and an artifact SHA-256 manifest. A failed scientific gate is a
+valid completed result: the runner records `FAIL` and exits successfully. A
+schema, provenance, installation, arithmetic, or orchestration failure aborts.
+Generated evidence remains ignored under `benchmark/results/`.
+
 ## Generated artifacts
 
 Every runner writes:
@@ -142,6 +165,11 @@ sampler; passive GNU-time process RSS is its resource gate.
 The preparer writes `installations.tsv`, exact source archives, install logs,
 per-library provenance markers, and installed-package tree fingerprints. Gate
 mode recomputes the source and installed fingerprints before any worker runs.
+
+The aggregation runner additionally writes `observations.tsv`, `endpoints.tsv`,
+`fold-results.tsv`, `predictions.tsv`, `model-coefficients.tsv`,
+`bootstrap.tsv`, `strata.tsv`, `summary.tsv`, `installation.log`, atomic
+`checkpoints/`, and `artifacts.tsv`.
 
 ## Compiled catalogue comparison
 

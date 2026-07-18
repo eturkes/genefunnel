@@ -127,6 +127,44 @@ stopifnot(
     identical(aggregation_protocol$latent_scenarios, 62208)
 )
 
+source(file.path(benchmark_dir, "aggregation-synthetic.R"), local = TRUE)
+source(
+    file.path(benchmark_dir, "aggregation-synthetic-summary.R"),
+    local = TRUE
+)
+aggregation_registry <- aggregation_read_registry(file.path(
+    benchmark_dir,
+    "aggregation-protocol.tsv"
+))
+aggregation_design <- aggregation_synthetic_design(aggregation_registry)
+aggregation_smoke <- aggregation_smoke_design(aggregation_design)
+aggregation_audit <- getFromNamespace(".aggregation_audit", "genefunnel")
+aggregation_scale <- as.numeric(aggregation_registry_value(
+    aggregation_registry,
+    "synthetic",
+    "common_scale"
+))
+aggregation_first <- aggregation_simulate_design(
+    aggregation_smoke,
+    aggregation_audit,
+    aggregation_scale,
+    workers = 1L,
+    chunk_size = 2L
+)
+aggregation_second <- aggregation_simulate_design(
+    aggregation_smoke,
+    aggregation_audit,
+    aggregation_scale,
+    workers = 1L,
+    chunk_size = 3L
+)
+aggregation_validate_smoke(aggregation_first, aggregation_smoke)
+stopifnot(identical(aggregation_first, aggregation_second))
+aggregation_validate_summary_smoke(
+    aggregation_design,
+    aggregation_registry
+)
+
 cat(
     "Benchmark and aggregation-protocol smoke checks passed: ",
     normalizePath(output_root),

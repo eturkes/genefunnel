@@ -726,3 +726,34 @@ only then execute all controlled rows and record every passed/failed endpoint.
 Risks/blockers: regression aliasing is expected because maximum weight is fixed
 by declared design factors; frozen pivoted QR chooses one prediction-equivalent
 coefficient representation, so coefficients are descriptive rather than causal.
+
+2026-07-18 | frontier execution 11 | commit `HEAD`
+Scope: implement B-1.0.2 synthetic generation, analysis, and evidence retention
+before running its controlled observations.
+Changed: base-R latent/archetype/log-normal/overlap/outlier generator; exact
+multinomial subunit + member-dropout measurement; independent reference target;
+two-group internal audit call; deterministic serial/fork execution; atomic
+protocol/Git/scenario-bound checkpoints; fixed treatment matrices, ten paired
+QR fits, within-fold bootstrap, endpoints/strata/report/artifact hashes. Full
+runner requires a clean commit, installs that tree in an isolated temporary
+library, resumes only identity-matching chunks, records scientific `FAIL` as a
+valid outcome, and aborts mechanistic/provenance failures. Every helper is <=49
+lines; CI smoke covers generator, audit, full 124,416-row fabricated model
+orchestration, endpoint schema, and deterministic replay.
+Verified: pre-implementation source seam failed because the runner was absent;
+four paired strata pass serial/fork/checkpoint identity, shared-target, complex
+zero-gap, dropout/subunit, metric-bound, and seed assertions; a fabricated full
+design passes ten folds/62,208 predictions, explicit factor contrasts, QR alias
+handling, bootstrap, ten endpoints, and 35 strata; dirty-tree execution refuses;
+isolated self-install exposes the committed internal audit; complete 89-test/
+7,083-expectation source suite, benchmark/controlled/aggregation CI smoke, and
+standalone documentation pass.
+Decisions: one audit call scores both eligible A/B groups per latent scenario;
+workers never own RNG streams because every latent/measurement seed resets;
+post-result thresholds are immutable and hard-checked against the registry;
+generated checkpoints/results remain ignored and never become sole claim proof.
+Remaining: commit this runner while no controlled observation exists, execute
+all 124,416 measurements from that clean commit, adversarially audit artifacts,
+then record every passed/failed gate without changing B-1.0.2.
+Risks/blockers: full runtime and checkpoint volume are not yet measured; severe
+dropout may exclude pairs or reject curve/stability/incremental gates by design.

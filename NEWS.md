@@ -49,6 +49,9 @@
 - Freezes the controlled audit runner's shared-latent RNG, measurement/dropout,
   cross-validation, model, quantile, and bootstrap execution rules before any
   synthetic or downloaded-data result.
+- Adds a clean-commit, isolated-install synthetic audit runner with deterministic
+  fork-safe generation, resumable identity-checked checkpoints, paired model/
+  bootstrap summaries, full failed-endpoint retention, and artifact hashes.
 
 ## Documentation
 

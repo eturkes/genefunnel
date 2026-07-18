@@ -198,4 +198,6 @@ Internal `.aggregation_audit()` implements the frozen additive four-table
 schema: eligibility reasons, effective weights/support, authoritative aggregate
 and unit scores, formula gap, normalized status, identity residual, and removed
 member/unit facts. It remains unexported. Factorial and empirical thresholds
-are frozen in benchmark protocol `B-1.0.2`; their evidence remains prospective.
+are frozen in benchmark protocol `B-1.0.2`. The tracked synthetic runner and CI
+smoke implement its generator/model mechanics; full controlled and empirical
+evidence remains prospective.

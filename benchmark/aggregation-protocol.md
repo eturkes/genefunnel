@@ -332,6 +332,14 @@ held-out donor rule must also pass before documentation suggests perturbation
 sensitivity. The adjusted sign-test gate is mandatory for any biological
 effect claim.
 
+`run-aggregation-synthetic.R` requires a clean committed tree, installs that
+tree into an isolated temporary library, checks deterministic generator/audit
+and fabricated model-orchestration controls, and retains all observations,
+folds, coefficients, bootstrap estimates, endpoints, failures, environment
+facts, and artifact hashes. Checkpoints bind to protocol hash, Git commit, and
+ordered scenario IDs. Scientific gate failure completes successfully and is
+reported as `FAIL`; provenance/schema/arithmetic failure aborts.
+
 Failure invokes PLAN's fallback: retain the theorem and aggregate-then-score
 warning; keep or remove the internal prototype according to maintenance value.
 No threshold is relaxed after seeing results. Generated downloads, expanded
