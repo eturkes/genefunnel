@@ -108,8 +108,8 @@ an arbitrary positive shift changes the score and is not a valid workaround.
 - [Vignette](vignettes/genefunnel.Rmd) - canonical examples, dense/sparse use,
   coverage policies, and serial/parallel execution.
 - [Benchmark protocol](https://github.com/eturkes/genefunnel/blob/main/benchmark/README.md)
-  - controlled scientific assertions plus reproducible timing, memory,
-  output-identity, and environment evidence.
+  - explicitly versioned controlled assertions plus reproducible timing,
+  memory, output-identity, and environment evidence.
 
 After installation, run `vignette("genefunnel", package = "genefunnel")` or
 `citation("genefunnel")`.

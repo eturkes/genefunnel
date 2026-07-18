@@ -1,0 +1,2 @@
+benchmark/*.R text eol=lf
+benchmark/*.tsv text eol=lf

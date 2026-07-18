@@ -1,0 +1,11 @@
+index_version	protocol_version	scope	role	order_code	path	sha256
+F-I-1.0.0	1.0.0	shared	protocol_manifest	001	benchmark/protocol.tsv	f1b6c2be78886e14ea01cd9eec5a205377734f0ebf4d29a57164bf12ff21efd6
+F-I-1.0.0	1.0.0	shared	protocol_parser	002	benchmark/protocol.R	5c9f40b8fe011c628f10557de8acd1bf4fa0de5b1c40bb71470f4631bfe12215
+F-I-1.0.0	1.0.0	shared	fixture_library	003	benchmark/fixtures.R	635076c52c996a1d92def2ede71efe2a5fd49345b7f4ab7e14b74e41ec26217a
+F-I-1.0.0	1.0.0	shared	provenance_library	004	benchmark/provenance.R	2141396955cbf0d6ae56e6ae760311363f2b3a76278ee21245644fc41c694ac1
+F-I-1.0.0	1.0.0	shared	report_library	005	benchmark/report.R	5730733d22ee3c48ea3424f3e4719d2b39131adb4e5820737e17fa2af9507f85
+F-I-1.0.0	1.0.0	performance	runner	006	benchmark/run.R	5ec98034ac324838623389859feb9a639f25c12a3b3f7f32f98e9bf27acb62f0
+F-I-1.0.0	1.0.0	performance	worker	007	benchmark/worker.R	a066cdc21f4b3092f826c886a35eb122d77238d41b2bea083d6e3e023007f6f5
+F-I-1.0.0	1.0.0	performance	measurement_library	008	benchmark/measure.R	d5dcb2efe9a54864032b22f66e6cc56c1fe91be57437c250811f48a4134d4f29
+F-I-1.0.0	1.0.0	controlled	runner	009	benchmark/run-controlled.R	8ad4fda1530685072ad4c902f280ade36e9015085bba81a3cfcd8607f523ed7f
+F-I-1.0.0	1.0.0	controlled	assertion_library	010	benchmark/controlled.R	69fb07ac48cb56dcdb088f665284367183bdf619b6a7a1f6256f1ee246f04368

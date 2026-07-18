@@ -35,6 +35,9 @@
   term would overflow on those platforms.
 - Adds a reproducible synthetic benchmark harness with identity-checked output
   digests and environment metadata.
+- Adds an explicit-version protocol dispatcher and SHA-256 index that freeze
+  protocol 1.0.0's runner/manifest/fixture closure without an implicit latest
+  alias or new dependency.
 - Locks a dependency-free scaled numerical oracle and paired default-path
   performance protocol before component implementation.
 - Freezes the internal observed-member sensitivity schema, dependency-free

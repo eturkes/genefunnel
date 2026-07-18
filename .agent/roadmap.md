@@ -1357,3 +1357,36 @@ unblocked PLAN frontier requires selection after reconciling independent lanes.
 Risks/blockers: a finite score with one unknown is easy to misstate as an
 identified missing value; the specification and exact plateau test lock that
 distinction.
+
+2026-07-18 | frontier execution 32 | commit `HEAD`
+Scope: close Workstream F's protocol-version selection prerequisite while
+preserving executable benchmark 1.0.0 byte-for-byte.
+Changed: machine index `F-I-1.0.0`; explicit-version/suite dispatcher; normative
+index note; LF Git attributes; CI dispatch + mutation rejection; PLAN/README/
+NEWS closure. Ten SHA-256-pinned files cover 1.0.0's manifest/parser, common
+fixture/provenance/report code, performance runner/worker/measurement code, and
+controlled runner/assertions. Index SHA-256 =
+`3d34bf1bf40cadc0f64fdbc65fbe0e7ac6fff3e888a6cb74a6c069fc2d67577b`.
+Verified: validator reports one version, two suites, ten files; every file hash
+matches. Independent appended-byte mutations to the index and a frozen
+dependency both fail before dispatch. `--list`, help, unknown selection,
+required explicit selection, passthrough to a path containing spaces, and
+non-zero runner status propagation behave as specified. Both performance-smoke
+and complete controlled 1.0.0 suites pass through the wrapper with prior output
+digests unchanged; complete aggregation/sensitivity smokes also pass. Full-
+vignette source build excludes `.gitattributes`; rebuilt-tarball
+`R CMD check --no-manual` = `Status: OK`.
+Decisions: use base R 4.5+ `tools::sha256sum()` (public-domain implementation)
+and portable `system2()`/`shQuote()`; add no dependency. Explicit selection has
+no moving `latest` alias. Hashes identify bytes and detect drift, never prove
+origin/security/scientific adequacy. Protocol 1.0.0 remains analytic score
+assertions + descriptive synthetic resource work only. Implementation repair =
+new patch version; any method/scenario/assertion = prospectively committed
+2.0.0; old files stay immutable/executable.
+Remaining: commit; execute Workstream F's next item by prospectively specifying
+2.0.0 assays, units, hypotheses/endpoints, effects, splits, exclusions,
+multiplicity, preprocessing, catalogues, coverage, competitors, and seeds before
+implementing or inspecting a comparative result. A2/C gates remain separately
+host-admission blocked.
+Risks/blockers: SHA validation is intentionally not an authenticity mechanism.
+Existing non-LF checkouts must honor tracked attributes before byte validation.

@@ -5,11 +5,55 @@ if (length(smoke_file) != 1L) {
     stop("Cannot locate benchmark/ci-smoke.R.", call. = FALSE)
 }
 benchmark_dir <- dirname(normalizePath(sub("^--file=", "", smoke_file)))
+source(file.path(benchmark_dir, "protocol-index.R"), local = TRUE)
+protocol_index <- benchmark_protocol_validate_index(dirname(benchmark_dir))
+stopifnot(
+    identical(protocol_index$index_version, "F-I-1.0.0"),
+    identical(protocol_index$protocol_versions, "1.0.0"),
+    identical(protocol_index$files, 10L),
+    identical(
+        protocol_index$suites$scope,
+        c("performance", "controlled")
+    )
+)
 output_root <- Sys.getenv(
     "GENEFUNNEL_BENCHMARK_OUTPUT",
     file.path(benchmark_dir, "results", "ci-smoke")
 )
 unlink(output_root, recursive = TRUE, force = TRUE)
+benchmark_protocol_mutation_rejected <- function() {
+    scratch <- file.path(output_root, "protocol-index-adversary")
+    on.exit(unlink(scratch, recursive = TRUE, force = TRUE), add = TRUE)
+    dir.create(file.path(scratch, "benchmark"), recursive = TRUE)
+    relative <- unique(c(
+        "benchmark/protocol-index.tsv", protocol_index$index$path
+    ))
+    copied <- file.copy(
+        file.path(dirname(benchmark_dir), relative), file.path(scratch, relative)
+    )
+    if (!all(copied)) return(FALSE)
+    benchmark_protocol_validate_index(scratch)
+    append_byte <- function(path) {
+        connection <- file(path, open = "ab")
+        on.exit(close(connection), add = TRUE)
+        writeBin(as.raw(10L), connection)
+    }
+    dependency <- file.path(scratch, protocol_index$index$path[[1L]])
+    append_byte(dependency)
+    dependency_rejected <- inherits(try(
+        benchmark_protocol_validate_index(scratch), silent = TRUE
+    ), "try-error")
+    file.copy(
+        file.path(dirname(benchmark_dir), protocol_index$index$path[[1L]]),
+        dependency, overwrite = TRUE
+    )
+    append_byte(file.path(scratch, "benchmark", "protocol-index.tsv"))
+    index_rejected <- inherits(try(
+        benchmark_protocol_validate_index(scratch), silent = TRUE
+    ), "try-error")
+    dependency_rejected && index_rejected
+}
+stopifnot(benchmark_protocol_mutation_rejected())
 performance_output <- file.path(output_root, "performance")
 controlled_output <- file.path(output_root, "controlled")
 
@@ -17,7 +61,9 @@ status <- system2(
     Sys.which("Rscript"),
     c(
         "--vanilla",
-        shQuote(file.path(benchmark_dir, "run.R")),
+        shQuote(file.path(benchmark_dir, "run-protocol.R")),
+        "--protocol=1.0.0",
+        "--suite=performance",
         "--preset=smoke",
         "--repeats=1",
         "--workers=2",
@@ -71,7 +117,9 @@ controlled_status <- system2(
     Sys.which("Rscript"),
     c(
         "--vanilla",
-        shQuote(file.path(benchmark_dir, "run-controlled.R")),
+        shQuote(file.path(benchmark_dir, "run-protocol.R")),
+        "--protocol=1.0.0",
+        "--suite=controlled",
         shQuote(paste0("--output=", controlled_output))
     )
 )

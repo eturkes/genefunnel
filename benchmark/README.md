@@ -2,12 +2,14 @@
 
 # GeneFunnel benchmark protocol
 
-The tracked runners plus [`protocol.tsv`](protocol.tsv) define benchmark
-protocol 1.0.0. The audit manifest records scenario seeds, dimensions, matrix
-and gene-set construction, preprocessing, methods, assertions, and environment
-artifacts; each execution also writes its actual expanded settings. A change to
-fixture meaning, method, or assertion requires a protocol version change in
-both `protocol.tsv` and `protocol.R`.
+The version-selecting [`protocol index`](protocol-index.md) and tracked runners
+define executable benchmark protocol 1.0.0. The audit
+[`manifest`](protocol.tsv) records scenario seeds, dimensions, matrix and
+gene-set construction, preprocessing, methods, assertions, and environment
+artifacts; each execution also writes its actual expanded settings. The index
+SHA-256 pins the complete runner/manifest/fixture closure, requires an explicit
+version and suite, and has no implicit latest alias. A new method, scenario, or
+assertion requires protocol 2.0.0 before results are inspected.
 
 All fixtures are synthetic, deterministic, generated without network access,
 and scored from an installed package in fresh R processes. Generated evidence
@@ -32,11 +34,27 @@ R_LIBS_USER="$PWD/.agent/R-library" R CMD INSTALL \
   --library="$PWD/.agent/R-library" .
 ```
 
+List or validate the registered executable suites with:
+
+```sh
+Rscript --vanilla benchmark/run-protocol.R --list
+Rscript --vanilla -e \
+  'source("benchmark/protocol-index.R"); \
+   print(benchmark_protocol_validate_index("."))'
+```
+
+The dependency-free harness uses base R
+[`tools::sha256sum()`](https://stat.ethz.ch/R-manual/R-patched/library/tools/html/sha256sum.html)
+for byte identity and portable
+[`system2()`](https://stat.ethz.ch/R-manual/R-patched/library/base/html/system2.html)
+dispatch. Hashes detect registered-byte drift; they are not security signatures
+or origin claims.
+
 ## Controlled scientific protocol
 
 ```sh
 R_LIBS_USER="$PWD/.agent/R-library" Rscript --vanilla \
-  benchmark/run-controlled.R
+  benchmark/run-protocol.R --protocol=1.0.0 --suite=controlled
 ```
 
 The runner checks analytic or independently paired expectations for:
@@ -61,7 +79,8 @@ Select a preset and isolated repeat count:
 
 ```sh
 R_LIBS_USER="$PWD/.agent/R-library" Rscript --vanilla \
-  benchmark/run.R --preset=full --repeats=3 --workers=2
+  benchmark/run-protocol.R --protocol=1.0.0 --suite=performance \
+  --preset=full --repeats=3 --workers=2
 ```
 
 Presets:

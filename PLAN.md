@@ -517,7 +517,7 @@ speed alone is not scientific novelty: [PLAID](https://academic.oup.com/bioinfor
 already demonstrates large sparse catalogue/sample workloads. GeneFunnel's
 claim must therefore rest on its estimand, diagnostics, and validated domain.
 
-- [ ] Add a version-selecting harness plus frozen runner/manifest/fixtures for
+- [x] Add a version-selecting harness plus frozen runner/manifest/fixtures for
   executable protocol `1.0.0`; introduce `2.0.0` only when new methods,
   scenarios, or assertions land.
 - [ ] Pre-specify in that committed protocol target assays, aggregation level,
@@ -554,6 +554,16 @@ claim must therefore rest on its estimand, diagnostics, and validated domain.
   public claim.
 - [ ] Record negative results and narrow the supported domain when simple
   baselines win.
+
+Index `F-I-1.0.0` now SHA-256-pins the complete ten-file execution closure for
+protocol `1.0.0`, requires explicit version/suite selection, and dispatches its
+performance or controlled runner in a fresh R process. LF checkout makes file
+identity cross-platform; the hash is content identity, not a signature. This
+version contains only the existing analytic score assertions and descriptive
+synthetic resource workloads. It makes no comparative, external, biological,
+or thesis-reproduction claim. The first new method, scenario, or assertion in
+the pre-specified scientific programme must therefore enter committed protocol
+`2.0.0`, leaving `1.0.0` immutable and executable.
 
 **Go:** the protocol's combined primary-task rule, minimum effects, multiplicity
 control, and independent replication pass against sum/mean and relevant methods,

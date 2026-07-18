@@ -1,4 +1,5 @@
 ^genefunnel\.Rproj$
+^\.gitattributes$
 ^\.Rproj\.user$
 ^AGENTS\.md$
 ^PLAN\.md$
