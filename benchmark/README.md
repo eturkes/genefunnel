@@ -17,6 +17,14 @@ The separate [`components-protocol.md`](components-protocol.md) and
 [`components-protocol.tsv`](components-protocol.tsv) freeze A2's numerical and
 default-path performance gates without changing scientific protocol 1.0.0.
 
+Workstream B's separate
+[`aggregation protocol B-1.0.0`](aggregation-protocol.md), machine
+[`registry`](aggregation-protocol.tsv), and exact external
+[`data manifest`](aggregation-data.tsv) freeze the internal audit schema,
+controlled factorial, known-mixture validation, donor split, endpoints, and
+go/fallback rules before prototype results. Its external data remain ignored;
+the source manifest pins HTTPS bytes and adds no package dependency.
+
 ## Install
 
 ```sh

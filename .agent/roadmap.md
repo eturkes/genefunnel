@@ -627,3 +627,30 @@ protocol before implementation results, then prototype and test the group API;
 rerun C and A2 gates only on a host sustaining load/core <= `0.25`.
 Risks/blockers: normalization is unstable near zero and member-scale/noise/
 preprocessing dependent; biological value remains an unvalidated H2 hypothesis.
+
+2026-07-18 | frontier execution 9 | commit `HEAD`
+Scope: freeze Workstream B implementation/validation protocol before prototype
+or empirical results.
+Changed: protocol `B-1.0.0` fixes internal signature, four-table schema,
+validation/missingness/reason/order/numerical contracts; exact 62,208-latent/
+124,416-measurement resolution-IV synthetic design; curve, stability, null,
+incremental, known-mixture, donor, multiplicity, and fallback gates; eight-file
+SHA-256 data manifest pins CellBench RNA mixtures, Kang GSE96583, and Reactome
+v97 without package dependencies; CI smoke validates the machine registry.
+Verified: registry = 60 unique rows; design = 1,944 core x 32 orthogonal runs x
+two independent measurements with every degree-1/2/3 contrast balanced; all
+eight downloaded artifacts = 81,600,675 exact bytes + matching SHA-256;
+existing dense/sparse serial/SOCK + controlled benchmark smoke; standalone
+documentation; exact source build; installed-tarball `R CMD check --no-manual`
+= `Status: OK`.
+Decisions: prototype stays internal until controlled, cross-protocol mixture,
+and real-data stability gates pass; external benchmark data remain ignored and
+dependency-free; CEL-seq2 trains while SORT-seq is held out; Kang inference
+uses eight paired donors, never cells/pathways as replicates; biological claims
+need the separately frozen held-out + Holm-adjusted exact sign-test gate.
+Remaining: implement `.aggregation_audit()` exactly, add API-level adversarial/
+oracle coverage, then implement and run synthetic, CellBench, and Kang runners
+without changing `B-1.0.0` after results.
+Risks/blockers: severe dropout/protocol effects may deliberately reject H2;
+data-derived mixture sets and pathway identifier mapping require audited stable
+ties/alignment; no theorem guarantees curve accuracy or biological utility.

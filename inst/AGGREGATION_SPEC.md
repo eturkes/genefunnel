@@ -196,4 +196,5 @@ sums, and unit/member permutations.
 A future group-audit API must be additive and must return eligibility reasons,
 effective weights/support, aggregate score, weighted unit score, absolute gap,
 normalized gap/status, and removed member/unit facts. Its schema and factorial
-validation thresholds must be frozen before implementation results.
+validation thresholds are frozen pre-result in benchmark protocol `B-1.0.0`;
+the prototype and its empirical evidence remain prospective.
