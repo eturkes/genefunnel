@@ -259,7 +259,7 @@ cancellation of different member patterns.
   level. Vary gene baselines, dynamic ranges, variances, and correlations;
   separate depth effects from member-pattern cancellation; stratify complexes,
   cascades, regulatory signatures, and mixed-direction sets.
-- [ ] Validate first on known artificial mixtures or purified populations, then
+- [x] Validate first on known artificial mixtures or purified populations, then
   on perturbation data with biological replicates and donor-level inference;
   never treat cells as independent donors.
 
@@ -269,16 +269,19 @@ Its 0.5-dropout stratum nevertheless inflated the marginal median observed gap
 by 0.09762 versus 0.10728 from complementarity 0 to 1, and its 90th-percentile
 curve error was 0.30464. This meets the qualitative fallback concern closely
 enough to require a severe-dropout warning and blocks any robustness claim;
-the donor gate remains open.
+the external gates were therefore still required.
 
 The first external stage then failed both frozen CellBench gates; see the
 tracked [negative result](benchmark/aggregation-cellbench-result.md). All 288
 pair-set error groups failed, 1,434/4,848 measured scores were exact zero, and
 only 88/192 conditions were complete across platforms. This closes the public
-promotion route under B-1.0.3. Kang/Reactome remains prospective
-characterization with a committed fail-closed runner; its full pinned-data
-execution remains pending and cannot rescue that gate, so the combined
-validation box stays unchecked.
+promotion route under B-1.0.3. The subsequent pinned
+[Kang/Reactome result](benchmark/aggregation-kang-result.md) passed technical
+split stability (median/q10 Spearman 0.9166/0.8399), but interferon gamma
+repeated in only 2/4 held-out donors and neither primary pathway passed its
+Holm-adjusted donor sign test. The ordered external validation is complete;
+its negative decisions reinforce rather than rescue the theorem-plus-warning
+fallback.
 
 **Go:** gap meets the protocol's pre-specified curve-error,
 replicate-stability, and incremental-effect thresholds under controlled

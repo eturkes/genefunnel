@@ -69,6 +69,10 @@
   alignment, deterministic cell-type splits, raw-UMI pseudobulk profiles,
   fixed 16-group technical stability, held-out donor directions, exact sign
   tests, and complete scientific-failure evidence.
+- Records the Kang result: technical split stability passed, but interferon
+  gamma repeated in only two of four held-out donors and neither primary
+  pathway passed its Holm-adjusted exact donor sign test. The perturbation and
+  biological-effect claims therefore fail.
 
 ## Documentation
 

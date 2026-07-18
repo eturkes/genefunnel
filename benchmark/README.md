@@ -195,6 +195,14 @@ two held-out/sign-test decisions, and six endpoints. Undefined fixed-grid
 metrics produce a retained scientific `FAIL`; malformed input aborts. This
 characterization cannot rescue the already-failed CellBench promotion gate.
 
+The complete B-1.0.3 execution from clean commit `62d42dc` passed technical
+split stability but failed the combined held-out and biological-effect gates.
+The compact tracked [`result`](aggregation-kang-result.md) and
+[`endpoint table`](aggregation-kang-result.tsv) retain unit/pathway support,
+the 16 correlations, donor directions, and exact sign-test failure. Workstream
+B's ordered external validation is complete; no public audit or perturbation
+claim follows.
+
 ## Generated artifacts
 
 Every runner writes:

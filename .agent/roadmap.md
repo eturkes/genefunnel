@@ -933,3 +933,39 @@ changing a threshold, donor, pathway, or decision rule; no endpoint was visible.
 Remaining: commit the repair, rerun pinned inputs from that clean snapshot, then
 audit/replay and track the result.
 Risks/blockers: later parsing or scientific gates can still fail independently.
+
+2026-07-18 | frontier execution 18 | commit `HEAD`
+Scope: execute, independently audit, replay, and compactly retain the final
+B-1.0.3 Kang/Reactome characterization.
+Changed: tracked six-endpoint result + support/failure anatomy; PLAN closes the
+ordered external-validation item as executed while selecting the theorem-only
+fallback. README, NEWS, aggregation protocol/spec, and result interpretation
+reject perturbation sensitivity, a biological claim, and public audit promotion.
+Verified: clean source `62d42dc3652d810b3c7ea58c70d29986b42504ce`;
+four inputs = 77,527,715 exact bytes. The 313 duplicated raw barcodes join all
+29,065 metadata rows exactly; nine missing cell labels filter out. Of 23,981
+registered singlet candidates, 23,649 cells in 84/96 eligible units remain.
+First-occurrence collapse maps 35,635 rows to 32,938 symbols; 1,728/2,868 human
+Reactome pathways (59,969 memberships) retain size 8-128. All 82,944 fixed
+pathway/view rows are audit-eligible; 80,633 normalized gaps are defined and
+2,311 exact-zero aggregates retain `NA`. All 16 split correlations are defined
+over 1,621-1,690 common pathways; median/q10 = 0.916608/0.839918, so both
+technical endpoints pass. Interferon alpha/beta fixes positive direction and
+matches 3/4 held-out donors, but 6/8 positive signs give exact/Holm p
+0.2890625/0.578125. Interferon gamma fixes negative direction, matches only 2/4,
+and has 4/8 positive signs, p=1. Endpoint vector = pass/pass/pass/fail/fail/fail.
+Independent artifact, unit, pathway, score-identity, contrast, binomial/Holm,
+and endpoint reconstruction passes: all 19 artifact hashes match, maximum
+relative identity residual = 9.30e-15, and rounded-table rank-tie delta <=4.34e-5
+cannot approach a gate. A second isolated run reproduces all 12 scientific
+tables byte-exact; ordered hash-stream SHA-256 =
+`040d2beca3c0bf41314c6c152fdffd666601bd037e023cab9dfd09aaa837168b`.
+Decisions: technical repeatability alone cannot establish donor-replicated
+sensitivity. Held-out gate = FAIL; biological gate = FAIL. CellBench had already
+closed export; Kang independently withholds perturbation/biological claims.
+Workstream B ends with the theorem, internal prototype as maintenance permits,
+and aggregate-then-score + severe-dropout/small-denominator warnings.
+Remaining: continue PLAN at the next unchecked executable item; no Workstream B
+empirical gate remains.
+Risks/blockers: none for B execution; public promotion requires a newly frozen
+future protocol, not reinterpretation of B-1.0.3.

@@ -397,6 +397,15 @@ decisions, environment facts, and artifact hashes. Missing or undefined
 scientific endpoints record `FAIL`; malformed bytes, schema, alignment, or
 arithmetic aborts.
 
+The complete pinned execution passed Kang technical stability (median/type-8
+10th-percentile split Spearman 0.91661/0.83992) but failed the combined held-out
+gate: interferon gamma matched its training direction in only two of four
+held-out donors. Holm-adjusted exact sign-test p-values were 0.578125 and 1, so
+neither biological-effect endpoint passed. The tracked
+[`result`](aggregation-kang-result.md) retains exact provenance and all six
+endpoints. Together with CellBench failure, this completes negative external
+validation and selects PLAN's fallback without exporting the prototype.
+
 Failure invokes PLAN's fallback: retain the theorem and aggregate-then-score
 warning; keep or remove the internal prototype according to maintenance value.
 No threshold is relaxed after seeing results. Generated downloads, expanded

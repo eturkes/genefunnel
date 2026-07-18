@@ -186,7 +186,7 @@ not a patent search or exhaustive review.
 | Replicate-aware pseudobulk | [Crowell et al. (2020)](https://doi.org/10.1038/s41467-020-19894-4); [Zimmerman et al. (2021)](https://doi.org/10.1038/s41467-021-21038-1); [Squair et al. (2021)](https://doi.org/10.1038/s41467-021-25960-2) | Pseudobulk methods preserve biological-replicate structure for inference. They do not establish that nonlinear pathway scoring commutes with aggregation; this contract also forbids treating cells as independent donors. |
 | Pathway-score benchmarks | [Zhang et al. (2020)](https://doi.org/10.1016/j.csbj.2020.10.007); [PathwayBench v3 software record (2026)](https://doi.org/10.5281/zenodo.19601134) | Single-cell and pseudobulk pathway-score accuracy/stability are active benchmark topics; the current software record explicitly includes aggregation stability. Neither source tests this GeneFunnel identity or supports a biological novelty claim. |
 
-## Executable evidence and next gate
+## Executable evidence and outcome
 
 `tests/testthat/helper-aggregation-reference.R` implements the coordinate
 formula and opposing-mass formula in base R, independently of native code.
@@ -204,6 +204,8 @@ but its severe-dropout diagnostic was comparable with the planted
 complementarity effect and does not support a robustness claim. The tracked
 result records that failure envelope. Both frozen CellBench gates failed:
 pair-set errors were large and exact-zero measured scores left the fixed
-condition grid incomplete. Kang donor-replicated perturbation evidence remains
-prospective characterization, but cannot rescue the failed public-promotion
-gate. The prototype stays internal.
+condition grid incomplete. Kang donor-replicated perturbation evidence was
+technically split-stable, but interferon gamma failed the held-out direction
+rule and neither primary pathway passed its Holm-adjusted exact donor sign
+test. The ordered external validation is complete and negative; it cannot
+rescue the failed public-promotion gate. The prototype stays internal.
