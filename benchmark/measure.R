@@ -82,7 +82,8 @@ benchmark_start_memory_monitor <- function(interval_sec = 0.01) {
         ))
     }
 
-    done <- tempfile("genefunnel-memory-monitor-")
+    done <- tempfile("genefunnel-memory-monitor-done-")
+    ready <- tempfile("genefunnel-memory-monitor-ready-")
     job <- parallel::mcparallel({
         monitor_pid <- Sys.getpid()
         peak_rss_kib <- baseline
@@ -108,6 +109,9 @@ benchmark_start_memory_monitor <- function(interval_sec = 0.01) {
                 peak_processes <- sum(is.finite(rss))
             }
             samples <- samples + 1L
+            if (samples == 1L) {
+                file.create(ready)
+            }
             if (file.exists(done) || !dir.exists(sprintf("/proc/%d", root))) {
                 break
             }
@@ -120,12 +124,24 @@ benchmark_start_memory_monitor <- function(interval_sec = 0.01) {
         )
     }, silent = TRUE, mc.set.seed = FALSE)
 
+    deadline <- Sys.time() + 5
+    while (!file.exists(ready) && Sys.time() < deadline) {
+        Sys.sleep(0.001)
+    }
+    if (!file.exists(ready)) {
+        file.create(done)
+        parallel::mccollect(job, wait = TRUE)
+        unlink(c(done, ready))
+        stop("Process-tree memory monitor did not become ready.", call. = FALSE)
+    }
+
     list(
         supported = TRUE,
         baseline_rss_kib = baseline,
         scope = if (nzchar(token)) "tagged-process aggregate" else "descendant aggregate",
         interval_sec = interval_sec,
         done = done,
+        ready = ready,
         job = job
     )
 }
@@ -143,7 +159,7 @@ benchmark_stop_memory_monitor <- function(monitor) {
 
     file.create(monitor$done)
     result <- parallel::mccollect(monitor$job, wait = TRUE)[[1L]]
-    unlink(monitor$done)
+    unlink(c(monitor$done, monitor$ready))
     if (inherits(result, "try-error")) {
         warning("Process-tree memory monitor failed: ", result, call. = FALSE)
         result <- c(

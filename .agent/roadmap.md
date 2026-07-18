@@ -556,3 +556,30 @@ than latent runner code; version before any runner/result exists.
 Remaining: implement and smoke the `C-1.0.2` harness; full run awaits a clean,
 quiescent Linux host.
 Risks/blockers: unchanged strict benefit gate + global load blocker.
+
+2026-07-18 | frontier execution 7 | commit `HEAD`
+Scope: make compiled-catalogue protocol `C-1.0.2` executable and auditable.
+Changed: exact Git-snapshot preparer + SHA-256 source/installed provenance;
+machine-validated dense/sparse fixtures; adjacent paired timing plus fresh,
+isolated timing/allocation/RSS workers; ready-synchronized resource-only `/proc`
+monitor; compilation/validation/codec/resource facts; 20-pair intervals; fixed
+adversarial + fresh/reused SOCK audit; complete machine/human evidence outputs.
+Verified: all four full fixtures construct exactly 50,000 canonical memberships;
+preparer validates baseline `a573c12` + candidate source/installed trees; final
+96-process separate-snapshot smoke produces 32 merged observations, 16/16 paired
+digest/fact/environment identities, 13/13 correctness assertions, four summaries,
+and `all_pass=TRUE`, `performance_claim=FALSE`; every scoring monitor records
+5-9 samples; protocol SHA/schema, four full membership counts, CLI/parse/local
+links/whitespace pass. Audit found/fixed duplicate schema, quote reporting,
+unsynchronized sampling, mislabelled whole-worker RSS, and resource work between
+paired timings.
+Decisions: smoke applies correctness/orchestration only; gate uses fresh R
+processes, fixed pair order + load checks, one-sided log-ratio intervals, and
+fails unavailable/undersampled metrics; worker start/first/reused time remains
+descriptive.
+Remaining: prepare the committed candidate snapshot; run gate only at clean HEAD
+with load/core <= 0.25; check C's benchmark box only if every fixed threshold
+passes. A2's independent gate remains open under the same host constraint.
+Risks/blockers: smoke compiled/list ratios are intentionally non-evidentiary and
+show validation overhead can dominate tiny fixtures; final smoke load/core
+oscillates across the strict `0.25` boundary (`0.214-0.276`).

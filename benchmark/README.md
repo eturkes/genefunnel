@@ -135,8 +135,59 @@ The preparer writes `installations.tsv`, exact source archives, install logs,
 per-library provenance markers, and installed-package tree fingerprints. Gate
 mode recomputes the source and installed fingerprints before any worker runs.
 
-`Rprofmem()` reports cumulative manager-side R allocations, not retained or
-native allocation. On Linux, a 10 ms `/proc` sampler records aggregate resident
+## Compiled catalogue comparison
+
+Protocol [`C-1.0.2`](catalogue-protocol.md) tests the internal compiled-catalogue
+spike without promoting an API. Prepare the exact named-list parent and current
+candidate from Git snapshots:
+
+```sh
+R_LIBS_USER="$PWD/.agent/R-library" Rscript --vanilla \
+  benchmark/prepare-catalogue.R \
+  --output="$PWD/.agent/tmp/catalogue-comparison"
+```
+
+Exercise all isolated timing/resource, digest, parser/tamper, and fresh/reused
+SOCK paths with downscaled fixtures:
+
+```sh
+R_LIBS_USER="$PWD/.agent/R-library" Rscript --vanilla \
+  benchmark/run-catalogue.R \
+  --baseline-library="$PWD/.agent/tmp/catalogue-comparison/list-library" \
+  --candidate-library="$PWD/.agent/tmp/catalogue-comparison/compiled-library" \
+  --mode=smoke
+```
+
+Smoke uses four balanced pairs, two batches, and smaller matrices. It must pass
+identity/orchestration but records `performance_claim = FALSE` and applies no
+timing/resource threshold. Gate mode requires a clean repository at the full
+candidate SHA plus baseline
+`a573c124909235e41bdbc3cfae950947465d8755`; it verifies both snapshot markers,
+aborts above load/core `0.25`, and executes the fixed 20-pair/five-batch decision:
+
+```sh
+candidate_id="$(git rev-parse HEAD)"
+R_LIBS_USER="$PWD/.agent/R-library" Rscript --vanilla \
+  benchmark/run-catalogue.R \
+  --baseline-library="$PWD/.agent/tmp/catalogue-comparison/list-library" \
+  --candidate-library="$PWD/.agent/tmp/catalogue-comparison/compiled-library" \
+  --baseline-id=a573c124909235e41bdbc3cfae950947465d8755 \
+  --candidate-id="$candidate_id" \
+  --mode=gate
+```
+
+The runner writes tracked-protocol and expanded manifests, exact package
+records, correctness/load/session metadata, isolated run logs, raw/paired/
+summary tables, a report, and a machine decision. Generated evidence remains
+under ignored `benchmark/results/` or `.agent/tmp/` paths. Each catalogue
+observation uses separate fresh timing, allocation, and RSS processes. GNU time
+records the timing process's whole-process maximum; a ready-synchronized,
+resource-only `/proc` sampler records compilation and scoring peak increments.
+No concurrent sampler perturbs primary timing.
+
+For the general computational runner, `Rprofmem()` reports cumulative
+manager-side R allocations, not retained or native allocation. On Linux, a 10
+ms `/proc` sampler records aggregate resident
 memory for the scoring process tree while excluding itself. The baseline
 includes the input fixture; the increment includes output, bounded work
 buffers, backend startup, and workers. Compatible GNU `time` records maximum
