@@ -388,6 +388,15 @@ facts, and artifact hashes. Checkpoints bind to protocol hash, Git commit, and
 ordered scenario IDs. Scientific gate failure completes successfully and is
 reported as `FAIL`; provenance/schema/arithmetic failure aborts.
 
+The CellBench and Kang runners likewise require clean commits, verify only
+manifest-pinned payloads, install the exact source snapshot, and retain fixed
+grid failures. The Kang evidence includes exact matrix/barcode preprocessing,
+all cell-type eligibility and split assignments, retained Reactome membership,
+every pathway/view audit, 16 split correlations, donor contrasts, Holm-adjusted
+decisions, environment facts, and artifact hashes. Missing or undefined
+scientific endpoints record `FAIL`; malformed bytes, schema, alignment, or
+arithmetic aborts.
+
 Failure invokes PLAN's fallback: retain the theorem and aggregate-then-score
 warning; keep or remove the internal prototype according to maintenance value.
 No threshold is relaxed after seeing results. Generated downloads, expanded

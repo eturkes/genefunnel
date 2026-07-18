@@ -879,3 +879,37 @@ donor sign tests without changing B-1.0.3.
 Risks/blockers: Kang may fail alignment, unit eligibility, pathway retention,
 technical stability, held-out replication, or biological-claim gates; none
 alters the already-negative CellBench decision.
+
+2026-07-18 | frontier execution 16 | commit `HEAD`
+Scope: implement B-1.0.3 Kang/Reactome mechanics and evidence runner before
+calculating a downloaded-data pathway score or endpoint.
+Changed: exact `coordinate real general` Matrix Market parsing rejects declared
+dimension/entry/trailing-record mismatches and coalesces duplicate coordinates;
+the frozen `make.unique(sep = "")` join must equal metadata order. Empty symbols
+drop, duplicate symbols sum in first-occurrence order, and the fixed 96-unit
+grid assigns C-locale odd/even halves without non-local mutation. Eligible raw
+UMI profiles feed full/odd/even audits; summaries retain the fixed 16 technical
+correlations, 16 donor contrasts, training direction, four held-out donors,
+exact two-sided donor sign tests, Holm adjustment, and six fail-closed endpoints.
+The clean-tree runner verifies four hashes, installs that commit in isolation,
+and records preprocessing, assignments, catalogue membership, every audit,
+environment, report, and artifact hashes.
+Verified: the red source seam failed while the Kang implementation was absent.
+A 1,280-cell/12-pathway sparse fixture exercises 96 fixed units, 32 eligible
+units, 576 audit rows, exact split stability, positive training/held-out
+directions, and both adjusted sign tests; all six fabricated endpoints pass.
+Deleting one odd donor-condition produces a retained incomplete technical
+failure; zero eligible units fail all six endpoints without aborting, and an
+exact-zero training median cannot set a direction. Duplicate matrix coordinates
+sum; negative counts, integer/trailing Matrix Market records, reordered barcode
+expectations, and count/metadata misalignment abort. Complete benchmark,
+controlled, synthetic, CellBench, and Kang CI smoke passes; every new function
+is <=40 lines.
+Decisions: cells remain aggregation inputs only; donor contrasts remain the
+inferential units. Every eight-donor contrast must be defined for the biological
+claim, and held-out completeness cannot be rescued by pathway/cell counts.
+Full downloaded-data execution waits for this implementation commit.
+Remaining: commit, execute the four pinned payloads from the clean snapshot,
+adversarially reconstruct endpoints, replay, and track the compact result.
+Risks/blockers: fixed data may fail parsing, eligibility, stability, held-out,
+or sign-test gates; no observed result may alter B-1.0.3.

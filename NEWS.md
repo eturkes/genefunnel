@@ -65,6 +65,10 @@
   pair-set errors were large and exact-zero measured scores left much of the
   fixed condition grid undefined; high complete-case correlations do not
   rescue the pre-specified decision.
+- Adds a fail-closed Kang/Reactome runner with exact sparse-matrix/barcode
+  alignment, deterministic cell-type splits, raw-UMI pseudobulk profiles,
+  fixed 16-group technical stability, held-out donor directions, exact sign
+  tests, and complete scientific-failure evidence.
 
 ## Documentation
 

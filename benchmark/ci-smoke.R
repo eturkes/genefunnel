@@ -182,6 +182,10 @@ aggregation_validate_cellbench_smoke(
     getExportedValue("genefunnel", "genefunnel")
 )
 
+source(file.path(benchmark_dir, "aggregation-kang.R"), local = TRUE)
+source(file.path(benchmark_dir, "aggregation-kang-summary.R"), local = TRUE)
+aggregation_validate_kang_smoke(aggregation_registry, aggregation_audit)
+
 cat(
     "Benchmark and aggregation-protocol smoke checks passed: ",
     normalizePath(output_root),

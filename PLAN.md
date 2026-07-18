@@ -276,8 +276,9 @@ tracked [negative result](benchmark/aggregation-cellbench-result.md). All 288
 pair-set error groups failed, 1,434/4,848 measured scores were exact zero, and
 only 88/192 conditions were complete across platforms. This closes the public
 promotion route under B-1.0.3. Kang/Reactome remains prospective
-characterization and cannot rescue that gate, so the combined validation box
-stays unchecked.
+characterization with a committed fail-closed runner; its full pinned-data
+execution remains pending and cannot rescue that gate, so the combined
+validation box stays unchecked.
 
 **Go:** gap meets the protocol's pre-specified curve-error,
 replicate-stability, and incremental-effect thresholds under controlled

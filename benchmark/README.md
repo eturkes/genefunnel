@@ -175,6 +175,26 @@ pair-set error, and incomplete-condition failure envelope. This closes the
 protocol's public-promotion route; complete-case correlations cannot rescue the
 fixed-grid failure.
 
+## Kang donor-perturbation characterization
+
+After placing the exact `GSE96583_RAW.tar`, batch-2 gene/metadata files, and
+Reactome v97 archive from [`aggregation-data.tsv`](aggregation-data.tsv) in one
+external directory, run only from a clean committed tree:
+
+```sh
+R_LIBS_USER="$PWD/.agent/R-library" Rscript --vanilla \
+  benchmark/run-aggregation-kang.R --data-dir="$PWD/.agent/tmp"
+```
+
+The runner verifies all four payload hashes, enforces the exact Matrix Market
+and duplicated-barcode join contracts, installs the committed package in an
+isolated library, and constructs full/odd/even raw-UMI cell-type profiles. It
+retains the fixed 96-unit eligibility grid, every included Reactome pathway
+audit, all 16 donor-condition correlations, 16 primary-pathway donor contrasts,
+two held-out/sign-test decisions, and six endpoints. Undefined fixed-grid
+metrics produce a retained scientific `FAIL`; malformed input aborts. This
+characterization cannot rescue the already-failed CellBench promotion gate.
+
 ## Generated artifacts
 
 Every runner writes:
@@ -210,6 +230,12 @@ The CellBench runner writes verified `data-files.tsv`, `set-manifest.tsv`,
 `set-membership.tsv`, `pure-profiles.tsv`, `references.tsv`,
 `observations.tsv`, `curve-groups.tsv`, `condition-medians.tsv`,
 `endpoints.tsv`, `summary.tsv`, `installation.log`, and `artifacts.tsv`.
+
+The Kang runner writes verified `data-files.tsv`, sparse-matrix and
+preprocessing facts, unit/cell assignments, pathway manifest/membership,
+`audit-summary.tsv`, `stability.tsv`, `donor-contrasts.tsv`,
+`pathway-decisions.tsv`, six endpoints, environment/report files, and artifact
+hashes.
 
 ## Compiled catalogue comparison
 
