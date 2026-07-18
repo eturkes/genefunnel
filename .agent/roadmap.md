@@ -1262,3 +1262,36 @@ report; then execute the complete grid once from its clean candidate.
 Risks/blockers: model implementation must preserve the supplement's global
 schema/scaling/alias conventions. Full exact sensitivity remains the dominant
 compute cost and either co-primary gate may validly fail.
+
+2026-07-18 | frontier execution 29 | commit `HEAD`
+Scope: make E-C-1.0.0's held-out inference and full controlled execution
+reproducible before calculating a fixed-grid endpoint.
+Changed: explicit baseline/augmented numeric schemas; training-only mean/SD
+scaling; exact zero-SD removal; unscaled binary columns; `lm.fit(tol=1e-7)` QR
+with aliased coefficients set to zero; retained fold predictions/errors,
+coefficients, ranks, aliases, and scaling facts; canonical scenario-cluster
+fixed-prediction bootstrap; type-8 endpoints; 68 registered descriptive strata;
+clean-Git archive/isolated install; atomic identity-bound checkpoints; complete
+TSV/report/environment/artifact evidence; smoke/gate claim separation.
+Verified: all-factor planted model smoke = 34,560 feature + 5,760 technical rows,
+ten folds/target, 16 downscaled bootstrap rows, four finite passing planted
+endpoints, and 68 nonempty strata. Adversaries prove held-out target changes do
+not alter that fold's prediction, exact collinearity yields retained aliases
+with finite predictions, zero-SD columns drop, non-finite predictors abort, and
+bootstrap output survives unrelated RNG use. Isolated end-to-end smoke from
+archived package candidate `f53e2ca` passes four observation scenarios,
+two-worker chunks, models, report, and 22-file SHA-256 manifest. A one-worker
+resume reuses checkpoints and preserves raw feature/technical TSV SHA-256
+exactly; changed chunk size rejects at the locked config; dirty gate mode rejects
+before creating output. The complete 2,000 x 2 planted bootstrap path also emits
+4,000 rows, four finite endpoints, and 68 strata in 3.764 elapsed seconds.
+Decisions: smoke endpoint values are deliberately planted orchestration tests,
+labelled non-scientific in summary/report. Gate mode alone uses the 345,600/
+5,760 observed rows and 2,000 bootstraps per target. Worker count is resumable;
+candidate/mode/chunk design is identity-bound. A gate FAIL exits successfully
+after retaining evidence; malformed provenance/schema/arithmetic aborts.
+Remaining: commit; execute gate mode once from that clean full SHA, retain the
+compact decision/result, apply PLAN's go/fallback checks, and leave A2 pending
+until its independent host-load admission passes.
+Risks/blockers: full exact observations are compute-heavy. Either co-primary
+endpoint may validly fail and select the internal/no-public-API fallback.

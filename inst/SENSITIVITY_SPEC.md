@@ -212,3 +212,7 @@ The controlled observation implementation uses the installed authoritative
 scorer and exact cell diagnostic, resets every scenario/mask seed, retains all
 registered factors, and validates target/status/encoding identities before any
 held-out model can consume a row.
+The model/runner layer records training-only scaling, zero-SD drops, QR aliases,
+fixed predictions, scenario-cluster bootstrap draws, all descriptive strata,
+isolated source/install fingerprints, resumable checkpoints, and artifact
+hashes. Its smoke uses planted targets and has no empirical meaning.

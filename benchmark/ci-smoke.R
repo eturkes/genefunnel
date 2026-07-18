@@ -298,6 +298,20 @@ stopifnot(
     nrow(sensitivity_controlled_first$technical) == 4L,
     sensitivity_controlled_mutation_failed
 )
+source(
+    file.path(benchmark_dir, "sensitivity-controlled-summary.R"),
+    local = TRUE
+)
+sensitivity_controlled_summary_smoke <-
+    sensitivity_controlled_validate_summary_smoke(sensitivity_registry)
+stopifnot(
+    nrow(sensitivity_controlled_summary_smoke$feature_cv$folds) == 10L,
+    nrow(sensitivity_controlled_summary_smoke$technical_cv$folds) == 10L,
+    nrow(sensitivity_controlled_summary_smoke$bootstrap) == 16L,
+    nrow(sensitivity_controlled_summary_smoke$strata) == 68L,
+    all(sensitivity_controlled_summary_smoke$endpoints$passed),
+    !sensitivity_controlled_summary_smoke$summary$public_api_permitted
+)
 
 cat(
     "Benchmark, aggregation, and sensitivity protocol smokes passed: ",

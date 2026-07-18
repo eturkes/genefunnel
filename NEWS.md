@@ -61,6 +61,9 @@
 - Adds deterministic controlled sensitivity profile/count/mask generation and
   fixed-schema feature-loss/measurement-repeat observations, with authoritative
   package scores, exact partial-input diagnostics, and fail-closed invariants.
+- Adds frozen ten-fold baseline/augmented models, scenario-cluster bootstrap,
+  co-primary endpoint/strata summaries, and a clean-archive resumable controlled
+  runner that distinguishes scientific failure from execution failure.
 - Implements dependency-free scaled double-double native diagnostics for
   overflow, cancellation, and underflow cases while keeping the ordinary score
   authoritative.

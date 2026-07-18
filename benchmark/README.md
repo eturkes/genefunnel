@@ -275,6 +275,25 @@ scores, partial-input exact diagnostics, targets, and fixed-schema observation
 rows. CI exercises four size/archetype/noise strata twice, explicitly checks
 row-absence/`NA` identity, and rejects a mutated target.
 
+After committing the controlled runner, execute the full gate only from that
+explicit clean SHA:
+
+```sh
+candidate_id=$(git rev-parse HEAD)
+R_LIBS_USER="$PWD/.agent/R-library" Rscript --vanilla \
+  benchmark/run-sensitivity-controlled.R \
+  --mode=gate --candidate-id="$candidate_id" --workers=4 \
+  --chunk-size=128 --output=benchmark/results/sensitivity-controlled
+```
+
+The runner installs the Git archive in an isolated library, runs an independent
+four-stratum representation preflight, writes atomic scenario checkpoints,
+validates all fixed rows, fits both ten-fold models, and performs each 2,000-
+replicate cluster bootstrap. Reusing the same output resumes only an identical
+candidate/mode/chunk design; worker count may change without changing rows.
+`--mode=smoke` uses four real observation scenarios plus planted all-factor
+model frames and therefore makes no scientific decision.
+
 ## Generated artifacts
 
 Every runner writes:
@@ -301,6 +320,12 @@ The sensitivity profile writes `manifest.tsv`, three-call `runs.tsv`,
 `profile.tsv`, `allocation.tsv`, `decision.tsv`, raw `Rprof`/`Rprofmem` traces,
 an isolated source/library record, and artifact hashes. Its decision concerns
 optimization eligibility only.
+
+The controlled sensitivity runner writes feature/repeat observations, separate
+held-out prediction tables, fold results, coefficient/alias and scaling facts,
+fixed-prediction bootstrap estimates, endpoints, every registered descriptive
+stratum, summary/report/environment files, clean-source provenance, atomic
+`checkpoints/`, and `artifacts.tsv`.
 
 The preparer writes `installations.tsv`, exact source archives, install logs,
 per-library provenance markers, and installed-package tree fingerprints. Gate

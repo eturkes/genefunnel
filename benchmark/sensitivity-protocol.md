@@ -356,6 +356,14 @@ package sensitivity calculation or endpoint calibration.
 Factor-, fraction-, mechanism-, and encoding-stratified results are retained
 descriptively and cannot rescue a failed endpoint.
 
+The executable model layer materializes each global numeric schema before
+folding; records every training mean, SD, zero-SD drop, QR rank, coefficient,
+and alias; and retains every fixed held-out prediction. Bootstrap execution
+aggregates squared errors within canonical scenario clusters, resamples those
+clusters in the frozen replicate/fold order, and is algebraically identical to
+duplicating every associated mask row. A clean-archive runner checkpoints
+scenario ranges atomically and treats scientific failure as a completed result.
+
 ## Decision
 
 Correctness, exact schema/status, representation invariance, feature-loss

@@ -473,7 +473,9 @@ E-1.0.0's scientific dimensions, targets, gates, or claim boundary.
 The implemented observation layer now produces deterministic full/partial A
 and independent B measurements, package scores, exact partial-input
 diagnostics, paired encoding facts, and fail-closed fixed-schema rows. The full
-held-out execution and both reliability decisions remain pending.
+held-out model/bootstrap layer and clean-archive resumable runner are now also
+implemented and adversarially smoke-tested. The full controlled execution and
+both reliability decisions remain pending.
 
 **Go:** summaries are reproducible, representation-invariant, and pass the
 pre-specified held-out incremental-effect and technical-repeat thresholds.
