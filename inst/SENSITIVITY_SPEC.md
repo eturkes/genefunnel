@@ -204,3 +204,7 @@ the parent's previously implicit fixture/pass mechanics after implementation
 but before a fixed profile call; it changes no empirical gate. Its tracked
 result makes exact-oracle-preserving optimization eligible and no reliability
 or public-interface claim.
+Controlled supplement `E-C-1.0.0` then pins the previously implicit R RNG
+calls, predictor encoding/scaling, bootstrap draw order, isolated execution,
+checkpoint, and evidence mechanics before any controlled scenario is built. It
+changes no scientific design, target, threshold, or promotion rule.

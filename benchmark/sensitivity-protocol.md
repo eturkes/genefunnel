@@ -163,6 +163,14 @@ installs clean candidate `e5c013f` in isolation and reproduces the fixed brute
 output MD5 exactly. Exact-object tests remain authoritative; the exploratory
 single-call timing is not a performance claim.
 
+The parent controlled registry fixes scientific dimensions, equations, seeds,
+predictors, and gates, but terms such as Bernoulli draw, global schema, and
+fixed-seed bootstrap do not uniquely determine an R execution. Prospective
+supplement [`E-C-1.0.0`](sensitivity-controlled-protocol.tsv) byte-pins only
+those implementation choices before any controlled scenario is constructed.
+It changes no parent design, target, endpoint, threshold, claim boundary, or
+promotion rule.
+
 ## Controlled design
 
 The full Cartesian design uses registry order, with the first field varying

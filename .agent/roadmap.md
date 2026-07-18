@@ -1206,3 +1206,26 @@ runner, then execute all 345,600 feature-loss + 5,760 repeat rows.
 Risks/blockers: the controlled design may be compute-heavy or reject either
 co-primary prediction endpoint. A failed endpoint selects the internal/no-public-
 API fallback without affecting exact diagnostic correctness.
+
+2026-07-18 | frontier execution 27 | commit `HEAD`
+Scope: close E-1.0.0's remaining controlled-execution degrees prospectively,
+before constructing a fixed-grid latent scenario or observation.
+Changed: byte-pinned supplement `E-C-1.0.0` fixes exact R RNG calls, canonical
+identifiers and row order, installed scoring/sensitivity paths, absence-specific
+coverage facts, normalized predictors, dummy/scaling/QR conventions, bootstrap
+draw order, clean isolated installation, resumable checkpoint identity, failure
+semantics, and evidence artifacts. Parent registry bytes remain unchanged.
+Verified: 45 unique supplement rows; MD5
+`1c119004ee749b4242f1b73ca6fd8c4c`; parent MD5 remains
+`09d9429ae18f64ba00b3bd84955ad71d`; fail-closed parser rejects byte drift and
+validates the parent link. Documentation and CI smoke include both identities.
+Decisions: record rather than conceal that “Bernoulli,” “global schema,” and a
+fixed bootstrap seed did not uniquely specify an R run. The supplement changes
+no controlled dimension, equation, target, predictor concept, endpoint,
+threshold, claim boundary, or promotion rule. Scientific failure remains a
+valid completed result; provenance/schema/arithmetic failures abort.
+Remaining: commit; implement deterministic scenario/mask/observation mechanics
+against this supplement, then implement held-out models/bootstrap/report and
+execute the clean full grid.
+Risks/blockers: full execution remains compute-heavy and either co-primary gate
+may fail. No controlled value has been generated at this checkpoint.

@@ -256,6 +256,19 @@ controlled-repeat rows, and exactly 576 scenarios per held-out fold. This first
 stage is synthetic and internal: even a complete pass cannot support export or
 a claim about real technical/biological replicates.
 
+The parent controlled registry deliberately remains unchanged. Its terms did
+not uniquely choose R's Bernoulli call, predictor dummy/scaling details, or
+bootstrap draw order, so byte-pinned execution supplement
+[`E-C-1.0.0`](sensitivity-controlled-protocol.tsv) closes those degrees before
+any controlled scenario is constructed. Validate it with:
+
+```sh
+Rscript --vanilla -e \
+  'source("benchmark/sensitivity-protocol.R"); \
+   source("benchmark/sensitivity-controlled-protocol.R"); \
+   print(sensitivity_controlled_validate_protocol("."))'
+```
+
 ## Generated artifacts
 
 Every runner writes:

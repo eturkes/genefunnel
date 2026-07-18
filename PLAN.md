@@ -466,6 +466,11 @@ reproduces the frozen brute output MD5
 `3d9635e779a9ed1eee453a2a04596369`; no performance or reliability claim
 follows.
 
+Controlled execution supplement `E-C-1.0.0` prospectively closes the parent's
+implicit R draw calls, row order, predictor encoding/scaling, bootstrap draw
+order, clean-install, checkpoint, and output mechanics. It changes none of
+E-1.0.0's scientific dimensions, targets, gates, or claim boundary.
+
 **Go:** summaries are reproducible, representation-invariant, and pass the
 pre-specified held-out incremental-effect and technical-repeat thresholds.
 **Fallback:** if they do not outperform simple coverage/effective-size facts,

@@ -236,6 +236,18 @@ stopifnot(
     identical(sensitivity_optimization_result$fixed_workload_identity, "TRUE"),
     identical(sensitivity_optimization_result$performance_claim, "FALSE")
 )
+source(
+    file.path(benchmark_dir, "sensitivity-controlled-protocol.R"),
+    local = TRUE
+)
+sensitivity_controlled_protocol <- sensitivity_controlled_validate_protocol(
+    dirname(benchmark_dir)
+)
+stopifnot(
+    identical(sensitivity_controlled_protocol$protocol_version, "E-C-1.0.0"),
+    identical(sensitivity_controlled_protocol$protocol_rows, 45L),
+    identical(sensitivity_controlled_protocol$parent_protocol, "E-1.0.0")
+)
 
 cat(
     "Benchmark, aggregation, and sensitivity protocol smokes passed: ",

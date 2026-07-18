@@ -55,6 +55,9 @@
 - Adopts an exact sorted-prefix sensitivity path while retaining the brute
   oracle. Fixed/extreme/randomized delta objects, the representation/backend
   suite, and the clean frozen-workload digest remain identical.
+- Byte-pins controlled sensitivity execution details - R draw calls, row order,
+  predictor encoding/scaling, bootstrap order, isolated installation,
+  checkpoints, and evidence artifacts - before constructing the fixed grid.
 - Implements dependency-free scaled double-double native diagnostics for
   overflow, cancellation, and underflow cases while keeping the ordinary score
   authoritative.
