@@ -269,7 +269,15 @@ Its 0.5-dropout stratum nevertheless inflated the marginal median observed gap
 by 0.09762 versus 0.10728 from complementarity 0 to 1, and its 90th-percentile
 curve error was 0.30464. This meets the qualitative fallback concern closely
 enough to require a severe-dropout warning and blocks any robustness claim;
-the external mixture and donor gates remain open.
+the donor gate remains open.
+
+The first external stage then failed both frozen CellBench gates; see the
+tracked [negative result](benchmark/aggregation-cellbench-result.md). All 288
+pair-set error groups failed, 1,434/4,848 measured scores were exact zero, and
+only 88/192 conditions were complete across platforms. This closes the public
+promotion route under B-1.0.3. Kang/Reactome remains prospective
+characterization and cannot rescue that gate, so the combined validation box
+stays unchecked.
 
 **Go:** gap meets the protocol's pre-specified curve-error,
 replicate-stability, and incremental-effect thresholds under controlled

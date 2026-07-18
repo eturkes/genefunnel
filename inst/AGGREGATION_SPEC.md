@@ -202,7 +202,8 @@ are frozen in benchmark protocol `B-1.0.3`, which inherits B-1.0.2's unchanged
 synthetic contract/result. The full controlled run passed all co-primary gates,
 but its severe-dropout diagnostic was comparable with the planted
 complementarity effect and does not support a robustness claim. The tracked
-result records that failure envelope. CellBench cross-protocol mixtures and
-Kang donor-replicated perturbation evidence remain prospective. A tracked
-CellBench runner implements the frozen parsing, selection, process-control, and
-endpoint mechanics without exporting the prototype.
+result records that failure envelope. Both frozen CellBench gates failed:
+pair-set errors were large and exact-zero measured scores left the fixed
+condition grid incomplete. Kang donor-replicated perturbation evidence remains
+prospective characterization, but cannot rescue the failed public-promotion
+gate. The prototype stays internal.

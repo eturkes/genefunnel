@@ -848,3 +848,34 @@ Remaining: run documentation + complete benchmark/aggregation smoke, commit,
 then execute the four pinned files and adversarially audit/record every endpoint.
 Risks/blockers: exact data may reject one or both co-primary gates; output must
 remain a process-control result, never biological validation.
+
+2026-07-18 | frontier execution 15 | commit `HEAD`
+Scope: execute, adversarially audit, replay, and compactly retain B-1.0.3's
+pinned CellBench result.
+Changed: tracked exact five-endpoint result + negative-evidence anatomy; PLAN,
+README, NEWS, and aggregation spec now close public promotion while keeping the
+combined external-validation box open for Kang characterization. No protocol,
+threshold, selection, missingness, or decision rule changed after inspection.
+Verified: clean source commit
+`9b3cab65f626200d28a9ce494b79700247eaf0be`; four inputs = 4,072,960 exact
+bytes; 13,906 common genes; 12 training-derived sets; 4,848 library/set rows;
+all 96 references eligible/defined. Both curve endpoints = `NA`/FAIL because
+only 191/384 fixed groups were complete. CEL-seq2/SORT-seq/cross-platform
+complete-case Spearman = 0.977979/0.944496/0.909954, but only 98/93/88 of 192
+conditions were complete, so all stability endpoints fail. In total 299/384
+curve groups fail, including all 288 pair groups; 1,434 observations have exact
+zero measured score. Independent selection/formula/grid/endpoint reconstruction
+passes within TSV precision; 16/16 artifact hashes match; a second isolated run
+reproduces all 12 scientific tables byte-for-byte.
+Decisions: CellBench co-primary decision = FAIL. High finite correlations are
+descriptive and cannot override completeness. Pair-set finite errors are also
+far beyond threshold, so this is not merely a missingness technicality. The
+B-1.0.3 export gate is closed; retain theorem + aggregate-then-score and severe-
+dropout/small-denominator warnings. Kang remains pre-specified characterization
+only and cannot rescue promotion.
+Remaining: implement/adversarially test the committed Kang/Reactome runner,
+then execute and record technical stability, held-out directions, and exact
+donor sign tests without changing B-1.0.3.
+Risks/blockers: Kang may fail alignment, unit eligibility, pathway retention,
+technical stability, held-out replication, or biological-claim gates; none
+alters the already-negative CellBench decision.

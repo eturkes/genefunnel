@@ -61,6 +61,10 @@
 - Adds a fail-closed CellBench runner with verified inputs, CEL-seq2-only set
   selection, isolated package installation, complete fixed-grid error and
   split/cross-platform stability evidence, and retained scientific failures.
+- Records the negative CellBench result: both co-primary gates failed because
+  pair-set errors were large and exact-zero measured scores left much of the
+  fixed condition grid undefined; high complete-case correlations do not
+  rescue the pre-specified decision.
 
 ## Documentation
 

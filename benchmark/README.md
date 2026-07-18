@@ -167,6 +167,14 @@ groups or undefined metrics produce a retained scientific `FAIL`; malformed or
 misaligned input aborts. A scientific failure is a completed result and exits
 successfully. Generated output remains ignored under `benchmark/results/`.
 
+The complete B-1.0.3 execution from clean commit `9b3cab6` failed both frozen
+CellBench gates. The compact tracked
+[`negative result`](aggregation-cellbench-result.md) and
+[`endpoint table`](aggregation-cellbench-result.tsv) retain the zero-score,
+pair-set error, and incomplete-condition failure envelope. This closes the
+protocol's public-promotion route; complete-case correlations cannot rescue the
+fixed-grid failure.
+
 ## Generated artifacts
 
 Every runner writes:
