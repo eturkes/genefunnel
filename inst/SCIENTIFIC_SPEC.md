@@ -182,3 +182,8 @@ magnitude, balance, penalty, effective-support, numerical-status, and scaled
 representation matrices. `COMPONENTS_SPEC.md` owns its proved factorization,
 contract, and interpretation boundary. The additive API does not change the
 scorer or coverage helper described here.
+
+`SENSITIVITY_SPEC.md` owns the prospective observed-member deletion
+diagnostic's exact sign, support, and interpretation boundary. No public
+sensitivity API exists yet, and the deterministic deltas are not causal
+contributions or inferential uncertainty.

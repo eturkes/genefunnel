@@ -988,3 +988,30 @@ Remaining: rerun all 30 pairs/workload from zero when every load check can pass.
 Proceed meanwhile to Workstream E's non-performance definition/protocol work.
 Risks/blockers: external host load remains the sole A2 execution blocker; the
 gate can also reject later if load rises after admission.
+
+2026-07-18 | frontier execution 20 | commit `HEAD`
+Scope: fix Workstream E's observed-member deletion quantity and interpretation
+boundary before any sensitivity API or empirical diagnostic exists.
+Changed: new normative pre-API sensitivity specification; direct brute-force R
+oracle; property/canonical-case tests; PLAN, scientific-spec, README, and NEWS
+cross-links. For each cell with at least three observed members, delta is full
+score minus the score after deleting that member. Compact mathematical facts
+are largest absolute delta/member, its signed and observed-sum-normalized delta,
+median absolute delta, and effective size; exact ties use stable declared-member
+order after deduplication, matching, and per-sample missingness omission.
+Verified: ordinary-range direct equation checks lock positive/negative deltas,
+all-zero/equal/insufficient-support states, midpoint median, duplicate/unmatched/
+`NA`/`NaN` filtering, 100 randomized bounds/homogeneity/common-shift cases,
+permutation equivariance, and explicit non-additivity. Clean source tarball
+build passes; rebuilt-tarball `R CMD check --no-manual` = `Status: OK`.
+Decisions: call the quantity sensitivity, not contribution, importance,
+jackknife inference, or causal effect. Normalize the selected signed delta by
+the full observed sum only when positive; retain sign after absolute-value
+selection. No hidden member-by-set-by-sample array. The future prototype must
+freeze extreme-number representation and held-out reliability rules first.
+Remaining: commit; freeze E's numerical/API and held-out validation protocol,
+then implement compact summaries against brute force. Retry A2 separately only
+after the host satisfies its frozen quiescence admission rule.
+Risks/blockers: algebra alone establishes no predictive reliability. Public
+promotion remains conditional on representation invariance and pre-specified
+held-out incremental-effect/technical-repeat gates.

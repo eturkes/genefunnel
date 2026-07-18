@@ -83,6 +83,9 @@
 - Records the weighted aggregation-gap theorem, equality condition, normalized
   discrepancy, eligibility/missingness policy, and prior-art boundary before
   any group-level API is implemented.
+- Fixes the exact observed-member deletion sensitivity, canonical support,
+  sign, compact summaries, algebraic properties, and non-causal boundary before
+  any reliability API or empirical diagnostic result exists.
 - Adds an executable BiocStyle vignette covering canonical examples,
   caller-controlled coverage, dense/sparse matrices, and parallel execution.
 - Expands function help and the README with the complete public contract and

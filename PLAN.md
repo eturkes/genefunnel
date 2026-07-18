@@ -20,6 +20,9 @@ remains recoverable from Git at `c789a23:PLAN.md`.
 - [`inst/AGGREGATION_SPEC.md`](inst/AGGREGATION_SPEC.md) = Workstream B's
   theorem/design contract. It owns the pre-API estimand, eligibility,
   missingness, terminology, and novelty boundary.
+- [`inst/SENSITIVITY_SPEC.md`](inst/SENSITIVITY_SPEC.md) = Workstream E's
+  pre-API deletion diagnostic contract. It owns canonical support, delta sign,
+  compact mathematical summaries, invariants, and interpretation boundaries.
 - `PLAN.md` = hypotheses, future interfaces, sequencing, evidence gates, and
   kill criteria. Unchecked boxes are prospective work, not release promises.
 - [`.agent/roadmap.md`](.agent/roadmap.md) = chronological execution evidence
@@ -408,7 +411,7 @@ justifies each maintenance surface.
 **Outcome:** report how dependent a score is on particular measured members or
 assay coverage, without “correcting” the result.
 
-- [ ] Define exact leave-one-observed-member-out deltas for gene-set/sample
+- [x] Define exact leave-one-observed-member-out deltas for gene-set/sample
   cells with at least three observed members; call them sensitivity, never
   causal contribution.
 - [ ] Prototype compact summaries first: largest absolute delta and member,
