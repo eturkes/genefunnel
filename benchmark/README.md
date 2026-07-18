@@ -269,6 +269,12 @@ Rscript --vanilla -e \
    print(sensitivity_controlled_validate_protocol("."))'
 ```
 
+`sensitivity-controlled.R` implements the registered profile, Poisson/NB,
+post-count Bernoulli dropout, weighted masks, paired absence encodings, package
+scores, partial-input exact diagnostics, targets, and fixed-schema observation
+rows. CI exercises four size/archetype/noise strata twice, explicitly checks
+row-absence/`NA` identity, and rejects a mutated target.
+
 ## Generated artifacts
 
 Every runner writes:

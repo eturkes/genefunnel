@@ -248,6 +248,56 @@ stopifnot(
     identical(sensitivity_controlled_protocol$protocol_rows, 45L),
     identical(sensitivity_controlled_protocol$parent_protocol, "E-1.0.0")
 )
+source(file.path(benchmark_dir, "sensitivity-controlled.R"), local = TRUE)
+sensitivity_controlled_grid <- sensitivity_controlled_design(
+    sensitivity_registry
+)
+sensitivity_controlled_smoke <- sensitivity_controlled_smoke_design(
+    sensitivity_controlled_grid
+)
+sensitivity_controlled_scorer <- getExportedValue("genefunnel", "genefunnel")
+sensitivity_controlled_cell <- getFromNamespace(
+    ".sensitivity_cell", "genefunnel"
+)
+sensitivity_controlled_backend <- BiocParallel::SerialParam(progressbar = FALSE)
+sensitivity_controlled_run_smoke <- function(verify_encoding) {
+    pieces <- lapply(seq_len(nrow(sensitivity_controlled_smoke)), function(index) {
+        sensitivity_controlled_observe_scenario(
+            sensitivity_controlled_smoke[index, , drop = FALSE],
+            sensitivity_registry,
+            sensitivity_controlled_scorer,
+            sensitivity_controlled_cell,
+            sensitivity_controlled_backend,
+            verify_encoding = verify_encoding
+        )
+    })
+    sensitivity_controlled_bind_observations(pieces)
+}
+sensitivity_controlled_first <- sensitivity_controlled_run_smoke(TRUE)
+invisible(stats::runif(17L))
+sensitivity_controlled_second <- sensitivity_controlled_run_smoke(FALSE)
+sensitivity_controlled_validate_observations(
+    sensitivity_controlled_first,
+    sensitivity_controlled_smoke,
+    sensitivity_registry
+)
+sensitivity_controlled_mutated <- sensitivity_controlled_first
+sensitivity_controlled_mutated$feature$target[[1L]] <-
+    sensitivity_controlled_mutated$feature$target[[1L]] + 1
+sensitivity_controlled_mutation_failed <- inherits(try(
+    sensitivity_controlled_validate_observations(
+        sensitivity_controlled_mutated,
+        sensitivity_controlled_smoke,
+        sensitivity_registry
+    ),
+    silent = TRUE
+), "try-error")
+stopifnot(
+    identical(sensitivity_controlled_first, sensitivity_controlled_second),
+    nrow(sensitivity_controlled_first$feature) == 240L,
+    nrow(sensitivity_controlled_first$technical) == 4L,
+    sensitivity_controlled_mutation_failed
+)
 
 cat(
     "Benchmark, aggregation, and sensitivity protocol smokes passed: ",

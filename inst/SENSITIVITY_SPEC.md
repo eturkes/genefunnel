@@ -208,3 +208,7 @@ Controlled supplement `E-C-1.0.0` then pins the previously implicit R RNG
 calls, predictor encoding/scaling, bootstrap draw order, isolated execution,
 checkpoint, and evidence mechanics before any controlled scenario is built. It
 changes no scientific design, target, threshold, or promotion rule.
+The controlled observation implementation uses the installed authoritative
+scorer and exact cell diagnostic, resets every scenario/mask seed, retains all
+registered factors, and validates target/status/encoding identities before any
+held-out model can consume a row.

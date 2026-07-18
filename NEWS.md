@@ -58,6 +58,9 @@
 - Byte-pins controlled sensitivity execution details - R draw calls, row order,
   predictor encoding/scaling, bootstrap order, isolated installation,
   checkpoints, and evidence artifacts - before constructing the fixed grid.
+- Adds deterministic controlled sensitivity profile/count/mask generation and
+  fixed-schema feature-loss/measurement-repeat observations, with authoritative
+  package scores, exact partial-input diagnostics, and fail-closed invariants.
 - Implements dependency-free scaled double-double native diagnostics for
   overflow, cancellation, and underflow cases while keeping the ordinary score
   authoritative.

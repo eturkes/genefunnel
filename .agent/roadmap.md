@@ -1229,3 +1229,36 @@ against this supplement, then implement held-out models/bootstrap/report and
 execute the clean full grid.
 Risks/blockers: full execution remains compute-heavy and either co-primary gate
 may fail. No controlled value has been generated at this checkpoint.
+
+2026-07-18 | frontier execution 28 | commit `HEAD`
+Scope: implement E-1.0.0/E-C-1.0.0's deterministic controlled latent,
+measurement, mask, and observation mechanics without fitting or inspecting an
+endpoint model.
+Changed: scenario-local exact RNG reset; four registered profiles with
+log-normal perturbation/capture; Poisson/NB A/B counts and post-count Bernoulli
+dropout; five independently seeded weighted mask mechanisms; canonical selected
+member records; one authoritative installed score batch per scenario; exact
+full/partial A diagnostics; paired absence encodings; fixed 43-field feature and
+36-field technical rows; fail-closed schema/seed/order/target/status/ratio/
+encoding validation.
+Verified: four smoke strata span sizes 8/32/128, all four archetypes, both count
+families, dropout/no-dropout, and folds 1/2/9/10. Two runs remain object-identical
+after unrelated RNG use; combined digest = `0d925728a6e151e9e2f67fe283a6a92a`;
+240 feature + 4 technical rows pass every invariant. Explicit global row absence
+and sample `NA` omission produce identical installed-package scores and exact
+diagnostics. Direct equation scores agree within the fixed ordinary tolerance;
+an altered target fails validation. A 31.069 s mechanics-only sweep constructs
+all 5,760 latent/A/B states and 172,800 unique seeds/masks; every selected index
+set has the registered size/order/domain, covering 2,822,400 selections with no
+invalid or zero-total full measurement.
+Decisions: compute every unique partial input once, then reuse its values,
+score, and diagnostic across encodings while deriving their distinct factual
+coverage fields. Declared size remains the original full set size. Repeat B is
+outcome-only; all predictors and diagnostics use A. No controlled gate or
+reliability claim has been calculated.
+Remaining: commit; exhaustively exercise latent/mask mechanics, implement the
+ten-fold models, fixed-prediction cluster bootstrap, resumable clean runner, and
+report; then execute the complete grid once from its clean candidate.
+Risks/blockers: model implementation must preserve the supplement's global
+schema/scaling/alias conventions. Full exact sensitivity remains the dominant
+compute cost and either co-primary gate may validly fail.

@@ -261,6 +261,14 @@ two encodings; their coverage facts must remain distinct. These are artificial
 sampled deletions. They are not evidence that a real unmeasured member was zero
 or randomly missing. The grid contains 345,600 fixed feature-loss rows.
 
+The executable observation layer resets every registered seed locally,
+generates the parent profiles/counts/masks in canonical order, batches the
+authoritative installed scorer once per scenario, and calls the installed exact
+cell diagnostic only on A/full or A/partial inputs. It computes each unique
+partial observation once and duplicates it across the two absence encodings;
+only declared coverage and observed fraction differ. Smoke checks also score
+and diagnose explicit row absence versus `NA` omission independently.
+
 For full measured replicate A score `F_A`, partial score `F_A^p`, and full
 observed sum `T_A`, the feature-loss target is
 
