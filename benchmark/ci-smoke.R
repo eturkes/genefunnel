@@ -229,6 +229,13 @@ stopifnot(
     identical(sensitivity_profile_result$optimization_eligible, "TRUE"),
     identical(sensitivity_profile_result$performance_claim, "FALSE")
 )
+sensitivity_optimization_result <- sensitivity_profile_validate_optimization(
+    dirname(benchmark_dir)
+)
+stopifnot(
+    identical(sensitivity_optimization_result$fixed_workload_identity, "TRUE"),
+    identical(sensitivity_optimization_result$performance_claim, "FALSE")
+)
 
 cat(
     "Benchmark, aggregation, and sensitivity protocol smokes passed: ",

@@ -1180,3 +1180,29 @@ controlled reliability runner.
 Risks/blockers: a clean-candidate mismatch rejects adoption despite randomized
 success. Further optimization is optional; correctness and maintainability take
 precedence over exploratory elapsed time.
+
+2026-07-18 | frontier execution 26 | commit `HEAD`
+Scope: close the optimized-algorithm adoption gate from a clean isolated
+candidate and preserve a compact machine-checkable identity result.
+Changed: tracked E-O-1.0.0 Markdown/TSV adoption record + MD5-pinned validator;
+PLAN closes the optimized-algorithm item; protocol/spec/README/NEWS call the
+sorted-prefix path adopted while retaining the brute oracle.
+Verified: clean candidate `e5c013fcb0f10e2eb4f0431c1cbd09cd40f73954`
+archive SHA-256
+`11b7892eb9d60bea77ee63301673da0bae5e0a2744718952a88301f6ede79224`,
+archive MD5 `ac7142c66b47d2e5dd5976a1656999bb`, installed manifest MD5
+`7f30f8246b98f6a1262a55b2f5217c09`. Fixed fixture MD5 remains
+`32fa8d4843d024765a4adfc676793dbe`; candidate output MD5
+`3d9635e779a9ed1eee453a2a04596369` equals the committed brute output.
+The isolated single call took 15.128 s as non-claim context. Result registry MD5
+= `baece34f7435fff0086da286021745cf`; complete protocol smoke validates it.
+Decisions: adopt exact sorted-prefix internally. Keep brute executable and its
+tests mandatory. `performance_claim = FALSE`; a single correctness call neither
+replaces the frozen profile nor creates a performance threshold. No empirical
+reliability/public-API gate has run.
+Remaining: commit; implement E-1.0.0's controlled scenario generation, feature-
+loss/repeat observations, fixed held-out models/bootstrap, and fail-closed report
+runner, then execute all 345,600 feature-loss + 5,760 repeat rows.
+Risks/blockers: the controlled design may be compute-heavy or reject either
+co-primary prediction endpoint. A failed endpoint selects the internal/no-public-
+API fallback without affecting exact diagnostic correctness.

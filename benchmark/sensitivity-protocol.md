@@ -158,6 +158,11 @@ elapsed 213.585 seconds and exact-stack share 0.999402883221019. Both branches
 cross their frozen strict thresholds; optimization research is eligible. The
 result sets `performance_claim = FALSE` and changes no reliability gate.
 
+The tracked [`sorted-prefix adoption check`](sensitivity-optimization-result.md)
+installs clean candidate `e5c013f` in isolation and reproduces the fixed brute
+output MD5 exactly. Exact-object tests remain authoritative; the exploratory
+single-call timing is not a performance claim.
+
 ## Controlled design
 
 The full Cartesian design uses registry order, with the first field varying

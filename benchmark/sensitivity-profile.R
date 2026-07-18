@@ -3,6 +3,39 @@
 SENSITIVITY_PROFILE_VERSION <- "E-P-1.0.0"
 SENSITIVITY_PROFILE_MD5 <- "ff86e032b7a766be20c5d61d940991ab"
 SENSITIVITY_PROFILE_RESULT_MD5 <- "bfe706bc325fffa3d33b985df962ebc7"
+SENSITIVITY_OPTIMIZATION_RESULT_MD5 <- "baece34f7435fff0086da286021745cf"
+
+sensitivity_profile_validate_optimization <- function(root = ".") {
+    path <- file.path(root, "benchmark", "sensitivity-optimization-result.tsv")
+    if (!identical(
+        unname(tools::md5sum(path)),
+        SENSITIVITY_OPTIMIZATION_RESULT_MD5
+    )) {
+        stop("Sensitivity optimization result identity is invalid.", call. = FALSE)
+    }
+    result <- utils::read.delim(
+        path,
+        stringsAsFactors = FALSE,
+        check.names = FALSE,
+        colClasses = "character"
+    )
+    fields <- c(
+        "check_version", "parent_protocol", "profile_protocol", "candidate_id",
+        "source_archive_sha256", "source_archive_md5", "installed_manifest_md5",
+        "fixture_md5", "expected_brute_output_md5", "candidate_output_md5",
+        "fixed_workload_identity", "exploratory_elapsed_sec", "performance_claim"
+    )
+    valid <- identical(names(result), fields) && nrow(result) == 1L &&
+        !anyNA(result) && all(nzchar(unlist(result))) &&
+        result$check_version == "E-O-1.0.0" &&
+        grepl("^[0-9a-f]{40}$", result$candidate_id) &&
+        result$expected_brute_output_md5 == result$candidate_output_md5 &&
+        result$fixed_workload_identity == "TRUE" &&
+        result$performance_claim == "FALSE" &&
+        as.numeric(result$exploratory_elapsed_sec) > 0
+    if (!isTRUE(valid)) stop("Sensitivity optimization result is invalid.", call. = FALSE)
+    result
+}
 
 sensitivity_profile_result_fields <- function() {
     c(

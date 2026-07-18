@@ -422,7 +422,7 @@ assay coverage, without “correcting” the result.
   abundance and detection rate. Distinguish global feature absence, sampled
   deletion, and sample-specific missingness; label assay-derived strata as
   study-composition dependent.
-- [ ] Validate an optimized algorithm against brute-force recomputation before
+- [x] Validate an optimized algorithm against brute-force recomputation before
   adopting it; profile before pursuing sorted-prefix or native acceleration.
 - [ ] Test whether diagnostics predict held-out full-data score error and
   technical-replicate instability beyond coverage, set size, observed sum, and
@@ -459,10 +459,12 @@ value/member constructors and pass boundaries implicit, then byte-pins them
 before any fixed-workload call. It changes no correctness, controlled-design,
 endpoint, threshold, or promotion rule.
 
-The first optimized candidate replaces per-deletion rescanning with exact
-sorted boundaries and prefix sums while retaining the brute oracle. Fixed,
-extreme, and randomized exact-object tests pass; adoption remains pending an
-isolated clean-candidate match to the frozen workload digest.
+The adopted optimized path replaces per-deletion rescanning with exact sorted
+boundaries and prefix sums while retaining the brute oracle. Fixed, extreme,
+and randomized exact-object tests pass. Clean isolated candidate `e5c013f`
+reproduces the frozen brute output MD5
+`3d9635e779a9ed1eee453a2a04596369`; no performance or reliability claim
+follows.
 
 **Go:** summaries are reproducible, representation-invariant, and pass the
 pre-specified held-out incremental-effect and technical-repeat thresholds.
