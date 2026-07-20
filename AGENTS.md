@@ -19,6 +19,9 @@
   `--no-pdf-header-footer` → `pdftoppm` → inspect PNGs. `url#fragment` screenshots are unreliable;
   `--virtual-time-budget` / `--run-all-compositor-stages-before-draw` can hang new-headless;
   `--force-dark-mode` is not `prefers-color-scheme` emulation (patch media query in scratch if needed).
+  An rc=124 capture hang with `SwANGLE`/Vulkan `EGL` initialization failure (plus GCM-retry spam) in
+  stderr signals this container's software-GL path stalling, which reaches `--print-to-pdf` too even
+  under `--disable-gpu`, so prefer textual evidence (the served DOM via `curl` plus response headers).
 - Shell exactness: prefer `/usr/bin/rg`/`rg` for search. For byte-exact grep/find behavior use
   `command grep` / `/usr/bin/find`; if a future shell adds grep/find wrappers, treat ranked/fuzzy
   output as browsing only and re-run exact commands before using matches for edits.
