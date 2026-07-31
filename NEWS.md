@@ -42,6 +42,21 @@
   RNA, pseudobulk RNA, and proteomics gates; exact Reactome/method bytes and
   APIs; same-input/native regimes; matched controls; held-out replication;
   minimum effects, multiplicity, null tests, exclusions, and RNG namespaces.
+- Adds prospective amendment F-2.1.0 without changing the frozen parent:
+  cell-type-complete contrast identity, dependence-preserving biological-unit
+  weighting, fixed-panel-only claim scope, explicit null-permutation resolution
+  eligibility, a pinned Reactome 97 roster, machine-validated assay-input schemas,
+  linear-proteomics eligibility, metadata-only selection, opaque-byte closure,
+  acquisition-through-heldout-first-access validation, and adversarial contract
+  checks. Its 128 rows yield a 266-row effective contract and fixed 5,062-row
+  target roster; the hermetic fixture currently covers 12 sources, 90 tasks,
+  60 null contrasts, 29 objects, 37 F-A events, and 99 adversaries. Validation
+  closes typed design fields, byte-exact UTF-8 scalars, underflow-aware numeric
+  parsing, total archive decoder/resource and finite acquisition bounds,
+  dependence-group bijection, guarded descriptors, exact S/B/I tree/runtime/
+  mode evidence, and the trusted-process boundary. No candidate source, archive,
+  or molecular table was selected or accessed; execution remains gated on exact
+  F-S, F-B, F-E, and controlled-runner artifacts.
 - Locks a dependency-free scaled numerical oracle and paired default-path
   performance protocol before component implementation.
 - Freezes the internal observed-member sensitivity schema, dependency-free

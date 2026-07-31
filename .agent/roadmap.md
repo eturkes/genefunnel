@@ -1431,3 +1431,39 @@ Risks/blockers: the high replication/coverage/matched-control standard may
 validly leave an assay stratum ineligible. No replacement after value access or
 cross-stratum rescue is permitted; scarcity narrows the domain rather than the
 threshold.
+
+2026-07-31 | frontier execution 34 | commit `HEAD`
+Scope: repair F-2.0.0 prospectively, before study selection or any candidate
+molecular-value access, and make source/task freezing mechanically enforceable.
+Changed: immutable 128-row F-2.1.0 amendment yielding a 266-row effective
+protocol; generated 5,062-row Reactome 97 target/control roster; exact
+source/task/object/transcript validator; 99-case adversarial self-test; CI and
+PLAN/benchmark/NEWS/memory documentation. The amendment adds 82 requirements,
+replaces 46, and pins the parent, roster, generator, selector, source bundle,
+object bundle, closure, runner, and transcript chain. Amendment SHA-256 =
+`7bda0577d077a5204165bd570af6bd6eaeeb2d581571e17ff54e832b4f2cf2a5`;
+roster SHA-256 =
+`915fce5e43b0e0fe57baf1a0b6cf646f5be8c4e25d325612c5ad6263ebc69202`.
+Verified: effective protocol returns 266 rows; roster returns 1,686 RNA targets
+per frame and 1,690 proteomics targets; focused fixture returns 12 sources, 90
+tasks, 60 null tasks, 29 planned objects, 37 transcript events, and 99 rejected
+adversaries. Full benchmark/aggregation/sensitivity CI smoke passes. Installed
+package tests pass; full-vignette source build and rebuilt-tarball
+`R CMD check --no-manual --no-build-vignettes` = `Status: OK`.
+Decisions: claims are limited to the fixed registered panel, with no population,
+confidence, or FWER interpretation. Exact source dependence groups bind to task
+dependence IDs. Canonical categorical treatment coding and numeric binary64
+parsing are frozen. Execution order is F-S source bundle -> F-B opaque object
+bundle -> F-E fresh-environment closure -> runner -> F-A Git transcript. Git,
+archives, URLs, adapters, joins, container shapes, resource limits, and all
+failure states fail closed; trusted-process integrity remains an explicit
+boundary. Structural records attest the registered process, not external
+non-access.
+Remaining: commit. Then perform metadata-only candidate discovery and freeze
+eligible development/held-out roles as F-S. Retrieve molecular archives only
+after that committed bundle, freeze opaque F-B bytes, then construct F-E and
+execute the transcript. A2/C performance gates remain independently blocked by
+host-load admission.
+Risks/blockers: the prospective criteria may leave a stratum ineligible; this
+narrows the claim domain and never permits post-value substitution. Remote
+metadata/license stability and archive scarcity remain external constraints.

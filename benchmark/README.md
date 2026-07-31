@@ -27,21 +27,51 @@ controlled factorial, known-mixture validation, donor split, endpoints, and
 go/fallback rules before prototype results. Its external data remain ignored;
 the source manifest pins HTTPS bytes and adds no package dependency.
 
-Workstream F's prospective
-[`validation protocol F-2.0.0`](validation-protocol.md) and machine
-[`registry`](validation-protocol.tsv) freeze the future comparative design. It
-separates bulk RNA, donor-level pseudobulk RNA, and bulk proteomics; pins
-Reactome 97 and the exact sum/mean/singscore/GSVA/ssGSEA APIs; and fixes matched
-controls, units, splits, endpoints, minimum effects, multiplicity, exclusions,
-null tests, and seeds. It is deliberately design-only and absent from the
-executable index until its data and implementation supplements are committed.
-Validate its 184 rows and resolution-IV simulation design with:
+Workstream F's prospective parent
+[`validation protocol F-2.0.0`](validation-protocol.md), machine
+[`registry`](validation-protocol.tsv), and immutable
+[`F-2.1.0 amendment`](validation-amendment.md) define the effective future
+comparative design. The parent separates bulk RNA, donor-level pseudobulk RNA,
+and bulk proteomics and pins Reactome 97 plus exact comparator APIs. The
+amendment fixes population/contrast identity, shared-unit dependence, fixed-
+panel claim scope, explicit permutation-resolution eligibility, proteomics
+eligibility, and auditable ordering for metadata-only selection and opaque
+bytes. Both remain design-only and absent from the executable index until
+the committed readiness sequence lands: F-S selection → F-B opaque-byte closure
+→ F-E implementation closure → controlled runner before each F-A attempt.
+Validate the 184-row parent, 128-row delta, 266-row effective design, and
+resolution-IV simulation with:
 
 ```sh
 Rscript --vanilla -e \
   'source("benchmark/validation-protocol.R"); \
-   print(validation_protocol_validate("."))'
+   print(validation_protocol_validate(".")); \
+   source("benchmark/validation-amendment.R"); \
+   print(validation_effective_protocol_validate("."))'
 ```
+
+Future `F-S-1.0.0` supplies normalized source, task, design, resampling, filter,
+assay-input, and planned-object tables. Its pinned Reactome 97 roster contains
+5,062 assay-target rows and is reproducible from the three parent-hashed source
+mappings. `F-B-1.0.0` requires exact object closure, a complete HTTP 200 for
+verified bytes, and canonical retrieval/failure facts. `F-A-1.0.0` covers one
+supplied acquisition-through-heldout-first-access transcript against F-S/F-B
+and Git state; it is auditable evidence, not proof against external access or
+alternate transcripts. Content-sealed denotes declared guarded process state,
+not cryptographic sealing or OS isolation. `validation-selection.R`'s focused
+adversary suite currently has 99 checks rejecting target, role, cardinality,
+dependence, adapter/member, pseudobulk, object-tree, byte, and access-state
+drift. Its hermetic fixture has 12 sources, 90 tasks, 60 null contrasts, 29
+planned objects, and 37 F-A events.
+The contracts close `field_type`, byte-exact UTF-8 scalars, numeric parsing
+including underflow, total archive decoder/resource bounds, finite acquisition
+limits, guarded object descriptors, dependence-group bijection, and exact S/B/I
+Git tree/runtime/mode evidence. Production F-A validation requires
+`verify_git = TRUE`, exact Git/object closure, the `F-E-1.0.0`
+implementation-closure validator, and the controlled runner in a trusted fresh
+process; it otherwise fails closed. No candidate source, archive, or molecular
+table has been selected or accessed by this work, and the design remains
+non-executable until F-S, F-B, F-E, and the controlled runner exist.
 
 ## Install
 
@@ -469,9 +499,10 @@ universal thresholds.
 
 The repository has no thesis datasets, so executable protocol 1.0.0 neither
 reruns nor claims reproduction of thesis results or historical runtimes. It
-includes no competitor methods. Prospective F-2.0.0 names competitors and
-external-data requirements but contains no implementation, data, result, or
-comparative claim.
+includes no competitor methods. Prospective F-2.0.0 plus F-2.1.0 name
+competitors and external-data requirements but contain no comparative runner or
+method implementation, selected-source or molecular data, result, or comparative
+claim.
 
 If real thesis data become available, keep them external. Optional retrieval
 and execution scripts must record source URLs, licensing, checksums, immutable

@@ -521,8 +521,8 @@ claim must therefore rest on its estimand, diagnostics, and validated domain.
   executable protocol `1.0.0`; introduce `2.0.0` only when new methods,
   scenarios, or assertions land.
 - [x] Pre-specify in that committed protocol target assays, aggregation level,
-  primary/secondary hypotheses and endpoints, minimum effects, independent
-  replication, exclusions, multiplicity, unit of inference, preprocessing,
+  primary/secondary hypotheses and endpoints, minimum effects, dependence-aware
+  consistency, exclusions, multiplicity, unit of inference, preprocessing,
   gene-set versions, coverage policy, competitor versions/APIs, and seeds
   before comparative results are inspected.
 - [ ] Start with bulk/pseudobulk transcriptomics and proteomics whose
@@ -545,7 +545,7 @@ claim must therefore rest on its estimand, diagnostics, and validated domain.
 - [ ] Measure perturbation ranking, technical-replicate stability, sensitivity
   to missing features, donor-level generalization, and resource cost. For
   negative controls, pre-specify the downstream contrast/test, null, covariates,
-  replication unit, multiplicity control, and empirical false-discovery
+  replication unit, multiplicity procedure, and empirical false-discovery
   endpoint; GeneFunnel scores alone have no false-positive rate.
 - [ ] Match random control sets on size, abundance, detection, correlation/
   co-expression, and catalogue overlap/degree where the endpoint requires it.
@@ -573,18 +573,52 @@ bytes and coverage, exact sum/mean/singscore/GSVA/ssGSEA APIs, matched random
 controls, development/held-out roles, exclusions, null testing, seeds, and
 secondary failure envelopes. Exact-size controls make sum and mean ranks
 identical, so disagreement aborts and one ablation-superiority hypothesis is
-tested. The 15 co-primary hypotheses use one-sided Bonferroni familywise 0.05;
-no assay stratum, native pipeline, simulation, or secondary endpoint rescues
-another. `F-2.0.0` remains outside the executable index: an opaque-byte data
-supplement and a post-development/pre-heldout implementation supplement must
-land before comparative execution.
+tested. The frozen parent specified one-sided Bonferroni familywise 0.05 for its
+15 co-primary hypotheses; F-2.1.0 below supersedes that inferential claim.
+No assay stratum, native pipeline, simulation, or secondary endpoint rescues
+another. The prospective lineage remains outside the executable index until
+its readiness sequence lands: F-S selection → F-B opaque-byte closure → F-E
+post-development/pre-heldout implementation closure → controlled runner before
+each F-A attempt.
 
-**Go:** the protocol's combined primary-task rule, minimum effects, multiplicity
-control, and independent replication pass against sum/mean and relevant methods,
-with a clear failure envelope.
-**Kill/narrow:** absent held-out benefit, retain GeneFunnel as the faithful thesis
-implementation and document the diagnostic/aggregation findings without claims
-of general method superiority.
+Prospective amendment `F-2.1.0` preserves those parent bytes and replaces the
+ambiguous supplement sequence with separately hashed `F-S-1.0.0` metadata-only
+selection and `F-B-1.0.0` opaque-byte contracts. An analysis contrast now fixes
+population, arms, exposure, time, and biological-unit frame; pseudobulk requires
+one exact source cell type. Target multiplicity is nested within contrast, and
+shared units carry synchronized resampling frames with a bijection between
+source independence groups and task dependence groups. The primary rule is
+explicitly a fixed-panel stability decision: studies/tasks stay fixed, one
+million shared draws use normalized positive cluster weights, and the
+`0.05/15` tail has no FWER, confidence-bound, or study-population
+interpretation. Negative controls
+are a non-rescuing dependent stress test: at least 20 value-blind contrasts
+across three held-out independence groups, explicit BH permutation-resolution
+eligibility, equal-group summaries, and no binomial/FDR claim. A generated,
+hash-pinned Reactome 97 target roster closes the eligible-target universe;
+future F-S assay-input rows close each selected source's adapter choice. F-A
+records one acquisition-through-heldout-first-access transcript without proving
+external non-access or excluding alternate transcripts. Selection order is
+never fallback; every predeclared candidate is processed once and every
+exclusion remains visible. Content-sealed denotes a declared guarded process
+state between opaque acquisition and implementation freeze, not cryptographic
+sealing or OS isolation. The 128-row amendment yields a 266-row effective
+contract and a fixed 5,062-row Reactome 97 roster. The hermetic structural
+fixture currently covers 12 sources, 90 tasks, 60 null contrasts, 29 objects,
+37 F-A events, and 99 adversaries, including explicit `field_type`, byte-exact
+UTF-8 scalar and underflow-aware numeric parsing, total decoder/resource and
+finite acquisition bounds, guarded descriptors, and exact S/B/I tree/runtime/
+mode evidence. Those checks assume a trusted fresh process; they do not sandbox
+project code. No candidate source, archive, or molecular table has been
+selected or accessed by this work. The lineage remains non-executable until
+exact F-S, F-B, and F-E closures plus the controlled runner exist.
+
+**Go:** all registered fixed-panel effect thresholds, nominal tail allocations,
+complete comparator cells, and deterministic study-consistency rules pass
+against sum/mean and relevant methods, with a clear failure envelope.
+**Kill/narrow:** if no assay fixed-panel gate passes, retain GeneFunnel as the
+faithful thesis implementation and document the diagnostic/aggregation findings
+without claims of general method superiority.
 
 ## 11. Conditional horizon
 

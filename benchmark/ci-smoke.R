@@ -33,11 +33,63 @@ stopifnot(
     identical(validation_protocol$simulation_rows, 221184L),
     identical(validation_protocol$executable, FALSE)
 )
+source(file.path(benchmark_dir, "validation-amendment.R"), local = TRUE)
+validation_effective <- validation_effective_protocol_validate(
+    dirname(benchmark_dir)
+)
+stopifnot(
+    identical(validation_effective$protocol_version, "F-2.1.0"),
+    identical(validation_effective$parent_version, "F-2.0.0"),
+    identical(validation_effective$amendment_rows, 128L),
+    identical(validation_effective$effective_rows, 266L),
+    identical(validation_effective$bootstrap_repeats, 1000000L),
+    identical(validation_effective$selection_schema, "F-S-1.0.0"),
+    identical(validation_effective$byte_schema, "F-B-1.0.0"),
+    identical(validation_effective$access_schema, "F-A-1.0.0"),
+    identical(validation_effective$claim_scope, "fixed_panel"),
+    identical(validation_effective$executable, FALSE)
+)
+source(file.path(benchmark_dir, "validation-selection.R"), local = TRUE)
+source(file.path(benchmark_dir, "validation-selection-tests.R"), local = TRUE)
 output_root <- Sys.getenv(
     "GENEFUNNEL_BENCHMARK_OUTPUT",
     file.path(benchmark_dir, "results", "ci-smoke")
 )
 unlink(output_root, recursive = TRUE, force = TRUE)
+selection_contract <- validation_selection_contract_self_test(
+    dirname(benchmark_dir), file.path(output_root, "validation-contract")
+)
+stopifnot(
+    identical(selection_contract$sources, 12L),
+    identical(selection_contract$tasks, 90L),
+    identical(selection_contract$null_tasks, 60L),
+    identical(selection_contract$eligible_targets, 5062L),
+    identical(selection_contract$planned_objects, 29L),
+    identical(selection_contract$access_events, 37L),
+    identical(selection_contract$adversaries, 99L),
+    grepl("^[0-9a-f]{64}$", selection_contract$selection_sha256)
+)
+validation_amendment_mutation_rejected <- function() {
+    scratch <- file.path(output_root, "validation-amendment-adversary")
+    on.exit(unlink(scratch, recursive = TRUE, force = TRUE), add = TRUE)
+    dir.create(file.path(scratch, "benchmark"), recursive = TRUE)
+    names <- c(
+        "validation-protocol.R", "validation-protocol.tsv",
+        "validation-amendment.tsv"
+    )
+    copied <- file.copy(
+        file.path(benchmark_dir, names), file.path(scratch, "benchmark", names)
+    )
+    if (!all(copied)) return(FALSE)
+    target <- file.path(scratch, "benchmark", "validation-amendment.tsv")
+    connection <- file(target, open = "ab")
+    writeBin(as.raw(10L), connection)
+    close(connection)
+    inherits(try(
+        validation_effective_protocol_validate(scratch), silent = TRUE
+    ), "try-error")
+}
+stopifnot(validation_amendment_mutation_rejected())
 validation_protocol_mutation_rejected <- function() {
     scratch <- file.path(output_root, "validation-protocol-adversary")
     on.exit(unlink(scratch, recursive = TRUE, force = TRUE), add = TRUE)

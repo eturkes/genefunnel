@@ -44,8 +44,25 @@ meaning; any new method, scenario, or assertion starts protocol `2.0.0` and is
 committed before its comparative result is inspected. Old version files remain
 immutable and executable.
 
-Prospective design `F-2.0.0` is now tracked separately in
-[`validation-protocol.tsv`](validation-protocol.tsv). It names future methods,
-assays, and assertions but has no runner, data, or results, so it is not an
-executable index entry. Registration waits for its byte-pinned data and
-implementation supplements; dispatch continues to expose only `1.0.0`.
+Prospective parent `F-2.0.0` and its immutable effective-design amendment
+`F-2.1.0` are tracked separately in
+[`validation-protocol.tsv`](validation-protocol.tsv) and
+[`validation-amendment.tsv`](validation-amendment.tsv). They name future
+methods, assays, assertions, fixed-panel scope, and selection/acquisition
+contracts but have no comparative runner or method implementation, no
+selected-source bundle or molecular data, and no results. F-2.1.0 is a 128-row
+delta/266-row effective contract with a fixed 5,062-row Reactome 97 roster. Its
+hermetic structural fixture currently covers 12 sources, 90 tasks, 60 null
+contrasts, 29 objects, 37 F-A events, and 99 adversaries. Contracts include
+explicit `field_type`, byte-exact UTF-8 scalar and underflow-aware numeric
+parsing, dependence bijection, total archive decoder/resource and finite
+acquisition bounds, guarded object descriptors, and exact S/B/I tree/runtime/
+mode Git evidence. They assume a trusted fresh process and do not sandbox
+project code. No candidate source, archive, or molecular table was selected or
+accessed by this work; that process record is not proof against external
+access. The committed readiness sequence is hashed F-S selection → F-B
+opaque-byte closure → F-E implementation closure → controlled runner before
+each F-A attempt. F-A evidence spans acquisition through held-out first access;
+production validation requires `verify_git = TRUE` and the exact Git/object,
+F-E, and runner closures. F-2.1.0 remains non-executable until those exact
+artifacts exist. Dispatch continues to expose only `1.0.0`.
