@@ -1467,3 +1467,25 @@ host-load admission.
 Risks/blockers: the prospective criteria may leave a stratum ineligible; this
 narrows the claim domain and never permits post-value substitution. Remote
 metadata/license stability and archive scarcity remain external constraints.
+
+2026-08-11 | vignette benchmark concepts | complete
+Scope: translate the thesis's performed benchmark ladder into the public
+vignette without importing historical superiority, timing, or biological
+claims.
+Changed: executable matched-total/partial/coordinated arithmetic analogues with
+component and independence assertions; performed-design facts; synthetic,
+overlap, FDP/FDR, sensitivity-profile, biological-unit, real-background,
+member-audit, resource, and claim boundaries; portable registered-runner
+examples; README/NEWS navigation; project-local benchmark-library setup.
+Verified from a clean committed tree: standalone documentation render and links;
+complete testthat; protocol index; controlled 14/14; eight-case performance
+smoke with paired serial/SOCK digests; full-vignette source build; rebuilt
+tarball check `Status: OK`; BiocCheck 0 errors/0 warnings/7 pre-existing notes;
+rendered-HTML visual audit; adversarial scientific, executable, trace, and
+formatting reviews with every finding closed.
+Decisions: thesis-era rankings/timings remain historical and are excluded.
+Performed work is distinguished from strengthened current requirements;
+comparative F-2.0.0/F-2.1.0 remains prospective design, never a result.
+Remaining: none.
+Risks/blockers: none for documentation. External comparative validation remains
+gated on its separately frozen F-S/F-B/F-E/runner sequence.

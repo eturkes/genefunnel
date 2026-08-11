@@ -278,6 +278,290 @@ Process startup and data transfer can outweigh parallel work on small inputs.
 Benchmark the intended workload rather than assuming that more workers are
 faster.
 
+# Benchmark design and interpretation
+
+Sections 4.5--4.9 of the thesis cited with this package progress from controlled
+toy matrices through one known-truth simulation, controlled edits on a real
+background, an unmodified-data plausibility audit, and resource scaling. The
+table turns those performed concepts into recommended evidence layers. Replicate
+uncertainty, held-out evaluation, explicit dense/sparse and overlap workloads,
+process-aware memory, and output identity below are strengthened requirements,
+not claims about the thesis execution. Each layer answers a different question:
+
+```{r benchmark-layers, echo=FALSE}
+benchmark_layers <- data.frame(
+    Layer = c(
+        "Exact properties",
+        "Synthetic truth",
+        "Controlled real background",
+        "Unmodified real data",
+        "Computational scaling"
+    ),
+    Design = c(
+        "Equal, zero, missing, and dispersed hand-constructed profiles",
+        paste(
+            "Planted signal/null sets under partial activation,",
+            "mean-preserving variance reduction, and coordinated changes"
+        ),
+        paste(
+            "Known edits to isolated and overlapping sets",
+            "in measured data"
+        ),
+        "Biologically motivated contrasts plus member-level inspection",
+        "Repeated storage, backend, size, and overlap workloads"
+    ),
+    `Primary readout` = c(
+        "Formula and ordering assertions",
+        "Recovery, false discoveries, and uncertainty across replicates",
+        "Target recovery and shared-member spillover",
+        "Plausibility and failure anatomy",
+        paste(
+            "Elapsed time, allocation, process-tree memory,",
+            "and output identity"
+        )
+    ),
+    `Evidence boundary` = c(
+        "Score semantics only",
+        "The declared generator and analysis pipeline",
+        "Responsiveness to the edit, not biological truth",
+        "Exploratory evidence only",
+        "The recorded workload, software, and hardware"
+    ),
+    check.names = FALSE
+)
+knitr::kable(benchmark_layers, row.names = FALSE)
+```
+
+The layers do not rescue one another. An exact property test cannot establish
+biological usefulness, a planted signal cannot establish performance outside
+its generator, and a plausible real-data result is not ground truth.
+
+## A controlled pattern benchmark
+
+The following small fixture gives arithmetic analogues of the three signal
+mechanisms used in the thesis's synthetic work; it is not a group-level
+simulation or detection test. The reference is balanced. The coordinated
+profile raises every member, partial activation raises only half, and the
+same-sum profile redistributes a fixed total. At that fixed total, the
+one-nonzero profile is the maximal-deviation boundary.
+
+The matched-total pair increases deviation from a balanced reference, whereas
+the thesis perturbation reduced intergene variance. The direction differs, but
+both isolate score response while the set mean and total stay fixed.
+
+```{r controlled-benchmark}
+benchmark_profiles <- cbind(
+    reference = c(2, 2, 2, 2),
+    coordinated_shift = c(2.25, 2.25, 2.25, 2.25),
+    partial_activation = c(3, 3, 2, 2),
+    same_sum_uneven = c(6, 1, 1, 0),
+    one_nonzero = c(8, 0, 0, 0)
+)
+rownames(benchmark_profiles) <- paste0(
+    "G",
+    seq_len(nrow(benchmark_profiles))
+)
+benchmark_set <- list(pathway = rownames(benchmark_profiles))
+
+pattern_scores <- genefunnel(
+    benchmark_profiles,
+    benchmark_set,
+    BPPARAM = serial
+)
+pattern_components <- genefunnel_components(
+    benchmark_profiles,
+    benchmark_set,
+    BPPARAM = serial
+)
+pattern_table <- data.frame(
+    scenario = colnames(benchmark_profiles),
+    observed_sum = pattern_components$observed_sum["pathway", ],
+    penalty = pattern_components$penalty["pathway", ],
+    balance = pattern_components$balance["pathway", ],
+    score = pattern_components$score["pathway", ],
+    row.names = NULL,
+    check.names = FALSE
+)
+knitr::kable(pattern_table, digits = 3)
+
+isolated_scores <- vapply(
+    seq_len(ncol(benchmark_profiles)),
+    function(j) {
+        genefunnel(
+            benchmark_profiles[, j, drop = FALSE],
+            benchmark_set,
+            BPPARAM = serial
+        )["pathway", 1L]
+    },
+    numeric(1L)
+)
+with_second_set <- genefunnel(
+    benchmark_profiles,
+    list(
+        pathway = rownames(benchmark_profiles),
+        first_pair = rownames(benchmark_profiles)[1:2]
+    ),
+    BPPARAM = serial
+)
+
+stopifnot(
+    identical(pattern_components$score, pattern_scores),
+    identical(
+        unname(pattern_scores["pathway", ]),
+        c(8, 9, 26 / 3, 8 / 3, 0)
+    ),
+    identical(
+        unname(pattern_components$observed_sum["pathway", ]),
+        c(8, 9, 10, 8, 8)
+    ),
+    identical(
+        unname(pattern_components$penalty["pathway", ]),
+        c(0, 0, 4 / 3, 16 / 3, 8)
+    ),
+    identical(
+        unname(pattern_components$balance["pathway", ]),
+        c(1, 1, 13 / 15, 1 / 3, 0)
+    ),
+    identical(
+        unname(pattern_components$effective_size["pathway", ]),
+        rep(4L, 5L)
+    ),
+    identical(
+        unname(pattern_scores["pathway", ]),
+        unname(isolated_scores)
+    ),
+    identical(
+        unname(pattern_scores["pathway", ]),
+        unname(with_second_set["pathway", ])
+    )
+)
+```
+
+The coordinated shift changes magnitude without changing balance. Partial
+activation increases the total but also incurs a penalty. The matched-total
+comparison between `reference` and `same_sum_uneven` isolates the effect of
+within-set absolute dispersion. `one_nonzero` retains the same total as the
+reference but scores zero. Scoring every column separately and adding a second
+gene set leave the pathway scores exactly identical, directly checking sample
+and gene-set independence.
+
+These are mechanism checks, not evidence that arithmetic balance is biological
+co-expression, correlation, coordinated regulation, pathway truth, or
+superiority over another method.
+
+## Comparative and empirical designs
+
+A synthetic detection benchmark should declare its data-generating model,
+biological unit, preprocessing, gene universe, set catalogue, signal and null
+sets, downstream test, multiplicity rule, seed schedule, and decision threshold
+before results are inspected. Pair methods on the same independently generated
+replicates. Partial activation, mean-preserving dispersion changes, and
+coordinated shifts should be varied separately because they test different
+mechanisms.
+
+The thesis instantiated this pattern with a 20,000-gene matrix of
+negative-binomial counts, 1,000 disjoint 20-member sets, 50 signal and 950 null
+sets, and five versus five samples. It applied TMM normalization and compared
+ORA, `camera`, and `fgsea` with GSVA, ssGSEA, and GeneFunnel score pipelines.
+The latter three were tested with limma-trend; the first three used their own
+inference. No independent simulation repetitions, complete seed schedule, or
+Monte Carlo uncertainty were reported, so those outcomes remain one controlled
+study rather than a general performance estimate.
+
+Include direct sum/mean ablations and a no-change control before adding a large
+competitor panel. ORA, competitive tests, ranked-list enrichment, and
+functional class scoring test different hypotheses; a cross-family comparison
+therefore evaluates end-to-end pipelines rather than scoring algorithms alone.
+Within methods that share a hypothesis and input contract, use a common
+compatible input to isolate scoring rules. Label any method-native preprocessing
+analysis as a separate regime.
+
+At each replicate, retain TP, FP, TN, and FN together with sensitivity,
+specificity, precision, F1, and the observed false discovery proportion (FDP).
+If `R = TP + FP` sets are called, define `FDP = FP / max(R, 1)`, so no calls
+give FDP zero. FDR is `E(FDP)`; mean FDP across independent replicates estimates
+it and requires Monte Carlo uncertainty. Declare zero-denominator conventions
+for precision and F1. Accuracy alone is weak when null sets greatly outnumber
+signal sets. A mean BH-adjusted p-value among planted signal sets is not an FDR
+and must be labelled as an adjusted-p-value summary among signals.
+
+Sensitivity analysis should report a profile rather than only the most
+favourable point. Useful axes include activated fraction, effect magnitude,
+within-set dispersion, set size and overlap, member correlation, sample count,
+zero density, missingness, assay coverage, and catalogue choice. Parameter
+selection and final evaluation require separate realizations or a held-out
+split.
+
+When sets overlap, a nominal null sharing an edited member is affected by
+construction. Use disjoint evaluation nulls or prospectively define which sets
+become affected through shared members. Report that spillover separately rather
+than counting it as a false positive.
+
+When synthetic distributions are inadequate, make known changes against a real
+data background. Start with a set that does not overlap the rest of the test
+catalogue, then repeat with an overlapping set to expose spillover induced
+through shared edited members. The thesis set all target members to their
+pre-edit set mean, eliminating within-set variation while preserving the total,
+and separately added 100 counts to every target member.
+
+Preserve donor or other biological-unit labels: condition-pooled profiles can
+illustrate scoring, but inferential pseudobulk must sum assay counts within each
+biological-unit by condition by cell-type stratum before scoring. Score every
+unit separately, treat units rather than cells or technical repeats as
+replicates, and include unit/block effects only for paired or repeated designs.
+Pooling biological units before scoring changes the nonlinear estimand. An
+unmodified real-data contrast has no known pathway truth; use it for
+plausibility and inspect the member values driving top-ranked sets.
+
+## Reproducible resource evidence
+
+The source repository contains an explicitly versioned
+[protocol](https://github.com/eturkes/genefunnel/tree/main/benchmark).
+The thesis resource study used five `bench::mark` iterations with six serial
+pseudobulk samples, 60 parallel samples, and a halving series up to 600 cells.
+Those coupled changes motivate current scaling scenarios but do not isolate
+parallel speedup from workload size.
+
+With `genefunnel` installed in a library visible to `Rscript --vanilla`, run
+the controlled and smoke suites from the source root. The linked protocol shows
+the alternative commands for its project-local library. The full command is
+potentially expensive:
+
+```{sh benchmark-protocol, eval=FALSE}
+Rscript --vanilla \
+    benchmark/run-protocol.R --protocol=1.0.0 --suite=controlled
+
+Rscript --vanilla \
+    benchmark/run-protocol.R --protocol=1.0.0 --suite=performance \
+    --preset=smoke --repeats=1 --workers=2
+
+# Full workload: 40 isolated observations at five repeats per scenario.
+Rscript --vanilla \
+    benchmark/run-protocol.R --protocol=1.0.0 --suite=performance \
+    --preset=full --repeats=5 --workers=2
+```
+
+The full preset contains 60-sample dense bulk-like and 600-sample sparse
+single-cell-like workloads; each crosses low/high set overlap and serial versus
+two-worker SOCK execution. Storage, density, and sample count remain coupled
+scenario classes rather than isolated effects. Fixtures and seeds are shared
+across backends, and serialized output digests must agree.
+
+Isolated measurement passes record elapsed time and, where Unix `/proc` is
+available, 10-ms sampled aggregate resident memory for the scoring process
+tree. Where R allocation profiling is available, a separate pass records
+cumulative manager-side R allocations, not retained or native memory.
+Unavailable fields remain `NA`. Historical thesis timings are
+environment-specific rather than current guarantees, so benchmark the intended
+workload.
+
+Executable protocol 1.0.0 contains analytic controls and descriptive resource
+workloads, but no competitors, external assays, or thesis-data reproduction.
+The separate prospective comparative parent `validation-protocol.md` and
+immutable effective-design amendment `validation-amendment.md` in that
+benchmark directory are designs rather than results. The current package
+therefore makes no general superiority or biological-validation claim.
+
 # Identifiers and preprocessing
 
 Matrix row names and gene-set names must be unique, non-missing, and non-empty.

@@ -144,6 +144,8 @@
   more can make the score unbounded. Finite caller caps give sharp score bounds
   and conservative deletion-delta enclosures without probabilistic meaning.
 - Adds an executable BiocStyle vignette covering canonical examples,
-  caller-controlled coverage, dense/sparse matrices, and parallel execution.
+  caller-controlled coverage, dense/sparse matrices, parallel execution, and
+  thesis-derived benchmark concepts and evidence boundaries spanning
+  controlled, comparative, empirical, and resource designs.
 - Expands function help and the README with the complete public contract and
   accurate development status.

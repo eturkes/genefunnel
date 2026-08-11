@@ -76,6 +76,7 @@ non-executable until F-S, F-B, F-E, and the controlled runner exist.
 ## Install
 
 ```sh
+mkdir -p "$PWD/.agent/R-library"
 R_LIBS_USER="$PWD/.agent/R-library" R CMD INSTALL \
   --library="$PWD/.agent/R-library" .
 ```

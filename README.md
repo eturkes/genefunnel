@@ -105,8 +105,9 @@ an arbitrary positive shift changes the score and is not a valid workaround.
   - exact leave-one-observed-member-out deltas, canonical support, compact
   unexported prototype, unknown-member identification bounds, invariants,
   frozen negative reliability result, and non-causal interpretation boundary.
-- [Vignette](vignettes/genefunnel.Rmd) - canonical examples, dense/sparse use,
-  coverage policies, and serial/parallel execution.
+- [Vignette](vignettes/genefunnel.Rmd) - canonical examples, controlled
+  benchmark patterns and evidence boundaries, coverage policies, dense/sparse
+  use, and serial/parallel execution.
 - [Benchmark protocol](https://github.com/eturkes/genefunnel/blob/main/benchmark/README.md)
   - explicitly versioned controlled assertions plus reproducible timing,
   memory, output-identity, and environment evidence.
