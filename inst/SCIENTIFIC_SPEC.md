@@ -175,6 +175,32 @@ chunks for BiocParallel execution. These storage and scheduling choices are
 implementation details: they must preserve the equation, missing-value rules,
 names, and ordering above.
 
+## Formal verification
+
+The reviewed Lean contract in `formal/GeneFunnel/Spec.lean` models one
+gene-set/sample cell over exact rationals. Optional entries model sample-local
+missingness, observed zeroes remain, negative values are rejected, fewer than
+two observations produce no score, and scoreable cells use the exact equation
+above. `GeneFunnel.Proof.implementation_correct` proves that the executable
+below-mean evaluator `GeneFunnel.Impl.run` satisfies that contract for every
+modeled cell. `GeneFunnel.Bounds.bounds_correct` proves that every produced
+score is nonnegative and no greater than the sum of the observed values.
+
+The repository gate checks the exact theorem/executable roots under Lean
+4.32.2, a closed reviewed import boundary, isolated build, independent kernel
+replay, and a logical-dependency allowance limited to `Classical.choice`,
+`Quot.sound`, and `propext`. `formal/SHA256SUMS` binds the reviewed inputs
+without authenticating an author or machine.
+
+The theorem covers the pure exact cell model. It does not prove binary64
+rounding or representability, the R and Rcpp/FFI boundary, global validation,
+identifier matching/deduplication, dense/sparse traversal, chunking, parallel
+scheduling, compilation, resource bounds, biological validity, or that the
+reviewed model matches stakeholder intent. The scientific specification and
+native source are hash-bound review evidence; that binding is drift detection,
+not a refinement proof. Package tests supply separate conformance evidence for
+implemented paths.
+
 ## Additive diagnostics
 
 `genefunnel_components()` returns the authoritative score with aligned

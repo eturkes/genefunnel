@@ -93,6 +93,9 @@ an arbitrary positive shift changes the score and is not a valid workaround.
 
 ## Documentation
 
+- [Formal scorer verification](https://github.com/eturkes/genefunnel/blob/main/formal/README.md)
+  covers the reviewed exact-rational contract, executable below-mean evaluator,
+  Lean kernel proofs, and explicit native/FFI boundary.
 - [Scientific specification](inst/SCIENTIFIC_SPEC.md) - equation, value and
   coverage semantics, invariants, and limitations.
 - [Component proof and contract](inst/COMPONENTS_SPEC.md) - prior art, exact

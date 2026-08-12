@@ -1,0 +1,13 @@
+formal/GeneFunnel.lean
+formal/GeneFunnel/Audit.lean
+formal/GeneFunnel/Bounds.lean
+formal/GeneFunnel/Impl.lean
+formal/GeneFunnel/Proof.lean
+formal/GeneFunnel/Spec.lean
+formal/verification-inputs.txt
+formal/verify.sh
+inst/SCIENTIFIC_SPEC.md
+lake-manifest.json
+lakefile.toml
+lean-toolchain
+src/calculateScores.cpp

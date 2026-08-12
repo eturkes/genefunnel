@@ -23,3 +23,4 @@
 /src/*.pdb
 /src/*.so
 /src/symbols.rds
+/.lake/

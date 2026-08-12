@@ -1,0 +1,8 @@
+name = "genefunnel-formal"
+version = "0.1.0"
+defaultTargets = ["GeneFunnel"]
+
+[[lean_lib]]
+name = "GeneFunnel"
+srcDir = "formal"
+roots = ["GeneFunnel"]

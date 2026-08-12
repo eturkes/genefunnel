@@ -1,5 +1,10 @@
 # Project memory
 
+- Formal scoring proof = `formal/GeneFunnel/*` + `formal/verify.sh`, Lean
+  4.32.2. The theorems cover exact rational cell equivalence + bounds;
+  native/R/storage/parallel paths remain conformance-tested boundaries. After
+  a verification-input change: `./formal/verify.sh --update-hashes`, inspect
+  the digest diff, then rerun `./formal/verify.sh`.
 - Development R packages live in `.agent/R-library`; prefix package commands
   with `R_LIBS_USER="$PWD/.agent/R-library"`.
 - Install into that library serially. Concurrent `install.packages()` processes

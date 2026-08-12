@@ -1489,3 +1489,27 @@ comparative F-2.0.0/F-2.1.0 remains prospective design, never a result.
 Remaining: none.
 Risks/blockers: none for documentation. External comparative validation remains
 gated on its separately frozen F-S/F-B/F-E/runner sequence.
+
+2026-08-12 | exact scorer formal verification | complete
+Scope: kernel-check the pure GeneFunnel cell algorithm against the reviewed
+scientific equation and exact score bounds.
+Changed: Lean 4.32.2 rational specification, executable below-mean evaluator,
+equivalence + bounds proofs, dependency-free Lake closure, repository-owned
+audit + digest gate, CI, documentation, packaging exclusions, and cross-session
+memory.
+Verified: isolated cache-free build, closed reviewed imports, exact theorem
+roots, bounded logical-dependency audit, two independent `leanchecker` replays,
+and stable inputs. Coefficient, missing-value, and
+below-mean-comparator mutations each fail proof elaboration. Actionlint,
+documentation render, full-vignette source build, tarball-boundary inspection,
+and rebuilt-tarball `R CMD check --no-manual --no-build-vignettes` pass with
+`Status: OK`.
+Decisions: theorem scope = every finite optional exact-rational cell; `none`
+means sample-local missingness, observed zero remains, negatives reject, and
+effective size below two returns no score. Native C++ is hash-bound review
+evidence only; binary64, R/Rcpp/FFI, matching, storage, chunking, parallelism,
+compiler/code generation, resources, biology, and specification intent remain
+explicit non-claims covered separately where package tests apply.
+Remaining: none for the exact scorer proof.
+Risks/blockers: `formal/SHA256SUMS` is unsigned drift evidence, not provenance;
+native refinement remains empirical rather than formal.

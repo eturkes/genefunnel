@@ -11,3 +11,8 @@
 ^.*\.BiocCheck$
 ^genefunnel_.*\.tar\.gz$
 ^src/.*\.(a|dll|dylib|exp|lib|o|obj|pdb|so)$
+^formal$
+^\.lake$
+^lake-manifest\.json$
+^lakefile\.toml$
+^lean-toolchain$

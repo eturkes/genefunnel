@@ -192,6 +192,31 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
+  formal:
+    name: Lean scoring-model verification
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out GeneFunnel
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          path: genefunnel
+          persist-credentials: false
+      - name: Set up pinned Lean toolchain
+        uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1.5.0
+        with:
+          lake-package-directory: genefunnel
+          auto-config: "false"
+          build: "false"
+          test: "false"
+          lint: "false"
+          use-mathlib-cache: "false"
+          use-github-cache: "false"
+      - name: Verify proof roots, closure, and evidence drift
+        working-directory: genefunnel
+        shell: bash
+        run: ./formal/verify.sh
+
   native-sanitizers:
     name: Native ASan and UBSan
     needs: bioc-config

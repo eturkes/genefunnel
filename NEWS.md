@@ -27,6 +27,12 @@
 
 ## Quality
 
+- Adds a Lean 4.32.2 kernel proof that the executable exact-rational
+  below-mean scorer equals the reviewed absolute-deviation equation for every
+  cell and obeys exact score bounds, with complete missingness,
+  insufficient-support, and negative-value behavior in the modeled cell. The
+  proof boundary explicitly excludes native binary64, R/FFI, storage, and
+  parallel refinement claims.
 - Adds deterministic formula, invariant, randomized-oracle, dense-sparse, and
   serial-parallel tests.
 - Preserves exact-zero classification when positive subnormal means underflow
