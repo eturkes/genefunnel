@@ -46,15 +46,15 @@ Those cumulative allocations and profiled-pass runtimes are diagnostic context,
 not primary timing or retained-memory measurements.
 
 Both trigger branches pass, so `optimization_eligible = TRUE` and
-`performance_claim = FALSE`. Any optimized implementation must remain internal
-and match the brute result and status on every fixed and randomized cell before
-adoption. The brute path remains the correctness oracle.
+`performance_claim = FALSE`. Any optimized implementation must remain internal.
+Before adoption, it must match the brute result and status on every fixed and
+randomized cell. The brute path remains the correctness oracle.
 
 ## Environment and evidence
 
-Execution used R 4.6.1, Matrix 1.7.5, BiocParallel 1.46.0, an Intel Core Ultra
-7 268V host with eight logical cores, and 32,329,932 KiB reported memory. Raw
-ignored artifacts are authenticated by:
+Execution used R 4.6.1, Matrix 1.7.5, and BiocParallel 1.46.0. The Intel Core
+Ultra 7 268V host had eight logical cores and 32,329,932 KiB reported memory.
+The following hashes identify the ignored raw artifacts:
 
 - `Rprof.out` SHA-256:
   `b44850aa8a5c84fbcde61461e0fcb6363ede5c831ab1f8c29b7ec066db536d8a`;

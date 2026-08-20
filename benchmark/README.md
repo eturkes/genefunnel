@@ -23,9 +23,10 @@ Workstream B's separate
 [`aggregation protocol B-1.0.3`](aggregation-protocol.md), machine
 [`registry`](aggregation-protocol.tsv), and exact external
 [`data manifest`](aggregation-data.tsv) freeze the internal audit schema,
-controlled factorial, known-mixture validation, donor split, endpoints, and
-go/fallback rules before prototype results. Its external data remain ignored;
-the source manifest pins HTTPS bytes and adds no package dependency.
+controlled factorial, and known-mixture validation. They also freeze the donor
+split, endpoints, and go/fallback rules before prototype results. Its external
+data remain ignored. The source manifest pins HTTPS bytes and adds no package
+dependency.
 
 Workstream F's prospective parent
 [`validation protocol F-2.0.0`](validation-protocol.md), machine
@@ -33,12 +34,12 @@ Workstream F's prospective parent
 [`F-2.1.0 amendment`](validation-amendment.md) define the effective future
 comparative design. The parent separates bulk RNA, donor-level pseudobulk RNA,
 and bulk proteomics and pins Reactome 97 plus exact comparator APIs. The
-amendment fixes population/contrast identity, shared-unit dependence, fixed-
-panel claim scope, explicit permutation-resolution eligibility, proteomics
+amendment fixes population/contrast identity, shared-unit dependence,
+fixed-panel claim scope, explicit permutation-resolution eligibility, proteomics
 eligibility, and auditable ordering for metadata-only selection and opaque
-bytes. Both remain design-only and absent from the executable index until
-the committed readiness sequence lands: F-S selection → F-B opaque-byte closure
-→ F-E implementation closure → controlled runner before each F-A attempt.
+bytes. Both remain design-only and absent from the executable index. The
+committed readiness sequence is F-S selection → F-B opaque-byte closure → F-E
+implementation closure → controlled runner before each F-A attempt.
 Validate the 184-row parent, 128-row delta, 266-row effective design, and
 resolution-IV simulation with:
 
@@ -63,14 +64,15 @@ adversary suite currently has 99 checks rejecting target, role, cardinality,
 dependence, adapter/member, pseudobulk, object-tree, byte, and access-state
 drift. Its hermetic fixture has 12 sources, 90 tasks, 60 null contrasts, 29
 planned objects, and 37 F-A events.
-The contracts close `field_type`, byte-exact UTF-8 scalars, numeric parsing
-including underflow, total archive decoder/resource bounds, finite acquisition
-limits, guarded object descriptors, dependence-group bijection, and exact S/B/I
-Git tree/runtime/mode evidence. Production F-A validation requires
+The contracts close `field_type`, byte-exact UTF-8 scalars, and numeric parsing
+that includes underflow. They close total archive decoder and resource bounds
+plus finite acquisition limits. They also close guarded object descriptors,
+dependence-group bijection, and exact S/B/I Git tree, runtime, and mode evidence.
+Production F-A validation requires
 `verify_git = TRUE`, exact Git/object closure, the `F-E-1.0.0`
 implementation-closure validator, and the controlled runner in a trusted fresh
-process; it otherwise fails closed. No candidate source, archive, or molecular
-table has been selected or accessed by this work, and the design remains
+process. It otherwise fails closed. This work has not selected or accessed a
+candidate source, archive, or molecular table. The design remains
 non-executable until F-S, F-B, F-E, and the controlled runner exist.
 
 ## Install
@@ -132,12 +134,12 @@ R_LIBS_USER="$PWD/.agent/R-library" Rscript --vanilla \
 
 Presets:
 
-- `full` - 20,000 features; dense bulk-like matrices with 60 samples and
-  sparse single-cell-like matrices with 600 samples; 1,000 sets of size 20;
-  low/high overlap; serial/two-worker SOCK execution.
-- `hotspot` - 20,000 x 200 sparse matrices across stored densities 0.1%, 1%,
-  3%, and 10%, with both overlap patterns; isolates sparse traversal and
-  catalogue preparation.
+- `full` - 20,000 features and 1,000 sets of size 20. Dense bulk-like matrices
+  have 60 samples. Sparse single-cell-like matrices have 600 samples. Cases
+  cross low/high overlap and serial/two-worker SOCK execution.
+- `hotspot` - 20,000 x 200 sparse matrices with 0.1%, 1%, 3%, and 10% stored
+  density. Both overlap patterns isolate sparse traversal and catalogue
+  preparation.
 - `smoke` - the same execution paths at tiny dimensions. `ci-smoke.R` checks
   this preset plus the controlled protocol without time or memory thresholds.
 
@@ -193,10 +195,10 @@ R_LIBS_USER="$PWD/.agent/R-library" Rscript --vanilla \
   benchmark/run-aggregation-synthetic.R --workers=4
 ```
 
-The runner installs that exact tree into a temporary isolated library, checks
-four deterministic generator/audit strata, then evaluates 62,208 shared latent
-scenarios with independent A/B measurements. Scenario-local seeds make one- or
-multi-worker results identical. `--chunk-size=N` controls atomic RDS
+The runner installs that exact tree into a temporary isolated library. It
+checks four deterministic generator and audit strata. It then evaluates 62,208
+shared latent scenarios with independent A/B measurements. Scenario-local
+seeds make one- or multi-worker results identical. `--chunk-size=N` controls atomic RDS
 checkpoints; rerunning with the same `--output=DIR` safely resumes only when the
 protocol, Git commit, chunk identities, and manifest match.
 
@@ -210,14 +212,14 @@ Generated evidence remains ignored under `benchmark/results/`.
 The complete B-1.0.2 execution from clean commit `d1cbf15` passed every frozen
 synthetic gate. Its compact tracked
 [`result`](aggregation-synthetic-result.md) and
-[`endpoint table`](aggregation-synthetic-result.tsv) also retain the severe-
-dropout failure envelope: controlled success does not establish dropout
-robustness or biological validity.
+[`endpoint table`](aggregation-synthetic-result.tsv) also retain the
+severe-dropout failure envelope. Controlled success does not establish dropout
+stability or biological validity.
 
 ## CellBench known-mixture validation
 
-After placing the four exact `RNAmix_celseq2.*` and `RNAmix_sortseq.*` files
-from [`aggregation-data.tsv`](aggregation-data.tsv) in one external directory,
+Place the four exact `RNAmix_celseq2.*` and `RNAmix_sortseq.*` files from
+[`aggregation-data.tsv`](aggregation-data.tsv) in one external directory. Then
 run only from a clean committed tree:
 
 ```sh
@@ -225,10 +227,11 @@ R_LIBS_USER="$PWD/.agent/R-library" Rscript --vanilla \
   benchmark/run-aggregation-cellbench.R --data-dir="$PWD/.agent/tmp"
 ```
 
-The runner verifies all four payload hashes before parsing, installs the exact
-commit into an isolated library, derives 12 sets only from CEL-seq2 pure
-profiles, and retains every library/set error, all 384 fixed error groups, 384
-condition/set medians, and five co-primary endpoint decisions. Missing fixed
+The runner verifies all four payload hashes before parsing. It installs the
+exact commit into an isolated library. It derives 12 sets only from CEL-seq2
+pure profiles. It retains every library/set error and all 384 fixed error
+groups. It also retains 384 condition/set medians and five co-primary endpoint
+decisions. Missing fixed
 groups or undefined metrics produce a retained scientific `FAIL`; malformed or
 misaligned input aborts. A scientific failure is a completed result and exits
 successfully. Generated output remains ignored under `benchmark/results/`.
@@ -243,21 +246,24 @@ fixed-grid failure.
 
 ## Kang donor-perturbation characterization
 
-After placing the exact `GSE96583_RAW.tar`, batch-2 gene/metadata files, and
-Reactome v97 archive from [`aggregation-data.tsv`](aggregation-data.tsv) in one
-external directory, run only from a clean committed tree:
+Place `GSE96583_RAW.tar`, the batch-2 gene and metadata files, and the Reactome
+v97 archive from
+[`aggregation-data.tsv`](aggregation-data.tsv) in one external directory. Then
+run only from a clean committed tree:
 
 ```sh
 R_LIBS_USER="$PWD/.agent/R-library" Rscript --vanilla \
   benchmark/run-aggregation-kang.R --data-dir="$PWD/.agent/tmp"
 ```
 
-The runner verifies all four payload hashes, enforces the exact Matrix Market
-and duplicated-barcode join contracts, installs the committed package in an
-isolated library, and constructs full/odd/even raw-UMI cell-type profiles. It
-retains the fixed 96-unit eligibility grid, every included Reactome pathway
-audit, all 16 donor-condition correlations, 16 primary-pathway donor contrasts,
-two held-out/sign-test decisions, and six endpoints. Undefined fixed-grid
+The runner verifies all four payload hashes and enforces the exact Matrix
+Market and duplicated-barcode join contracts. It installs the committed
+package in an isolated library. It then constructs full/odd/even raw-UMI
+cell-type profiles. It retains the fixed 96-unit eligibility grid and every included
+Reactome pathway audit. It also retains 16 donor-condition correlations, 16
+primary-pathway donor contrasts, two held-out/sign-test decisions, and six
+endpoints.
+Undefined fixed-grid
 metrics produce a retained scientific `FAIL`; malformed input aborts. This
 characterization cannot rescue the already-failed CellBench promotion gate.
 
@@ -271,13 +277,14 @@ claim follows.
 
 ## Observed-member sensitivity
 
-Protocol [`E-1.0.0`](sensitivity-protocol.md) fixes the internal compact schema,
-exact dyadic-rational brute oracle, profile-before-optimization rule, controlled
-feature masks, measurement repeats, held-out folds, models, bootstrap, and
-incremental prediction gates; it was frozen before a package sensitivity value
-existed. The unexported exact brute prototype now implements the compact schema,
-and the complete controlled result failed both empirical reliability gates, so
-the public interface is omitted. The tracked
+Protocol [`E-1.0.0`](sensitivity-protocol.md) fixes the internal compact schema
+and dependency-free exact dyadic-rational brute oracle. It also fixes the
+profile-before-optimization rule. It
+fixes controlled feature masks, measurement repeats, held-out folds, models,
+bootstrap, and incremental prediction gates. The protocol was frozen before a package
+sensitivity value existed. The unexported exact brute prototype implements the
+compact schema. The complete controlled result failed both empirical
+reliability gates, so the public interface is omitted. The tracked
 [`fixed profile`](sensitivity-profile-result.md) records median elapsed 213.585 s
 and exact-stack share 0.999403, so both frozen optimization triggers pass. This
 permits implementation research only. The tracked
@@ -313,9 +320,9 @@ Rscript --vanilla benchmark/run-sensitivity-profile.R \
   --output=benchmark/results/sensitivity-profile
 ```
 
-Gate mode installs the exact Git archive in an isolated library, records three
-timed calls plus separate CPU/allocation profiles, requires one output digest,
-and applies only the frozen optimization-eligibility rule. Its timing is
+Gate mode installs the exact Git archive in an isolated library. It records
+three timed calls and separate CPU/allocation profiles. It requires one output
+digest and applies only the frozen optimization-eligibility rule. Its timing is
 descriptive and cannot promote a reliability API.
 
 The registry contains 5,760 latent scenarios, 345,600 feature-loss rows, 5,760
@@ -324,10 +331,10 @@ stage is synthetic and internal: even a complete pass cannot support export or
 a claim about real technical/biological replicates.
 
 The parent controlled registry deliberately remains unchanged. Its terms did
-not uniquely choose R's Bernoulli call, predictor dummy/scaling details, or
-bootstrap draw order, so byte-pinned execution supplement
+not uniquely choose R's Bernoulli call, predictor encoding, scaling, or
+bootstrap draw order. Therefore, byte-pinned execution supplement
 [`E-C-1.0.0`](sensitivity-controlled-protocol.tsv) closes those degrees before
-any controlled scenario is constructed. Validate it with:
+the runner constructs a controlled scenario. Validate it with:
 
 ```sh
 Rscript --vanilla -e \
@@ -352,25 +359,26 @@ R_LIBS_USER="$PWD/.agent/R-library" Rscript --vanilla \
   --chunk-size=128 --output=benchmark/results/sensitivity-controlled
 ```
 
-The runner installs the Git archive in an isolated library, runs an independent
-four-stratum representation preflight, writes atomic scenario checkpoints,
-validates all fixed rows, fits both ten-fold models, and performs each 2,000-
-replicate cluster bootstrap. Reusing the same output resumes only an identical
-candidate/mode/chunk design; worker count may change without changing rows.
+The runner installs the Git archive in an isolated library. It runs an
+independent four-stratum representation preflight and writes atomic scenario
+checkpoints. It validates all fixed rows and fits both ten-fold models. It then
+performs each 2,000-replicate cluster bootstrap. Reusing the same output resumes
+only an identical candidate/mode/chunk design. Worker count can change without
+changing rows.
 `--mode=smoke` uses four real observation scenarios plus planted all-factor
 model frames and therefore makes no scientific decision.
 
 The complete run from clean candidate `5920ea9` retained every fixed row and
 failed all four frozen endpoint requirements. Feature-loss median fold RMSE
-reduction/lower bound was 0.00110097/0.000407703; controlled-repeat reduction/
-lower bound was 0.0193130/0.0112902, versus required values 0.10/0.05 for each
-target. The tracked [`negative result`](sensitivity-controlled-result.md),
+reduction/lower bound was 0.00110097/0.000407703. The controlled-repeat
+reduction/lower bound was 0.0193130/0.0112902. Each target required 0.10/0.05. The tracked
+[`negative result`](sensitivity-controlled-result.md),
 [`endpoint table`](sensitivity-controlled-result.tsv), and
 [`thinning curves`](sensitivity-controlled-curves.tsv) preserve provenance and
 the study-composition-dependent failure envelope. Biological replicates were
-not evaluated. The specification separately proves what can be bounded when a
-caller supplies finite limits for genuinely unknown members; the controlled
-thinning grid never supplies or validates those limits. Validate the compact
+not evaluated. The specification separately proves bounds for callers that
+supply finite limits for genuinely unknown members. The controlled thinning
+grid never supplies or validates those limits. Validate the compact
 evidence with:
 
 ```sh
@@ -407,11 +415,11 @@ The sensitivity profile writes `manifest.tsv`, three-call `runs.tsv`,
 an isolated source/library record, and artifact hashes. Its decision concerns
 optimization eligibility only.
 
-The controlled sensitivity runner writes feature/repeat observations, separate
-held-out prediction tables, fold results, coefficient/alias and scaling facts,
-fixed-prediction bootstrap estimates, endpoints, every registered descriptive
-stratum, summary/report/environment files, clean-source provenance, atomic
-`checkpoints/`, and `artifacts.tsv`.
+The controlled sensitivity runner writes feature and repeat observations. It
+also writes held-out predictions, fold results, coefficients, aliases, scaling
+facts, fixed-prediction bootstraps, endpoints, and every registered descriptive
+stratum. It writes summary, report, and environment files with clean-source
+provenance. Atomic `checkpoints/` and `artifacts.tsv` complete the output.
 
 The preparer writes `installations.tsv`, exact source archives, install logs,
 per-library provenance markers, and installed-package tree fingerprints. Gate
@@ -459,9 +467,9 @@ R_LIBS_USER="$PWD/.agent/R-library" Rscript --vanilla \
 Smoke uses four balanced pairs, two batches, and smaller matrices. It must pass
 identity/orchestration but records `performance_claim = FALSE` and applies no
 timing/resource threshold. Gate mode requires a clean repository at the full
-candidate SHA plus baseline
-`a573c124909235e41bdbc3cfae950947465d8755`; it verifies both snapshot markers,
-aborts above load/core `0.25`, and executes the fixed 20-pair/five-batch decision:
+candidate SHA and baseline `a573c124909235e41bdbc3cfae950947465d8755`. It
+verifies both snapshot markers and aborts above load/core `0.25`. It then
+executes the fixed 20-pair/five-batch decision:
 
 ```sh
 candidate_id="$(git rev-parse HEAD)"
@@ -500,13 +508,13 @@ universal thresholds.
 
 The repository has no thesis datasets, so executable protocol 1.0.0 neither
 reruns nor claims reproduction of thesis results or historical runtimes. It
-includes no competitor methods. Prospective F-2.0.0 plus F-2.1.0 name
-competitors and external-data requirements but contain no comparative runner or
-method implementation, selected-source or molecular data, result, or comparative
-claim.
+includes no competitor methods. Prospective F-2.0.0 and F-2.1.0 name
+competitors and external-data requirements. They contain no comparative
+runner, method implementation, selected source, molecular data, result, or
+comparative claim.
 
 If real thesis data become available, keep them external. Optional retrieval
 and execution scripts must record source URLs, licensing, checksums, immutable
-dataset identifiers, preprocessing, feature and gene-set versions, and the
-full environment; results must remain clearly separated from this synthetic
-protocol.
+dataset identifiers, and preprocessing. They must also record feature and
+gene-set versions and the complete environment. Keep results clearly separate
+from this synthetic protocol.

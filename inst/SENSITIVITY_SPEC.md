@@ -89,8 +89,8 @@ including an all-zero vector, select the first canonical observed member. For
 \(n<3\), effective size remains factual and every deletion-summary quantity is
 undefined.
 
-Full member-level deltas remain a separate prospective output requiring an
-explicit sink; the compact interface must not allocate a hidden
+Full member-level deltas remain a separate prospective output that requires an
+explicit sink. The compact interface must not allocate a hidden
 member-by-set-by-sample array.
 
 ## Exact properties
@@ -116,22 +116,22 @@ For finite non-negative \(x\) with \(n\ge3\):
   globally unmatched declaration changes neither values nor deltas.
 
 The deltas are not additive attributions. In general,
-\(\sum_i\Delta_i\ne F_n(x)\), and the changed effective-size coefficient means
-\(\Delta_i\) is not the member's measured value or a separable term of the
-score.
+\(\sum_i\Delta_i\ne F_n(x)\). The changed effective-size coefficient means that
+\(\Delta_i\) is not the member's measured value. It is also not a separable
+term of the score.
 
 ## Unknown-member identification
 
 An unknown member is a canonically declared identifier whose value is absent
-for the cell, either because its feature row is globally unmatched or its cell
-is `NA`/`NaN`. A measured zero is observed and is not an unknown. Undeclared
+for the cell. Its feature row can be globally unmatched, or its cell can be
+`NA`/`NaN`. A measured zero is observed and is not an unknown. Undeclared
 features remain outside the gene-set estimand. The score and deletion diagnostic
 omit unknown members; they neither impute them nor treat them as zero.
 
 Non-negativity alone assigns each unknown value the set \([0,\infty)\), so no
 unknown coordinate has a finite upper bound. This does not always make the
 complete-data score unbounded. Let finite observed values \(x\) have length
-\(r\), sum \(T\), and let \(q\) unknown members all take value \(L\), with
+\(r\) and sum \(T\). Let \(q\) unknown members all take value \(L\), with
 \(m=r+q\ge2\). Once \(L\) is large enough,
 
 \[
@@ -142,16 +142,16 @@ F_m(x,L\mathbf1_q)=
 For \(q=1\) and \(r\ge1\), the first coefficient is zero: the score plateaus at
 \((r+1)T/r\), even though the missing value remains unidentified. For
 \(q\ge2\), the coefficient is positive and the complete-data score is
-unbounded. A finite score plateau therefore must not be presented as a bound
-on the missing member, evidence for zero imputation, or reliability.
+unbounded. A finite score plateau provides no bound on the missing member. It
+also provides no evidence for zero imputation or reliability.
 
 Finite caller limits produce deterministic bounds without adding a sampling
 claim. For componentwise \(0\le \ell_j\le z_j\le u_j<\infty\), define complete
 corners \(y^L=(x,\ell)\) and \(y^U=(x,u)\). The score is coordinatewise
-nondecreasing: increasing one coordinate by \(h\) shifts its centered residual
-by \(h(1-1/m)\), every other residual by \(-h/m\), and can increase total
-absolute deviation by at most \(2h(m-1)/m\). The score increase is therefore
-non-negative. Consequently,
+nondecreasing. Increasing one coordinate by \(h\) shifts its centered residual
+by \(h(1-1/m)\). Every other residual shifts by \(-h/m\). Total absolute
+deviation can increase by at most \(2h(m-1)/m\). Therefore, the score increase
+is non-negative. Consequently,
 
 \[
 F_m(y^L)\le F_m(x,z)\le F_m(y^U)
@@ -172,10 +172,10 @@ This enclosure is valid but need not be sharp because its two score extrema can
 require different unknown vectors. Member ranking, the selected largest member,
 and compact summaries remain unidentified unless they agree throughout the
 feasible box. Any future implementation must key limits to canonical member
-identifiers, retain their units/preprocessing and source, distinguish global
-absence from sample missingness, and expose assumption-dependent bounds rather
-than a corrected score. The failed E-1.0.0 reliability gate does not justify
-such a public interface.
+identifiers. It must retain their units, preprocessing, and source. It must
+distinguish global absence from sample missingness. It must expose
+assumption-dependent bounds, not a corrected score. The failed E-1.0.0 reliability gate
+does not justify such a public interface.
 
 Finite limits are constraints, not a probability distribution. Probability,
 confidence, or credible intervals require an explicit joint value and
@@ -211,10 +211,11 @@ authoritative.
 The retained brute oracle recomputes every deleted score numerator. After the
 frozen profile admitted optimization, the active internal path sorts exact
 member magnitudes once and forms exact prefix sums. For deletion `i`, it sets
-`T_-i = T - z_i`, binary-searches the largest sorted boundary `q` satisfying
-`(n - 1) z_(q) < T_-i`, removes `z_i` from the prefix when it lies below that
-boundary, and evaluates the same integer `N_-i`. This changes complexity, not
-the rational estimand. The brute function remains executable. A clean isolated
+`T_-i = T - z_i`. It binary-searches the largest sorted boundary `q` that
+satisfies `(n - 1) z_(q) < T_-i`. When `z_i` lies below that boundary, the path
+removes it from the prefix. It then evaluates the same integer `N_-i`. This
+changes complexity, not the rational estimand. The brute function remains
+executable. A clean isolated
 candidate reproduces the frozen brute workload digest exactly; fixed and
 randomized tests also require exact delta-object identity.
 
@@ -244,7 +245,7 @@ search.
 | Missing-gene benchmarks | [Toro-Dominguez et al. (2025)](https://doi.org/10.1093/bib/bbaf684) | Their multi-method benchmark shows that missing genes can destabilize some single-sample scores. It does not supply a per-cell diagnostic that predicts held-out GeneFunnel error. |
 | Gene-set stability/refinement | [Abou Choucha and Pasquier (2026)](https://doi.org/10.1038/s41598-026-48119-9) | MEAST uses SVD scores plus a genetic algorithm to optimize active subsets across cell groups. GeneFunnel sensitivity neither learns/refines a set nor calls selected members stable or high-contributing. |
 
-Delete-one perturbation, member ranking, dispersion, missing-gene robustness,
+Delete-one perturbation, member ranking, dispersion, missing-gene stability,
 and gene-set refinement are established ideas. Any claim is restricted to the
 exact GeneFunnel full-minus-deleted quantity, its faithful compact
 implementation, and predictive value that survives pre-specified held-out
@@ -256,39 +257,40 @@ gates. A largest-sensitivity member is not a novel biomarker or biological core.
 deletion from the normative equation without package code.
 `test-sensitivity-theorem.R` locks the canonical cases, support rules, sign,
 tie-break, bounds, homogeneity, common-shift behavior, permutation behavior,
-non-additivity, coordinate monotonicity, unknown-member non-identification, and
-finite-limit score bounds/delta enclosures before a public implementation
-exists.
-`test-sensitivity-exact.R` checks the limb arithmetic against independent
-integer identities, round-trips binary64 across its exponent domain, proves
-exact ordering under subtract-rounded tie drift, and checks score-numerator and
+and non-additivity. It also locks coordinate monotonicity, unknown-member
+non-identification, finite-limit score bounds, and deletion-delta enclosures
+before public implementation.
+`test-sensitivity-exact.R` checks limb arithmetic against independent integer
+identities. It round-trips binary64 across its exponent domain. It proves exact
+ordering under subtract-rounded tie drift. It also checks score-numerator and
 wide-exponent conversion. `test-sensitivity-api.R` locks the compact schema,
 statuses, direct randomized recomputation, canonical support, extreme values,
 storage representations, and serial/SOCK identity.
 `benchmark/sensitivity-protocol.md` and its machine registry fix the internal
-schema, exact-arithmetic boundary, controlled masks/repeats, folds, models,
-uncertainty, and rejection rules; they were committed before a package
-diagnostic was calculated. Profile supplement `E-P-1.0.0` transparently closes
+schema, exact-arithmetic boundary, controlled masks and repeats, folds, models,
+uncertainty, and rejection rules. They were committed before calculating a package
+diagnostic. Profile supplement `E-P-1.0.0` transparently closes
 the parent's previously implicit fixture/pass mechanics after implementation
 but before a fixed profile call; it changes no empirical gate. Its tracked
 result makes exact-oracle-preserving optimization eligible and no reliability
 or public-interface claim.
 Controlled supplement `E-C-1.0.0` then pins the previously implicit R RNG
-calls, predictor encoding/scaling, bootstrap draw order, isolated execution,
-checkpoint, and evidence mechanics before any controlled scenario is built. It
+calls, predictor encoding, scaling, and bootstrap draw order. It also pins
+isolated execution, checkpoints, and evidence mechanics before building a
+controlled scenario. It
 changes no scientific design, target, threshold, or promotion rule.
 The controlled observation implementation uses the installed authoritative
-scorer and exact cell diagnostic, resets every scenario/mask seed, retains all
-registered factors, and validates target/status/encoding identities before any
-held-out model can consume a row.
-The model/runner layer records training-only scaling, zero-SD drops, QR aliases,
-fixed predictions, scenario-cluster bootstrap draws, all descriptive strata,
-isolated source/install fingerprints, resumable checkpoints, and artifact
-hashes. Its smoke uses planted targets and has no empirical meaning. The
+scorer and exact cell diagnostic. It resets every scenario and mask seed. It
+retains all registered factors and validates target, status, and encoding
+identities before a held-out model consumes a row.
+The model and runner record training-only scaling, zero-SD drops, QR aliases,
+fixed predictions, and scenario-cluster bootstrap draws. They also record all
+descriptive strata, isolated source and installation fingerprints, resumable
+checkpoints, and artifact hashes. Their smoke uses planted targets and has no empirical meaning. The
 complete tracked [`controlled result`](../benchmark/sensitivity-controlled-result.md)
 retains all 345,600 feature-loss and 5,760 repeat rows. Feature-loss median
-fold reduction/bootstrap lower bound was 0.00110097/0.000407703 and controlled-
-repeat reduction/lower bound was 0.0193130/0.0112902; every value failed its
-0.10/0.05 requirement. The deterministic thinning curves remain descriptive,
+fold reduction/bootstrap lower bound was 0.00110097/0.000407703. The
+controlled-repeat reduction/lower bound was 0.0193130/0.0112902. Every value failed its 0.10/0.05
+requirement. The deterministic thinning curves remain descriptive,
 study-composition-dependent artificial deletion evidence and cannot rescue a
 failed endpoint. The exact diagnostic stays an internal adversarial-test oracle.

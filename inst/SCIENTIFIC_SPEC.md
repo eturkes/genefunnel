@@ -2,11 +2,11 @@
 
 # GeneFunnel scientific specification
 
-This document is the durable public contract for GeneFunnel scoring. It is
-derived from Sections 4.3-4.12 and 5.1 of Emir Turkes' 2025 University College
-London PhD thesis, *Development of Gene Set Enrichment and Imputation Methods
-for Transcriptomics and Proteomics: Application in the Study of
-Neurofibrillary Tangle-bearing Neurons in Alzheimer's Disease*.
+This document is the durable public contract for GeneFunnel scoring. Sections
+4.3-4.12 and 5.1 of Emir Turkes' 2025 University College London PhD thesis
+define this contract. The thesis title is *Development of Gene Set Enrichment
+and Imputation Methods for Transcriptomics and Proteomics: Application in the
+Study of Neurofibrillary Tangle-bearing Neurons in Alzheimer's Disease*.
 
 ## Scope
 
@@ -122,9 +122,9 @@ gene sets are valid and remain independent.
 | `c(4, NA)` | `NA` | Fewer than two observed members remain. |
 | sparse implicit `c(4, 0)` | `0` | The implicit zero is observed. |
 
-For a declared set `c("A", "B", "C")` and matrix rows containing only `A`
-and `B`, GeneFunnel scores the available pair, reports coverage `2/3`, and
-leaves the acceptance threshold to the caller.
+For a declared set `c("A", "B", "C")`, assume that the matrix contains only
+rows `A` and `B`. GeneFunnel then scores the available pair and reports coverage
+`2/3`. The caller selects the acceptance threshold.
 
 ## Required properties
 
@@ -158,10 +158,10 @@ Sample-wise independence does not make unrelated data sets automatically
 comparable. Cross-data-set comparison requires compatible units,
 preprocessing, identifiers, gene-set definitions, and coverage policies.
 
-Gene-set database revisions can change scores, so analyses should record the
-exact collection and version. GeneFunnel does not guarantee that score
-distributions satisfy every downstream statistical model; users must validate
-the assumptions of their chosen analyses.
+Gene-set database revisions can change scores. Therefore, analyses must record
+the exact collection and version. GeneFunnel does not guarantee that score
+distributions satisfy every downstream statistical model. Before using a
+downstream model, validate its assumptions.
 
 Raw non-negative measurements can be preferable where scientifically
 appropriate because prior filtering or transformation can remove zeros or
@@ -179,27 +179,27 @@ names, and ordering above.
 
 The reviewed Lean contract in `formal/GeneFunnel/Spec.lean` models one
 gene-set/sample cell over exact rationals. Optional entries model sample-local
-missingness, observed zeroes remain, negative values are rejected, fewer than
-two observations produce no score, and scoreable cells use the exact equation
+missingness, and observed zeros remain. Negative values are rejected. Fewer
+than two observations produce no score. Scoreable cells use the exact equation
 above. `GeneFunnel.Proof.implementation_correct` proves that the executable
 below-mean evaluator `GeneFunnel.Impl.run` satisfies that contract for every
 modeled cell. `GeneFunnel.Bounds.bounds_correct` proves that every produced
 score is nonnegative and no greater than the sum of the observed values.
 
-The repository gate checks the exact theorem/executable roots under Lean
-4.32.2, a closed reviewed import boundary, isolated build, independent kernel
-replay, and a logical-dependency allowance limited to `Classical.choice`,
-`Quot.sound`, and `propext`. `formal/SHA256SUMS` binds the reviewed inputs
-without authenticating an author or machine.
+The repository gate checks the exact theorem and executable roots under Lean
+4.32.2. It checks a closed reviewed import boundary, an isolated build, and an
+independent kernel replay. It permits only `Classical.choice`, `Quot.sound`,
+and `propext` as logical dependencies. `formal/SHA256SUMS` binds the reviewed
+inputs without authenticating an author or machine.
 
 The theorem covers the pure exact cell model. It does not prove binary64
-rounding or representability, the R and Rcpp/FFI boundary, global validation,
-identifier matching/deduplication, dense/sparse traversal, chunking, parallel
-scheduling, compilation, resource bounds, biological validity, or that the
-reviewed model matches stakeholder intent. The scientific specification and
-native source are hash-bound review evidence; that binding is drift detection,
-not a refinement proof. Package tests supply separate conformance evidence for
-implemented paths.
+rounding, representability, the R and Rcpp/FFI boundary, global validation,
+identifier matching, or deduplication. It also excludes storage traversal,
+chunking, parallel scheduling, compiler and code-generation correctness,
+resource bounds, biological validity, and stakeholder intent. The scientific
+specification and native source are hash-bound review evidence. That binding
+detects drift; it is not a refinement proof. Package tests supply separate
+conformance evidence for implemented paths.
 
 ## Additive diagnostics
 

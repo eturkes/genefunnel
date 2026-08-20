@@ -16,11 +16,11 @@ biological-replicate, causal, or assay-independent reliability claim.
   `5920ea920e0e0e85659485c26f8096a61f08ea40`; source archive SHA-256:
   `ba49307a94b8cb1fd347db910be71975a5e39ed92b7d7a1ff65557f509663013`;
   installed manifest MD5: `fe6476f760cf6aedc9343b8299ad5088`.
-- Generated 2026-07-18 12:25:03 UTC with eight workers and 128-scenario
-  chunks: 5,760 latent scenarios, 345,600 feature-loss rows, 5,760 repeat rows,
-  ten folds of 576 scenarios, and 2,000 bootstraps per target. No fixed row or
-  status was excluded; 66 duplicated encoding rows had valid `zero_total`
-  partial inputs.
+- Generated 2026-07-18 12:25:03 UTC with eight workers and 128-scenario chunks.
+  The run contained 5,760 latent scenarios and 345,600 feature-loss rows. It
+  also contained 5,760 repeat rows, ten 576-scenario folds, and 2,000 bootstraps
+  per target. No fixed row or status was excluded. Sixty-six duplicated
+  encoding rows had valid `zero_total` partial inputs.
 - The ignored full bundle has 20 core artifacts totaling 251,274,443 bytes
   plus 45 atomic checkpoints. `artifacts.tsv` SHA-256 is
   `73872ce7576643fef4db48f9994e1b17180647117887090191f6c19423ec2038`;
@@ -36,8 +36,8 @@ biological-replicate, causal, or assay-independent reliability claim.
 | Feature loss | 0.00110097 | 0.000407703 | >=0.10; >=0.05 | fail |
 | Controlled repeat | 0.0193130 | 0.0112902 | >=0.10; >=0.05 | fail |
 
-Feature-loss fold reductions ranged from -0.000674 to 0.001463; controlled-
-repeat reductions ranged from -0.002184 to 0.029976. Every feature stratum lay
+Feature-loss fold reductions ranged from -0.000674 to 0.001463. Controlled-repeat
+reductions ranged from -0.002184 to 0.029976. Every feature stratum lay
 between -0.003506 and 0.003538; every repeat stratum lay between -0.002411 and
 0.029976. No factor, fraction, mechanism, encoding, or fold approaches the
 frozen primary thresholds, and descriptive strata cannot rescue them. Exact

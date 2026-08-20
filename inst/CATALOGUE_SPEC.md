@@ -88,9 +88,9 @@ Domain-separated encodings produce:
 - `features`: ordered identifier universe; and
 - `content`: the complete `GFCAT-1` body, including mappings and adjacency.
 
-Custom deserialization verifies the appended content digest before parsing,
-applies strict remaining-byte/allocation bounds, reconstructs matching and
-adjacency from primary identifiers, and accepts the payload only when both
+Custom deserialization verifies the appended content digest before parsing. It
+applies strict remaining-byte and allocation bounds. It reconstructs matching
+and adjacency from primary identifiers. It accepts the payload only when both
 representations agree. Supported-platform tests fix byte/digest vectors and
 exercise fresh R/SOCK processes.
 
@@ -111,10 +111,17 @@ sidecar remain later work.
 
 The repository's
 [`catalogue-protocol.md`](https://github.com/eturkes/genefunnel/blob/main/benchmark/catalogue-protocol.md)
-freezes the spike workloads and decision. Required outcomes: exact list-path
-results/errors; deterministic portable bytes; malformed/stale rejection;
-fresh/reused SOCK identity; compilation amortized by call five; a one-sided 95%
-upper cumulative-time ratio at most `0.85` in every workload; compiled-object
-size at most 256 bytes per canonical membership; serialized size at most 192
-bytes per membership; and bounded compilation RSS. One failure keeps compiled
-scoring internal and triggers the stated fallback.
+freezes the spike workloads and decision. The required outcomes are:
+
+- exact list-path results and errors;
+- deterministic portable bytes;
+- malformed and stale input rejection;
+- fresh and reused SOCK identity;
+- compilation amortized by call five;
+- a one-sided 95% upper cumulative-time ratio of at most `0.85` in every
+  workload;
+- at most 256 compiled-object bytes per canonical membership;
+- at most 192 serialized bytes per membership; and
+- bounded compilation RSS.
+
+One failure keeps compiled scoring internal and triggers the stated fallback.

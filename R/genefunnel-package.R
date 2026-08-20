@@ -12,8 +12,8 @@
 #' score with aligned magnitude, balance, penalty, and effective-support
 #' diagnostics. [gene_set_coverage()] reports exact identifier coverage so
 #' callers can apply an experiment-specific policy before scoring. Dense and
-#' sparse inputs are supported; zeros are observed values, `NA` and `NaN` are
-#' omitted per sample, and partially covered sets remain scoreable when at
+#' sparse inputs are supported. Zeros are observed values. The scorer omits
+#' `NA` and `NaN` per sample. Partially covered sets remain scoreable when at
 #' least two unique members match.
 #'
 #' GeneFunnel does not normalize or impute measurements, map identifiers,

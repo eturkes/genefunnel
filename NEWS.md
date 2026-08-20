@@ -27,12 +27,11 @@
 
 ## Quality
 
-- Adds a Lean 4.32.2 kernel proof that the executable exact-rational
-  below-mean scorer equals the reviewed absolute-deviation equation for every
-  cell and obeys exact score bounds, with complete missingness,
-  insufficient-support, and negative-value behavior in the modeled cell. The
-  proof boundary explicitly excludes native binary64, R/FFI, storage, and
-  parallel refinement claims.
+- Adds a Lean 4.32.2 kernel proof for the executable exact-rational below-mean
+  scorer. The proof establishes equation equality and exact score bounds for
+  every modeled cell. It covers missingness, insufficient support, and
+  negative-value behavior. The proof boundary explicitly excludes native
+  binary64, R/FFI, storage, and parallel refinement claims.
 - Adds deterministic formula, invariant, randomized-oracle, dense-sparse, and
   serial-parallel tests.
 - Preserves exact-zero classification when positive subnormal means underflow
@@ -44,39 +43,42 @@
 - Adds an explicit-version protocol dispatcher and SHA-256 index that freeze
   protocol 1.0.0's runner/manifest/fixture closure without an implicit latest
   alias or new dependency.
-- Prospectively freezes design-only validation protocol F-2.0.0: separate bulk
-  RNA, pseudobulk RNA, and proteomics gates; exact Reactome/method bytes and
-  APIs; same-input/native regimes; matched controls; held-out replication;
-  minimum effects, multiplicity, null tests, exclusions, and RNG namespaces.
-- Adds prospective amendment F-2.1.0 without changing the frozen parent:
-  cell-type-complete contrast identity, dependence-preserving biological-unit
-  weighting, fixed-panel-only claim scope, explicit null-permutation resolution
-  eligibility, a pinned Reactome 97 roster, machine-validated assay-input schemas,
-  linear-proteomics eligibility, metadata-only selection, opaque-byte closure,
-  acquisition-through-heldout-first-access validation, and adversarial contract
-  checks. Its 128 rows yield a 266-row effective contract and fixed 5,062-row
-  target roster; the hermetic fixture currently covers 12 sources, 90 tasks,
-  60 null contrasts, 29 objects, 37 F-A events, and 99 adversaries. Validation
-  closes typed design fields, byte-exact UTF-8 scalars, underflow-aware numeric
-  parsing, total archive decoder/resource and finite acquisition bounds,
-  dependence-group bijection, guarded descriptors, exact S/B/I tree/runtime/
-  mode evidence, and the trusted-process boundary. No candidate source, archive,
-  or molecular table was selected or accessed; execution remains gated on exact
-  F-S, F-B, F-E, and controlled-runner artifacts.
+- Prospectively freezes design-only validation protocol F-2.0.0 with separate
+  bulk RNA, pseudobulk RNA, and proteomics gates. It fixes exact Reactome and
+  method bytes, APIs, same-input and native regimes, matched controls, and
+  held-out replication. It also fixes minimum effects, multiplicity, null
+  tests, exclusions, and RNG namespaces.
+- Adds prospective amendment F-2.1.0 without changing the frozen parent. It
+  defines cell-type-complete contrasts, dependence-preserving biological-unit
+  weights, fixed-panel-only claim scope, and null-permutation eligibility. It
+  also pins the Reactome 97 roster and validates assay-input schemas. It
+  specifies linear-proteomics eligibility. Metadata-only selection precedes
+  opaque-byte closure.
+  The amendment validates the acquisition transcript through the first
+  held-out access. It includes adversarial contract checks. Its 128
+  rows yield a 266-row effective contract and a fixed 5,062-row target roster.
+  The hermetic fixture covers 12 sources, 90 tasks, 60 null contrasts, 29
+  objects, 37 F-A events, and 99 adversaries. Validation closes typed design
+  fields, byte-exact UTF-8 scalars, and underflow-aware numeric parsing. It also
+  closes total archive decoder and resource bounds. It closes finite
+  acquisition bounds, dependence-group bijection, guarded descriptors, and
+  exact S/B/I tree, runtime, and mode evidence. It states the trusted-process boundary. No
+  candidate source, archive, or molecular table was selected or accessed.
+  Execution requires exact F-S, F-B, F-E, and controlled-runner artifacts.
 - Locks a dependency-free scaled numerical oracle and paired default-path
   performance protocol before component implementation.
 - Freezes the internal observed-member sensitivity schema, dependency-free
-  exact dyadic deletion oracle, profile-before-optimization rule, controlled
-  feature-loss/measurement-repeat design, held-out models, bootstrap, and
-  rejection gates before package diagnostics existed.
+  exact dyadic deletion oracle, and profile-before-optimization rule. It also freezes the
+  controlled feature-loss and measurement-repeat design, held-out models,
+  bootstrap, and rejection gates before package diagnostics existed.
 - Adds an unexported exact brute-force observed-member sensitivity prototype
   with compact aligned summaries, explicit representability status, exact
   canonical ties, bounded matrix iteration, and dense/sparse serial/SOCK
   identity. Public promotion is governed by the frozen empirical protocol.
 - Byte-pins the previously implicit sensitivity-profile fixture and measurement
-  passes before profiling, with isolated clean-SHA installation, output identity,
-  CPU/allocation attribution, environment capture, and an optimization-only
-  decision runner.
+  passes before profiling. The protocol fixes isolated installation, output
+  identity, CPU and allocation attribution, environment capture, and an
+  optimization-only decision runner.
 - Records the fixed exact-brute profile: median call 213.585 seconds and
   exact-arithmetic stack share 0.999403 both cross their frozen optimization
   triggers. The result makes no performance, reliability, or public-API claim.
@@ -92,8 +94,8 @@
 - Adds frozen ten-fold baseline/augmented models, scenario-cluster bootstrap,
   co-primary endpoint/strata summaries, and a clean-archive resumable controlled
   runner that distinguishes scientific failure from execution failure.
-- Records the complete negative controlled sensitivity result: both feature-
-  loss and measurement-repeat prediction gates failed by wide margins. Retains
+- Records the complete negative controlled sensitivity result. Both
+  feature-loss and measurement-repeat prediction gates failed by wide margins. Retains
   deterministic study-dependent thinning curves as a failure envelope and
   selects the internal-oracle/no-public-API fallback.
 - Implements dependency-free scaled double-double native diagnostics for
@@ -111,26 +113,26 @@
 - Adds a clean-commit, isolated-install synthetic audit runner with deterministic
   fork-safe generation, resumable identity-checked checkpoints, paired model/
   bootstrap summaries, full failed-endpoint retention, and artifact hashes.
-- Records the complete 124,416-measurement controlled result: every frozen
-  synthetic gate passed, while severe-dropout diagnostics remain comparable to
-  the planted complementarity effect and preclude a robustness claim.
-- Freezes CellBench and Kang external-data execution details - including
-  zero-abundance ranking, condition-level gate units, duplicated barcode joins,
-  cell-type eligibility, and exact sign tests - before any external endpoint.
+- Records the complete 124,416-measurement controlled result. Every frozen
+  synthetic gate passed. However, severe-dropout diagnostics remain comparable
+  to the planted complementarity effect and preclude a dropout-stability claim.
+- Freezes CellBench and Kang external-data execution details before any external
+  endpoint. These details include zero-abundance ranking, condition-level gate
+  units, duplicated barcode joins, cell-type eligibility, and exact sign tests.
 - Adds a fail-closed CellBench runner with verified inputs, CEL-seq2-only set
   selection, isolated package installation, complete fixed-grid error and
   split/cross-platform stability evidence, and retained scientific failures.
-- Records the negative CellBench result: both co-primary gates failed because
-  pair-set errors were large and exact-zero measured scores left much of the
-  fixed condition grid undefined; high complete-case correlations do not
+- Records the negative CellBench result. Both co-primary gates failed because
+  pair-set errors were large. Exact-zero measured scores also left much of the
+  fixed condition grid undefined. High complete-case correlations do not
   rescue the pre-specified decision.
-- Adds a fail-closed Kang/Reactome runner with exact sparse-matrix/barcode
-  alignment, deterministic cell-type splits, raw-UMI pseudobulk profiles,
-  fixed 16-group technical stability, held-out donor directions, exact sign
-  tests, and complete scientific-failure evidence.
-- Records the Kang result: technical split stability passed, but interferon
-  gamma repeated in only two of four held-out donors and neither primary
-  pathway passed its Holm-adjusted exact donor sign test. The perturbation and
+- Adds a fail-closed Kang/Reactome runner with exact sparse-matrix and barcode
+  alignment. The runner fixes cell-type splits, raw-UMI pseudobulk profiles,
+  fixed 16-group technical stability, held-out donor directions, and exact sign
+  tests. It retains complete scientific-failure evidence.
+- Records the Kang result. Technical split stability passed, but interferon
+  gamma repeated in only two of four held-out donors. Neither primary pathway
+  passed its Holm-adjusted exact donor sign test. The perturbation and
   biological-effect claims therefore fail.
 
 ## Documentation
@@ -143,15 +145,18 @@
   discrepancy, eligibility/missingness policy, and prior-art boundary before
   any group-level API is implemented.
 - Fixes the exact observed-member deletion sensitivity, canonical support,
-  sign, compact summaries, algebraic properties, and non-causal boundary before
-  any public reliability API or empirical diagnostic result exists.
-- Proves the unknown-member boundary: non-negativity leaves every absent value
-  unidentified, one missing member can yield a finite score plateau, and two or
-  more can make the score unbounded. Finite caller caps give sharp score bounds
-  and conservative deletion-delta enclosures without probabilistic meaning.
-- Adds an executable BiocStyle vignette covering canonical examples,
-  caller-controlled coverage, dense/sparse matrices, parallel execution, and
-  thesis-derived benchmark concepts and evidence boundaries spanning
-  controlled, comparative, empirical, and resource designs.
+  sign, compact summaries, and algebraic properties. It also fixes the
+  non-causal boundary before any public reliability API or empirical diagnostic
+  result.
+- Proves the unknown-member boundary. Non-negativity leaves every absent value
+  unidentified. One missing member can yield a finite score plateau. Two or
+  more missing members can make the score unbounded. Finite caller caps give
+  sharp score bounds and conservative deletion-delta enclosures without
+  probabilistic meaning.
+- Adds an executable BiocStyle vignette with canonical examples,
+  caller-controlled coverage policies, dense and sparse matrices, and parallel
+  execution. It also covers
+  thesis-derived benchmark concepts and evidence boundaries across controlled,
+  comparative, empirical, and resource designs.
 - Expands function help and the README with the complete public contract and
   accurate development status.

@@ -19,8 +19,8 @@ endpoint and its fixed-grid completeness count is retained in the
 - Inputs: four exact pinned files, 4,072,960 bytes; 13,906 common Ensembl
   identifiers; 12 CEL-seq2-pure-profile-derived sets; 4,848 mixed
   library/set rows. No mixed outcome or SORT-seq profile selected a member.
-- Environment: Linux x86_64, R 4.6.1, genefunnel 0.99.0, Matrix 1.7.5,
-  BiocParallel 1.46.0, Rcpp 1.1.2, and RcppArmadillo 15.4.0.1.
+- Environment: Linux x86_64, R 4.6.1, and genefunnel 0.99.0. Dependencies were
+  Matrix 1.7.5, BiocParallel 1.46.0, Rcpp 1.1.2, and RcppArmadillo 15.4.0.1.
 - Ignored full bundle: 17 files and 5,314,921 bytes. `artifacts.tsv` SHA-256
   is `beff1ccd5c86cbd52608c4fcaf4aaecbe4d9d7b6964fe1c91b15956ac71ed11b`.
   Independent table reconstruction matched all 16 listed artifact hashes;
@@ -39,10 +39,10 @@ normalized gaps. Failure arose after measuring individual mixtures:
   maximum-group curve endpoints are therefore `NA` and fail.
 - Of 384 groups, 299 failed: every one of the 288 pair-set groups plus 11 of
   96 complex-control groups. Only 85 complex groups passed.
-- Failure was not rescued by defined rows. Across pair sets of size 8/32/128,
-  defined observations numbered 182/827/1,193 of 1,212, while their pooled
-  median absolute errors were 0.361/3.700/5.224 and type-8 90th percentiles
-  were 1.565/16.007/27.714. The largest finite group median/q90 was
+- Failure was not rescued by defined rows. For pair-set sizes 8/32/128, defined
+  observations numbered 182/827/1,193 of 1,212. Their pooled median absolute
+  errors were 0.361/3.700/5.224. Their type-8 90th percentiles were
+  1.565/16.007/27.714. The largest finite group median/q90 was
   75.910/168.355.
 - Complex controls were materially better: pooled median/q90 errors for sizes
   8/32/128 were 0.0809/0.2218, 0.0647/0.1683, and 0.0254/0.0654.

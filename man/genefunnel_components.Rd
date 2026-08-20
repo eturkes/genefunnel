@@ -24,11 +24,11 @@ the currently registered \code{\link[BiocParallel:bpparam]{BiocParallel::bpparam
 \value{
 A fixed-order named list of aligned base matrices:
 \itemize{
-\item \code{score}, \code{observed_sum}, \code{penalty}, and \code{balance}: double matrices;
-\item \code{effective_size}: an integer matrix;
-\item \code{observed_fraction}: a double matrix;
+\item \code{score}, \code{observed_sum}, \code{penalty}, and \code{balance}: double matrices.
+\item \code{effective_size}: an integer matrix.
+\item \code{observed_fraction}: a double matrix.
 \item \code{status}: character matrices \code{semantic}, \code{observed_sum}, \code{penalty},
-\code{balance}, and \code{conditioning}; and
+\code{balance}, and \code{conditioning}.
 \item \code{scaled}: entries \code{observed_sum}, \code{penalty}, and \code{balance}, each containing
 double \code{mantissa} and integer \code{exponent} matrices.
 }
@@ -44,14 +44,14 @@ additive audit API: it does not change \code{\link[=genefunnel]{genefunnel()}} o
 score from rounded components.
 }
 \details{
-For each retained gene-set/sample cell, let \code{effective_size} be the number
-of matched members remaining after sample-specific \code{NA}/\code{NaN} omission and
-let \code{observed_sum} be their sum. \code{observed_fraction} divides effective size
-by the set's globally matched size. It is distinct from declared-set
-coverage returned by \code{\link[=gene_set_coverage]{gene_set_coverage()}}.
+For each retained gene-set/sample cell, \code{effective_size} counts the matched
+members that remain after sample-specific \code{NA}/\code{NaN} omission.
+\code{observed_sum} is their sum. \code{observed_fraction} divides effective size by
+the set's globally matched size. It is distinct from declared-set coverage
+returned by \code{\link[=gene_set_coverage]{gene_set_coverage()}}.
 
-When at least two values remain and their sum is positive, \code{balance} is
-Bulla's evenness index for the within-set shares and the score factorizes as
+When at least two values remain with a positive sum, \code{balance} is Bulla's
+evenness index for the within-set shares. The score then factorizes as
 \code{score = observed_sum * balance}. \code{penalty = observed_sum - score} in exact
 arithmetic. All-zero cells have score and penalty zero but undefined
 balance. Cells with fewer than two observed values have factual support and

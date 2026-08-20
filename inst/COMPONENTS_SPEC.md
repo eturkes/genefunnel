@@ -14,8 +14,8 @@ the exact matched, observed gene-set/sample vector used by that scorer.
 ## Definitions and factorization
 
 Let $x=(x_1,\ldots,x_n)$ contain the finite, observed, non-negative values for
-one retained gene set and sample, with $n\ge2$, total
-$T=\sum_i x_i$, mean $\bar{x}=T/n$, and GeneFunnel score
+one retained gene set and sample. Let $n\ge2$, total $T=\sum_i x_i$, and mean
+$\bar{x}=T/n$. The GeneFunnel score is
 
 $$
 F(x)=T-\frac{n}{2(n-1)}\sum_i|x_i-\bar{x}|.
@@ -122,10 +122,10 @@ zero.
 
 ## Binary64 representation contract
 
-The core score is authoritative. Diagnostics must neither make the ordinary
-`genefunnel()` path fail nor replace a representable core score with a value
-reconstructed from components. If the score itself is not representable, the
-existing core error remains authoritative.
+The core score is authoritative. Diagnostics must not make the ordinary
+`genefunnel()` path fail. They must not replace a representable core score with
+a value reconstructed from components. If the score itself is not
+representable, the existing core error remains authoritative.
 
 Finite inputs can still create diagnostics outside binary64:
 
@@ -236,9 +236,10 @@ oracle based on shares and total variation. `test-components-theorem.R` checks
 the factorization, Pietra/Bulla equivalence, bounds, homogeneity, concavity,
 zero semantics, missingness facts, and the committed interpretation cases.
 `helper-scaled-reference.R` adds a platform-independent double-double
-significand with an explicit binary exponent; its A2 tests cover total/penalty
-overflow, unsafe cancellation, balance underflow, subnormals, and semantic
-edge states without a new package dependency. `test-components-api.R` verifies
+significand with an explicit binary exponent. Its A2 tests cover total and
+penalty overflow, unsafe cancellation, balance underflow, subnormals, and
+semantic edge states. The helper adds no package dependency.
+`test-components-api.R` verifies
 the native result schema, scaled representation, safe identities, committed
 interpretation cases, missingness, permutations, dense/sparse equivalence, and
 serial/SOCK equivalence against those independent oracles.

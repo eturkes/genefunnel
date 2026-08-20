@@ -1,5 +1,8 @@
 # Assisted-by: OpenAI Codex.
 
+source(".github/scripts/documentation-style.R")
+documentation_style_check()
+
 markdown_files <- c(
     "README.md",
     "benchmark/README.md",
@@ -75,5 +78,8 @@ if (grepl(remote_resource, html, ignore.case = TRUE, perl = TRUE)) {
 }
 
 cat(
-    "Documentation checks passed: Rd, local links, and standalone vignette.\n"
+    paste0(
+        "Documentation checks passed: human-facing style, Rd, local links, ",
+        "and standalone vignette.\n"
+    )
 )

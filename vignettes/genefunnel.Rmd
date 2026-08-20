@@ -55,7 +55,7 @@ if (!requireNamespace("BiocManager", quietly = TRUE)) {
 BiocManager::install("eturkes/genefunnel")
 ```
 
-Load the installed package and choose a serial backend for the first examples.
+Load the installed package. Choose a serial backend for the first examples.
 
 ```{r load}
 library(genefunnel)
@@ -280,9 +280,10 @@ faster.
 
 # Benchmark design and interpretation
 
-Sections 4.5--4.9 of the thesis cited with this package progress from controlled
-toy matrices through one known-truth simulation, controlled edits on a real
-background, an unmodified-data plausibility audit, and resource scaling. The
+The thesis cited with this package includes Sections 4.5--4.9. These sections
+progress from controlled toy matrices through one known-truth simulation and
+controlled edits on a real background. They continue with an unmodified-data
+plausibility audit and resource scaling. The
 table turns those performed concepts into recommended evidence layers. Replicate
 uncertainty, held-out evaluation, explicit dense/sparse and overlap workloads,
 process-aware memory, and output identity below are strengthened requirements,
@@ -333,17 +334,17 @@ knitr::kable(benchmark_layers, row.names = FALSE)
 ```
 
 The layers do not rescue one another. An exact property test cannot establish
-biological usefulness, a planted signal cannot establish performance outside
-its generator, and a plausible real-data result is not ground truth.
+biological usefulness. A planted signal cannot establish performance outside
+its generator. A plausible real-data result is not ground truth.
 
 ## A controlled pattern benchmark
 
 The following small fixture gives arithmetic analogues of the three signal
-mechanisms used in the thesis's synthetic work; it is not a group-level
-simulation or detection test. The reference is balanced. The coordinated
-profile raises every member, partial activation raises only half, and the
-same-sum profile redistributes a fixed total. At that fixed total, the
-one-nonzero profile is the maximal-deviation boundary.
+mechanisms in the thesis's synthetic work. It is not a group-level simulation
+or detection test. The reference is balanced. The coordinated profile raises
+every member. Partial activation raises only half. The same-sum profile
+redistributes a fixed total. At that fixed total, the one-nonzero profile is the
+maximal-deviation boundary.
 
 The matched-total pair increases deviation from a balanced reference, whereas
 the thesis perturbation reduced intergene variance. The direction differs, but
@@ -451,22 +452,21 @@ superiority over another method.
 
 ## Comparative and empirical designs
 
-A synthetic detection benchmark should declare its data-generating model,
-biological unit, preprocessing, gene universe, set catalogue, signal and null
-sets, downstream test, multiplicity rule, seed schedule, and decision threshold
-before results are inspected. Pair methods on the same independently generated
-replicates. Partial activation, mean-preserving dispersion changes, and
-coordinated shifts should be varied separately because they test different
-mechanisms.
+Before inspecting results, declare the benchmark's data-generating model,
+biological unit, preprocessing, gene universe, and set catalogue. Also declare
+the signal and null sets, downstream test, multiplicity rule, seed schedule,
+and decision threshold. Pair methods on the same independently generated
+replicates. Vary partial activation, mean-preserving dispersion changes, and
+coordinated shifts separately because they test different mechanisms.
 
-The thesis instantiated this pattern with a 20,000-gene matrix of
-negative-binomial counts, 1,000 disjoint 20-member sets, 50 signal and 950 null
-sets, and five versus five samples. It applied TMM normalization and compared
+The thesis used a 20,000-gene matrix of negative-binomial counts. It included
+1,000 disjoint 20-member sets, 50 signal sets, 950 null sets, and five samples
+per group. It applied TMM normalization and compared
 ORA, `camera`, and `fgsea` with GSVA, ssGSEA, and GeneFunnel score pipelines.
 The latter three were tested with limma-trend; the first three used their own
-inference. No independent simulation repetitions, complete seed schedule, or
-Monte Carlo uncertainty were reported, so those outcomes remain one controlled
-study rather than a general performance estimate.
+inference. The study reported no independent simulation repetitions, complete
+seed schedule, or Monte Carlo uncertainty. Therefore, its outcomes represent
+one controlled study, not a general performance estimate.
 
 Include direct sum/mean ablations and a no-change control before adding a large
 competitor panel. ORA, competitive tests, ranked-list enrichment, and
@@ -476,7 +476,7 @@ Within methods that share a hypothesis and input contract, use a common
 compatible input to isolate scoring rules. Label any method-native preprocessing
 analysis as a separate regime.
 
-At each replicate, retain TP, FP, TN, and FN together with sensitivity,
+At each replicate, retain TP, FP, TN, and FN. Also retain sensitivity,
 specificity, precision, F1, and the observed false discovery proportion (FDP).
 If `R = TP + FP` sets are called, define `FDP = FP / max(R, 1)`, so no calls
 give FDP zero. FDR is `E(FDP)`; mean FDP across independent replicates estimates
@@ -499,19 +499,19 @@ than counting it as a false positive.
 
 When synthetic distributions are inadequate, make known changes against a real
 data background. Start with a set that does not overlap the rest of the test
-catalogue, then repeat with an overlapping set to expose spillover induced
-through shared edited members. The thesis set all target members to their
-pre-edit set mean, eliminating within-set variation while preserving the total,
-and separately added 100 counts to every target member.
+catalogue. Then repeat with an overlapping set to expose spillover from shared
+edited members. The thesis set all target members to their pre-edit set mean. This
+change removed within-set variation while preserving the total. The thesis
+also added 100 counts to every target member in a separate test.
 
-Preserve donor or other biological-unit labels: condition-pooled profiles can
-illustrate scoring, but inferential pseudobulk must sum assay counts within each
-biological-unit by condition by cell-type stratum before scoring. Score every
-unit separately, treat units rather than cells or technical repeats as
-replicates, and include unit/block effects only for paired or repeated designs.
+Preserve donor or other biological-unit labels. Condition-pooled profiles can
+illustrate scoring. For inferential pseudobulk, sum assay counts within each
+biological unit, condition, and cell-type stratum before scoring. Score every
+unit separately. Treat units, rather than cells or technical repeats, as
+replicates. Include unit/block effects only for paired or repeated designs.
 Pooling biological units before scoring changes the nonlinear estimand. An
-unmodified real-data contrast has no known pathway truth; use it for
-plausibility and inspect the member values driving top-ranked sets.
+unmodified real-data contrast has no known pathway truth. Use it for
+plausibility and inspect the member values that drive top-ranked sets.
 
 ## Reproducible resource evidence
 

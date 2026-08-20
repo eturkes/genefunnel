@@ -59,8 +59,8 @@ The second sample omits `C = NA` and scores the observed pair `c(1, 2)`.
 Zeros, including implicit sparse zeros, remain in the calculation. A set/sample
 cell with fewer than two observed members returns `NA`.
 
-Inspect magnitude, balance, penalty, and sample-specific support when the
-scalar score needs explanation:
+When the scalar score needs explanation, inspect magnitude, balance, penalty,
+and sample-specific support:
 
 ```r
 components <- genefunnel_components(
@@ -74,9 +74,9 @@ components$effective_size
 components$status$conditioning
 ```
 
-`components$score` is the authoritative `genefunnel()` result. Extreme finite
-diagnostics that do not fit in an R double use the documented binary-scaled
-sidecar; they are never returned silently as infinity or false zero.
+`components$score` is the authoritative `genefunnel()` result. Some extreme
+finite diagnostics do not fit in an R double. The documented binary-scaled
+sidecar represents them without infinity or false zero.
 
 Sparse matrices and portable parallel backends use the same API:
 
@@ -88,8 +88,9 @@ scores <- genefunnel(sparse_mat, gene_sets[keep], BPPARAM = backend)
 
 Matching is exact and case-sensitive. GeneFunnel performs no normalization,
 imputation, identifier mapping, gene-set retrieval, downstream testing, or
-biological interpretation. Input must be non-negative with a meaningful zero;
-an arbitrary positive shift changes the score and is not a valid workaround.
+biological interpretation. Input must be non-negative and have a meaningful
+zero. An arbitrary positive shift changes the score and is not a valid
+workaround.
 
 ## Documentation
 
@@ -115,8 +116,8 @@ an arbitrary positive shift changes the score and is not a valid workaround.
   - explicitly versioned controlled assertions plus reproducible timing,
   memory, output-identity, and environment evidence.
 
-After installation, run `vignette("genefunnel", package = "genefunnel")` or
-`citation("genefunnel")`.
+After installation, run `vignette("genefunnel", package = "genefunnel")`.
+Run `citation("genefunnel")` for citation information.
 
 ## License
 

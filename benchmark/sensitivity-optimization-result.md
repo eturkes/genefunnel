@@ -13,10 +13,10 @@ the installed-package manifest MD5 is `7f30f8246b98f6a1262a55b2f5217c09`.
 The fixed E-P-1.0.0 fixture retained MD5
 `32fa8d4843d024765a4adfc676793dbe`. Its candidate output MD5 was
 `3d9635e779a9ed1eee453a2a04596369`, exactly the previously committed brute
-output. Package tests additionally require exact object identity - including
-signed limbs, denominator, total, exponent, ties, and statuses - over fixed,
-wide-exponent, randomized, and size-128 cells, plus the existing storage and
-backend suite.
+output. Package tests also require exact object identity for signed limbs,
+denominators, totals, exponents, ties, and statuses. This requirement covers
+fixed, wide-exponent, randomized, and size-128 cells. The existing storage and
+backend suite also applies.
 
 The isolated call elapsed 15.128 seconds, recorded only as exploratory context.
 It is not a replicated performance result and sets `performance_claim = FALSE`.

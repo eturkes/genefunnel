@@ -8,21 +8,21 @@ contract. `GeneFunnel.Proof.implementation_correct` has the exact type
 
 ## Verified boundary
 
-- `Spec.lean` = reviewed semantics: optional entries model sample-local
-  missingness; observed zeroes remain; negative rationals are rejected; fewer
-  than two observations yield no score; scoreable cells use the normative
+- `Spec.lean` defines the reviewed semantics. Optional entries model
+  sample-local missingness. Observed zeros remain, and negative rationals are rejected.
+  Fewer than two observations yield no score. Scoreable cells use the normative
   absolute-deviation equation.
-- `Impl.lean` = executable evaluator using the stable below-mean identity from
-  the native scorer.
-- `Proof.lean` = equality proof for every finite rational cell plus complete
-  valid/rejected behavior; `Bounds.lean` = nonnegative and at-most-total score
-  proof for the same executable root.
-- `Audit.lean` = exact symbol-origin/type checks, reviewed-contract and safe
-  executable closure, plus an allowance limited to the standard logical
-  dependencies `Classical.choice`, `Quot.sound`, and `propext`.
-- `verify.sh` = source-policy and review-budget checks, SHA-256 drift detection,
-  isolated cache-free build, audit execution, and two fresh `leanchecker`
-  replays under pinned Lean 4.32.2.
+- `Impl.lean` contains the executable evaluator. It uses the stable below-mean
+  identity from the native scorer.
+- `Proof.lean` proves equality for every finite rational cell and covers all
+  valid and rejected behavior. `Bounds.lean` proves non-negative and
+  at-most-total scores for the same executable root.
+- `Audit.lean` checks exact symbol origins, types, the reviewed contract, and
+  the safe executable closure. It permits only `Classical.choice`, `Quot.sound`,
+  and `propext` as standard logical dependencies.
+- `verify.sh` checks the source policy, review budget, and SHA-256 drift. It
+  runs an isolated cache-free build and the audit. It also performs two fresh
+  `leanchecker` replays with Lean 4.32.2.
 
 `inst/SCIENTIFIC_SPEC.md` and `src/calculateScores.cpp` are hashed review
 evidence. Their drift invalidates the committed digest record. Hash binding
@@ -51,9 +51,9 @@ the proof from an isolated copy of those inputs.
 
 ## Non-claims
 
-The theorems cover the pure exact cell model only. They do not establish
-binary64 rounding/error behavior, global R validation, identifier matching or
-deduplication, dense/sparse traversal, chunking, parallel scheduling, Rcpp/FFI,
-compiler/code-generation correctness, resource bounds, biological validity,
-or specification correspondence. Package tests provide separate conformance
-evidence for the implemented paths.
+The theorems cover only the pure exact cell model. They do not establish
+binary64 rounding or error behavior, global R validation, identifier matching,
+or deduplication. They also exclude storage traversal, chunking, parallel
+scheduling, Rcpp/FFI, compiler and code-generation correctness, resource
+bounds, biological validity, and specification correspondence. Package tests
+provide separate conformance evidence for the implemented paths.

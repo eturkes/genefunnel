@@ -17,12 +17,12 @@ sensitivity or a biological effect claim. Every endpoint is retained in the
 - Runner/package source: clean commit
   `62d42dc3652d810b3c7ea58c70d29986b42504ce`; generated 2026-07-18
   08:48:00 UTC with one worker and C collation.
-- Inputs: four exact pinned files, 77,527,715 bytes. The two sparse matrices
-  had dimensions 35,635 x 14,619 and 35,635 x 14,446 with 8,732,747 and
-  8,838,098 coordinate entries; neither contained a duplicate/explicit-zero
-  entry after canonicalization.
-- Environment: Linux x86_64, R 4.6.1, genefunnel 0.99.0, Matrix 1.7.5,
-  BiocParallel 1.46.0, Rcpp 1.1.2, and RcppArmadillo 15.4.0.1.
+- Inputs: four exact pinned files, 77,527,715 bytes. The sparse matrices had
+  dimensions 35,635 x 14,619 and 35,635 x 14,446. They contained 8,732,747 and
+  8,838,098 coordinate entries. Neither matrix contained a duplicate or
+  explicit-zero entry after canonicalization.
+- Environment: Linux x86_64, R 4.6.1, and genefunnel 0.99.0. Dependencies were
+  Matrix 1.7.5, BiocParallel 1.46.0, Rcpp 1.1.2, and RcppArmadillo 15.4.0.1.
 - The artifact manifest covers 19 files and 14,292,063 bytes;
   `artifacts.tsv` SHA-256 is
   `5247a8c71abfca58d929f0ce17e56c25fd8dbbcdc893fcec788529c033b21e2f`.

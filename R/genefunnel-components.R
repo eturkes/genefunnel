@@ -10,14 +10,14 @@
 #' @inheritParams genefunnel
 #'
 #' @details
-#' For each retained gene-set/sample cell, let `effective_size` be the number
-#' of matched members remaining after sample-specific `NA`/`NaN` omission and
-#' let `observed_sum` be their sum. `observed_fraction` divides effective size
-#' by the set's globally matched size. It is distinct from declared-set
-#' coverage returned by [gene_set_coverage()].
+#' For each retained gene-set/sample cell, `effective_size` counts the matched
+#' members that remain after sample-specific `NA`/`NaN` omission.
+#' `observed_sum` is their sum. `observed_fraction` divides effective size by
+#' the set's globally matched size. It is distinct from declared-set coverage
+#' returned by [gene_set_coverage()].
 #'
-#' When at least two values remain and their sum is positive, `balance` is
-#' Bulla's evenness index for the within-set shares and the score factorizes as
+#' When at least two values remain with a positive sum, `balance` is Bulla's
+#' evenness index for the within-set shares. The score then factorizes as
 #' `score = observed_sum * balance`. `penalty = observed_sum - score` in exact
 #' arithmetic. All-zero cells have score and penalty zero but undefined
 #' balance. Cells with fewer than two observed values have factual support and
@@ -39,11 +39,11 @@
 #'
 #' @return A fixed-order named list of aligned base matrices:
 #'
-#' - `score`, `observed_sum`, `penalty`, and `balance`: double matrices;
-#' - `effective_size`: an integer matrix;
-#' - `observed_fraction`: a double matrix;
+#' - `score`, `observed_sum`, `penalty`, and `balance`: double matrices.
+#' - `effective_size`: an integer matrix.
+#' - `observed_fraction`: a double matrix.
 #' - `status`: character matrices `semantic`, `observed_sum`, `penalty`,
-#'   `balance`, and `conditioning`; and
+#'   `balance`, and `conditioning`.
 #' - `scaled`: entries `observed_sum`, `penalty`, and `balance`, each containing
 #'   double `mantissa` and integer `exponent` matrices.
 #'

@@ -10,8 +10,9 @@ boundary.
 
 ## Estimand
 
-Let active units be $x_k=(x_{k1},\ldots,x_{kn})$, $k=1,\ldots,m$, on one
-identical ordered member support, with finite non-negative values and $n\ge2$.
+Let active units be $x_k=(x_{k1},\ldots,x_{kn})$, $k=1,\ldots,m$. They must
+share one ordered member support and contain finite non-negative values, with
+$n\ge2$.
 Let finite weights satisfy $w_k>0$ and $\sum_k w_k=1$. Zero-weight units are
 excluded before value/support checks and reported as excluded; they cannot alter
 the estimand or eligibility.
@@ -34,9 +35,10 @@ $$
 J=F(\bar{x})-\sum_k w_kF(x_k).
 $$
 
-`Weighted mean` is the only primary aggregation estimand. A future interface may
-accept non-negative masses $a_k$ with finite positive total $A$, but it must
-report and use $w_k=a_k/A$. It must not silently substitute equal weights.
+`Weighted mean` is the only primary aggregation estimand. A future interface
+can accept non-negative masses $a_k$ with finite positive total $A$. It must
+report $w_k=a_k/A$ and use those weights. It must not silently substitute equal
+weights.
 
 ## Exact theorem and proof
 
@@ -79,16 +81,16 @@ oppositely signed, within-unit member deviations from their unit means.
 
 $J=0$ exactly when every coordinate has one weak sign across positive-weight
 units: for each $i$, $P_i=0$ or $N_i=0$. The gap is positive exactly when at
-least one member is above its unit mean in one active unit and below its unit
-mean in another.
+least one member crosses its unit mean. It must be above the mean in one active
+unit and below it in another.
 
 Profiles $x_k=a_kq$, $a_k\ge0$, are sufficient for equality because all
 $Hx_k=a_kHq$ share coordinate signs. Proportionality is not necessary. For
 example, `c(4, 3, 1, 0)` and `c(6, 3, 2, 1)` are not proportional, but their
 centered deviations have no opposing coordinate and their gap is zero.
 
-The equal mixture of `c(4, 0)` and `c(0, 4)` is the maximum-discrepancy example:
-both unit scores are zero, the mean is `c(2, 2)` with score four, and $J=4$.
+The equal mixture of `c(4, 0)` and `c(0, 4)` gives maximum discrepancy. Both
+unit scores are zero. The mean is `c(2, 2)` with score four, and $J=4$.
 
 ## Bounds and normalization
 
@@ -106,7 +108,7 @@ R=\frac{J}{F(\bar{x})}
 $$
 
 when $F(\bar{x})>0$, giving $R\in[0,1]$. When $F(\bar{x})=0$, both $J$ and the
-weighted unit score are zero; `R` is undefined and must be `NA`, not zero.
+weighted unit score are zero. In that case, `R` must be `NA`, not zero.
 
 `R` answers a narrow intended question: what fraction of the aggregate score is
 the aggregate-versus-weighted-unit discrepancy? It is scale-free under one
@@ -134,10 +136,10 @@ The two allowed policies are:
 
 1. `reject` (safe default): any `NA`/`NaN` in an active unit makes the group
    ineligible and reports the affected members/units.
-2. `intersection` (explicit): retain only members observed in every active unit,
-   preserve their original order, report every removed member identity/count,
-   and reject fewer than two retained members. Recompute $n$, $c$, every unit
-   score, $\bar{x}$, and the aggregate score on that same intersection.
+2. `intersection` (explicit): retain only members observed in every active
+   unit. Preserve their original order. Report each removed member and the
+   removed count. Reject fewer than two retained members. Recompute $n$, $c$,
+   every unit score, $\bar{x}$, and the aggregate score on that intersection.
 
 Zero remains observed under both policies. Infinite or negative values remain
 invalid. Missingness in zero-weight units is irrelevant because those units are
@@ -195,17 +197,19 @@ normalization, equality/strictness, zero-weight exclusion, scaling, physical
 sums, and unit/member permutations.
 
 Internal `.aggregation_audit()` implements the frozen additive four-table
-schema: eligibility reasons, effective weights/support, authoritative aggregate
-and unit scores, formula gap, normalized status, identity residual, and removed
-member/unit facts. It remains unexported. Factorial and empirical thresholds
+schema. It reports eligibility reasons, effective weights and support, and
+authoritative aggregate and unit scores. It also reports the formula gap,
+normalized status, identity residual, and removed member and unit facts. It
+remains unexported. Factorial and empirical thresholds
 are frozen in benchmark protocol `B-1.0.3`, which inherits B-1.0.2's unchanged
-synthetic contract/result. The full controlled run passed all co-primary gates,
-but its severe-dropout diagnostic was comparable with the planted
-complementarity effect and does not support a robustness claim. The tracked
+synthetic contract/result. The full controlled run passed all co-primary gates.
+However, its severe-dropout diagnostic was comparable with the planted
+complementarity effect. The result does not support a dropout-stability claim.
+The tracked
 result records that failure envelope. Both frozen CellBench gates failed:
 pair-set errors were large and exact-zero measured scores left the fixed
 condition grid incomplete. Kang donor-replicated perturbation evidence was
-technically split-stable, but interferon gamma failed the held-out direction
-rule and neither primary pathway passed its Holm-adjusted exact donor sign
-test. The ordered external validation is complete and negative; it cannot
+technically split-stable. However, interferon gamma failed the held-out
+direction rule. Neither primary pathway passed its Holm-adjusted exact donor
+sign test. The ordered external validation is complete and negative; it cannot
 rescue the failed public-promotion gate. The prototype stays internal.
