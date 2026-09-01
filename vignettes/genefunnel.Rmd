@@ -6,8 +6,10 @@ package: genefunnel
 output:
   BiocStyle::html_document:
     toc: true
-    toc_depth: 2
+    toc_float: true
+    toc_depth: 3
     math_method: mathml
+    css: vignette.css
 vignette: >
   %\VignetteIndexEntry{GeneFunnel: scoring gene-set activity}
   %\VignetteEngine{knitr::rmarkdown}
