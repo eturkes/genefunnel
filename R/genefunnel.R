@@ -21,6 +21,8 @@
 #'
 #' Convert a non-negative feature-by-sample matrix into sample-wise gene-set
 #' scores. Every retained gene set and sample is calculated independently.
+#' Unlike a plain member sum, equal-total patterns can receive different scores
+#' when their within-set coherence differs.
 #'
 #' @param mat An unclassed base numeric or integer matrix, or a numeric
 #'   dense/sparse [Matrix::Matrix] object, with features in rows and samples in

@@ -2,11 +2,47 @@
 # GeneFunnel
 
 GeneFunnel calculates sample-wise gene-set scores from non-negative
-feature-by-sample matrices. Each score combines observed magnitude with a
-scaled absolute-deviation penalty. Dense inputs use a dense path; sparse inputs
-remain sparse and retain implicit zeros as observations.
+feature-by-sample matrices. Each score preserves observed magnitude while
+discounting disagreement among the available members. Dense inputs use a dense
+path; sparse inputs remain sparse and retain implicit zeros as observations.
 
 GeneFunnel is under development and is not yet available from Bioconductor.
+
+## Why not use a plain sum?
+
+A member sum cannot distinguish coherent activity from the same total driven by
+only one or two features. GeneFunnel can:
+
+```r
+library(genefunnel)
+
+same_total <- rbind(
+    A = c(coherent = 3, split = 6, concentrated = 12),
+    B = c(coherent = 3, split = 6, concentrated = 0),
+    C = c(coherent = 3, split = 0, concentrated = 0),
+    D = c(coherent = 3, split = 0, concentrated = 0)
+)
+
+scores <- genefunnel(
+    same_total,
+    list(pathway = rownames(same_total)),
+    BPPARAM = BiocParallel::SerialParam()
+)
+rbind(
+    observed_sum = colSums(same_total),
+    GeneFunnel = unname(scores["pathway", ])
+)
+#>              coherent split concentrated
+#> observed_sum       12    12           12
+#> GeneFunnel         12     4            0
+```
+
+All three samples have the same observed sum. GeneFunnel gives full credit to
+the coherent pattern, partial credit to the split pattern, and zero to the
+single-feature pattern. Use this score when total magnitude and within-set
+agreement both carry meaning. Prefer a rank-based method when scale invariance
+is the intended property. This contrast demonstrates the score's behavior; it
+does not establish biological superiority for every analysis.
 
 ## Installation
 
@@ -25,7 +61,7 @@ After acceptance, install the Bioconductor package with:
 BiocManager::install("genefunnel")
 ```
 
-## Quick start
+## Coverage-aware workflow
 
 ```r
 library(genefunnel)
@@ -75,6 +111,16 @@ Matching is exact and case-sensitive. GeneFunnel performs no normalization,
 imputation, identifier mapping, gene-set retrieval, downstream testing, or
 biological interpretation. Input must be non-negative with a meaningful zero;
 an arbitrary positive shift changes the score and is not a valid workaround.
+
+## Validation evidence
+
+The vignette evaluates the equal-total contrast above as part of the package
+build. The regression suite also compares 32 deterministic dense and sparse
+fixtures against an independent R reference implementation. Additional tests
+verify score bounds, mathematical invariants, missing-value semantics, partial
+coverage, storage equivalence, and serial/SOCK ordering. This evidence supports
+the documented calculation and implementation; it is not a benchmark of
+biological usefulness against other methods.
 
 ## Documentation
 

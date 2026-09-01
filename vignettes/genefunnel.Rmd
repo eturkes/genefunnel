@@ -126,6 +126,45 @@ Equal values score their sum. All-zero sets and sets with only one non-zero
 member score zero. The missing-pair column scores the observed values `c(1, 2)`
 as 2; the last column has only one observed value and returns `NA`.
 
+# What the penalty contributes
+
+A plain member sum cannot distinguish the same total distributed across every
+member from a total concentrated in one or two members. The following three
+samples all sum to 12.
+
+```{r same-total}
+same_total <- rbind(
+    A = c(coherent = 3, split = 6, concentrated = 12),
+    B = c(coherent = 3, split = 6, concentrated = 0),
+    C = c(coherent = 3, split = 0, concentrated = 0),
+    D = c(coherent = 3, split = 0, concentrated = 0)
+)
+same_total_scores <- genefunnel(
+    same_total,
+    list(pathway = rownames(same_total)),
+    BPPARAM = serial
+)
+same_total_comparison <- data.frame(
+    pattern = colnames(same_total),
+    observed_sum = unname(colSums(same_total)),
+    genefunnel_score = unname(same_total_scores["pathway", ]),
+    check.names = FALSE
+)
+knitr::kable(same_total_comparison, digits = 3)
+
+stopifnot(
+    identical(same_total_comparison$observed_sum, c(12, 12, 12)),
+    identical(same_total_comparison$genefunnel_score, c(12, 4, 0))
+)
+```
+
+GeneFunnel gives full credit to the coherent sample, partial credit to the
+two-member split, and zero to the single-feature concentration. This is the
+specific information added by the absolute-deviation penalty. It is useful only
+when within-set agreement is part of the intended activity concept. The example
+demonstrates the mathematical distinction; it does not claim universal
+biological superiority over a sum or a rank-based score.
+
 # Relationship to existing Bioconductor methods
 
 Gene-set scoring is already supported by several complementary packages.

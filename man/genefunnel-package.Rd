@@ -7,7 +7,8 @@
 \description{
 GeneFunnel converts a non-negative feature-by-sample matrix into a numeric
 gene-set-by-sample score matrix. Every gene set and sample is scored
-independently from the available member values.
+independently from the available member values. Equal-total patterns can
+receive different scores when their within-set coherence differs.
 }
 \details{
 \code{\link[=genefunnel]{genefunnel()}} is the primary scorer. \code{\link[=gene_set_coverage]{gene_set_coverage()}} reports exact

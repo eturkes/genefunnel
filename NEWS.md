@@ -1,3 +1,13 @@
+# genefunnel 0.99.2 (2026-09-01)
+
+## Value-focused polish
+
+- Adds an executable equal-total comparison that shows the distinction between
+  a plain member sum and the GeneFunnel coherence penalty.
+- Surfaces the independent-oracle, dense/sparse, serial/parallel, and scientific
+  invariant evidence behind the implementation.
+- Tightens package metadata and help text around the score's intended use.
+
 # genefunnel 0.99.1 (2026-09-01)
 
 ## Submission readiness

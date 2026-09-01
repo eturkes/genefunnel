@@ -1,17 +1,19 @@
 Package: genefunnel
 Title: Gene Set Activity Scoring with GeneFunnel
-Version: 0.99.1
+Version: 0.99.2
 Authors@R: 
     person("Emir", "Turkes", email = "emir.turkes@eturkes.com",
         role = c("aut", "cre", "cph"),
         comment = c(ORCID = "0000-0002-7447-1476"))
 Description: Computes sample-wise gene set activity scores from non-negative
     feature-by-sample matrices. Each score combines the sum of observed member
-    values with a scaled within-set absolute-deviation penalty, independently
-    for every sample and gene set. Dense and sparse matrices, partial feature
-    coverage, sample-specific missing values, and parallel backends are
-    supported. The package performs scoring only; it does not normalize
-    measurements, map identifiers, or perform downstream statistical testing.
+    values with a scaled within-set absolute-deviation penalty. Equal-total
+    patterns can therefore receive different scores when their member-level
+    coherence differs. Every sample and gene set is calculated independently.
+    Dense and sparse matrices, partial feature coverage, sample-specific missing
+    values, and parallel backends are supported. The package performs scoring
+    only; it does not normalize measurements, map identifiers, or perform
+    downstream statistical testing.
 License: GPL (>= 3)
 URL: https://github.com/eturkes/genefunnel
 BugReports: https://github.com/eturkes/genefunnel/issues

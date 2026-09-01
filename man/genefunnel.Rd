@@ -30,6 +30,8 @@ and \code{ncol(mat)} columns.
 \description{
 Convert a non-negative feature-by-sample matrix into sample-wise gene-set
 scores. Every retained gene set and sample is calculated independently.
+Unlike a plain member sum, equal-total patterns can receive different scores
+when their within-set coherence differs.
 }
 \details{
 For the members of one gene set that match matrix rows, \code{NA} and \code{NaN} are
