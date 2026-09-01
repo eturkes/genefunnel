@@ -1,0 +1,52 @@
+# R session and local credentials
+.Rhistory
+.Rapp.history
+.RData
+.Ruserdata
+.Renviron
+.httr-oauth
+
+# RStudio state
+.Rproj.user/
+
+# Package build and check output
+/*.tar.gz
+/*.Rcheck/
+/*.BiocCheck/
+*-Ex.R
+*.Rout
+*.Rout.fail
+
+# Local package libraries
+/.R-library/
+
+# Rendered vignette output
+/vignettes/*.html
+/vignettes/*.pdf
+/vignettes/*_cache/
+/vignettes/*_files/
+
+# Native build products
+/src/*.a
+/src/*.dll
+/src/*.dylib
+/src/*.exp
+/src/*.lib
+/src/*.o
+/src/*.obj
+/src/*.pdb
+/src/*.so
+/src/*.dSYM/
+/src/symbols.rds
+
+# Generated benchmark output
+/benchmark/results/
+
+# Coverage and profiling output
+/coverage/
+*.Rprof
+*.Rprofmem
+
+# Operating-system metadata
+.DS_Store
+._*

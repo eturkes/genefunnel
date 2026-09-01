@@ -1,0 +1,36 @@
+Package: genefunnel
+Title: Gene Set Activity Scoring with GeneFunnel
+Version: 0.99.0
+Authors@R: 
+    person("Emir", "Turkes", email = "emir.turkes@eturkes.com",
+        role = c("aut", "cre", "cph"))
+Description: Computes sample-wise gene set activity scores from non-negative
+    feature-by-sample matrices. Each score combines the sum of observed member
+    values with a scaled within-set absolute-deviation penalty, independently
+    for every sample and gene set. Dense and sparse matrices, partial feature
+    coverage, sample-specific missing values, and parallel backends are
+    supported. The package performs scoring only; it does not normalize
+    measurements, map identifiers, or perform downstream statistical testing.
+License: GPL (>= 3)
+URL: https://github.com/eturkes/genefunnel
+BugReports: https://github.com/eturkes/genefunnel/issues
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+Imports:
+    methods,
+    Matrix,
+    BiocParallel,
+    Rcpp (>= 1.0.5)
+Suggests:
+    BiocStyle,
+    knitr,
+    rmarkdown (>= 2.12),
+    testthat (>= 3.0.0)
+LinkingTo:
+    Rcpp,
+    RcppArmadillo
+VignetteBuilder: knitr
+SystemRequirements: C++17
+Config/testthat/edition: 3
+Config/roxygen2/version: 8.0.0
+biocViews: GeneExpression, GeneSetEnrichment, Proteomics, Transcriptomics

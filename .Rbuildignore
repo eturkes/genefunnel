@@ -1,0 +1,7 @@
+^genefunnel\.Rproj$
+^\.Rproj\.user$
+^benchmark$
+^.*\.Rcheck$
+^.*\.BiocCheck$
+^genefunnel_.*\.tar\.gz$
+^src/.*\.(a|dll|dylib|exp|lib|o|obj|pdb|so)$
