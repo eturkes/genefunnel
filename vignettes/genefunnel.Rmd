@@ -40,6 +40,11 @@ a plain numeric matrix for downstream analysis. It is a scorer only: it does
 not normalize data, impute missing values, map identifiers, retrieve gene sets,
 or perform statistical testing.
 
+Within a larger pipeline, GeneFunnel can follow assay-specific preprocessing,
+identifier mapping, and coverage checks. Its output can then provide
+gene-set-level features for sample prioritization, visualization, clustering, or
+statistical models.
+
 The package is in development and has not been accepted into Bioconductor. Its
 source and issue tracker are on the
 [GeneFunnel repository](https://github.com/eturkes/genefunnel).
@@ -166,6 +171,74 @@ information added by the absolute-deviation penalty. The score is most useful
 when agreement within the set is part of the biological question. The example
 explains the mathematical difference; it does not show that one method is best
 for every analysis.
+
+# A pipeline example: prioritizing coherent hits
+
+Consider a perturbation screen that sends promising samples to an expensive
+validation assay. Upstream steps have produced comparable non-negative values,
+mapped identifiers, and established that zero has a meaningful interpretation.
+The screen measures one four-member response program.
+
+The example applies the same threshold of 10 to either total signal or the
+GeneFunnel response-program score. This threshold illustrates the decision
+point; it is not a package default.
+
+```{r screening-pipeline}
+screen_assay <- rbind(
+    marker_1 = c(
+        vehicle = 1,
+        coherent_hit = 3,
+        partial_hit = 6,
+        single_feature_spike = 12
+    ),
+    marker_2 = c(1, 3, 6, 0),
+    marker_3 = c(1, 3, 0, 0),
+    marker_4 = c(1, 3, 0, 0)
+)
+screen_scores <- genefunnel(
+    screen_assay,
+    list(response_program = rownames(screen_assay)),
+    BPPARAM = serial
+)
+screen_total <- unname(colSums(screen_assay))
+response_score <- unname(screen_scores["response_program", ])
+
+screen_decisions <- data.frame(
+    sample = colnames(screen_assay),
+    total_signal = screen_total,
+    genefunnel_score = response_score,
+    advance_by_sum = screen_total >= 10,
+    advance_by_genefunnel = response_score >= 10,
+    check.names = FALSE
+)
+knitr::kable(screen_decisions, digits = 3)
+```
+
+```{r screening-pipeline-check, include=FALSE}
+stopifnot(
+    identical(screen_decisions$total_signal, c(4, 12, 12, 12)),
+    identical(screen_decisions$genefunnel_score, c(4, 12, 4, 0)),
+    identical(
+        screen_decisions$advance_by_sum,
+        c(FALSE, TRUE, TRUE, TRUE)
+    ),
+    identical(
+        screen_decisions$advance_by_genefunnel,
+        c(FALSE, TRUE, FALSE, FALSE)
+    )
+)
+```
+
+The sum gate advances all three candidate hits because their totals are equal.
+The GeneFunnel gate advances only `coherent_hit`; the partial response and the
+single-feature spike no longer tie with a coordinated program. In a larger
+pipeline, every declared set becomes one row of the score matrix. That matrix
+can be transposed, joined to sample metadata, and passed to the next analysis
+stage without carrying every member as a separate feature.
+
+This example demonstrates a possible pipeline benefit, not a validated
+screening rule. Select thresholds and downstream models for the experiment, and
+compare GeneFunnel with suitable alternatives.
 
 # Choosing between GeneFunnel and rank-based methods
 
