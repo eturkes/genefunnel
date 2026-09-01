@@ -116,7 +116,7 @@ test_that("partial sets score matched unique members and retain set order", {
     )
 
     expect_length(warnings, 1L)
-    expect_match(warnings, "Omitting 2 gene sets")
+    expect_match(warnings, "GeneFunnel skipped 2 gene sets")
     expect_identical(rownames(observed), c("partial", "duplicated"))
     expect_identical(colnames(observed), c("unequal", "equal"))
     expect_identical(unname(observed), matrix(c(2, 2, 8, 8), nrow = 2L))
@@ -138,7 +138,7 @@ test_that("all globally unscoreable sets yield an empty score matrix", {
             list(empty = character(), one = c("A", "missing")),
             BPPARAM = BiocParallel::SerialParam()
         ),
-        "Omitting 2 gene sets"
+        "GeneFunnel skipped 2 gene sets"
     )
     expect_true(is.matrix(observed))
     expect_type(observed, "double")

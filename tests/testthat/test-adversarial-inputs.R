@@ -20,7 +20,7 @@ test_that("global and sample-specific minimum sizes remain distinct", {
             gene_sets,
             BPPARAM = BiocParallel::SerialParam()
         ),
-        "Omitting 2 gene sets"
+        "GeneFunnel skipped 2 gene sets"
     )
 
     expect_identical(dim(observed), c(2L, 4L))
@@ -164,7 +164,7 @@ test_that("unnamed samples and omitted sets preserve stable matrix dimensions", 
             gene_sets,
             BPPARAM = BiocParallel::SerialParam()
         ),
-        "Omitting 2 gene sets"
+        "GeneFunnel skipped 2 gene sets"
     )
     expect_warning(
         sparse <- genefunnel(
@@ -172,7 +172,7 @@ test_that("unnamed samples and omitted sets preserve stable matrix dimensions", 
             gene_sets,
             BPPARAM = BiocParallel::SerialParam()
         ),
-        "Omitting 2 gene sets"
+        "GeneFunnel skipped 2 gene sets"
     )
 
     expect_identical(dim(dense), c(1L, 1L))
@@ -185,7 +185,7 @@ test_that("unnamed samples and omitted sets preserve stable matrix dimensions", 
             gene_sets[c("omitted_before", "omitted_after")],
             BPPARAM = BiocParallel::SerialParam()
         ),
-        "Omitting 2 gene sets"
+        "GeneFunnel skipped 2 gene sets"
     )
     expect_identical(dim(empty), c(0L, 1L))
     expect_null(rownames(empty))

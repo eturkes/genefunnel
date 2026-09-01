@@ -1,5 +1,5 @@
 ---
-title: "GeneFunnel: scientific scoring and practical use"
+title: "GeneFunnel: scoring gene-set activity"
 author: "Emir Turkes"
 date: "1 September 2026"
 package: genefunnel
@@ -9,7 +9,7 @@ output:
     toc_depth: 2
     math_method: mathml
 vignette: >
-  %\VignetteIndexEntry{GeneFunnel: scientific scoring and practical use}
+  %\VignetteIndexEntry{GeneFunnel: scoring gene-set activity}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -63,7 +63,7 @@ library(genefunnel)
 serial <- BiocParallel::SerialParam()
 ```
 
-# Score definition
+# How the score is calculated
 
 For one declared gene set, GeneFunnel first deduplicates member identifiers and
 matches them exactly and case-sensitively to matrix row names. Within sample
@@ -87,7 +87,7 @@ observed value, including an implicit sparse zero, so it participates in $n$,
 the sum, the mean, and the deviation. Infinities and negative values are
 invalid.
 
-The following matrix places the canonical cases in columns.
+These small examples show the main edge cases.
 
 ```{r canonical}
 canonical <- matrix(
@@ -126,7 +126,7 @@ Equal values score their sum. All-zero sets and sets with only one non-zero
 member score zero. The missing-pair column scores the observed values `c(1, 2)`
 as 2; the last column has only one observed value and returns `NA`.
 
-# What the penalty contributes
+# Why the penalty matters
 
 A plain member sum cannot distinguish the same total distributed across every
 member from a total concentrated in one or two members. The following three
@@ -160,12 +160,12 @@ stopifnot(
 
 GeneFunnel gives full credit to the coherent sample, partial credit to the
 two-member split, and zero to the single-feature concentration. This is the
-specific information added by the absolute-deviation penalty. It is useful only
-when within-set agreement is part of the intended activity concept. The example
-demonstrates the mathematical distinction; it does not claim universal
-biological superiority over a sum or a rank-based score.
+information added by the absolute-deviation penalty. The score is most useful
+when agreement within the set is part of the biological question. The example
+explains the mathematical difference; it does not show that one method is best
+for every analysis.
 
-# Relationship to existing Bioconductor methods
+# Choosing between GeneFunnel and rank-based methods
 
 Gene-set scoring is already supported by several complementary packages.
 [`GSVA`](https://bioconductor.org/packages/GSVA) offers unsupervised gene-set
@@ -175,15 +175,13 @@ transformations whose methods use relative expression or rank information.
 scores from within-sample feature ranks, with UCell using a Mann-Whitney U
 statistic.
 
-GeneFunnel answers a different question. It neither ranks values nor estimates
-a distribution across samples. It applies the fixed
-sum-minus-absolute-deviation formula above independently to each set and
-sample. Consequently, input magnitude, units, gene-set size, and observed
-coverage remain part of the score. These methods are complementary rather than
-interchangeable; choose among them according to the desired invariances and
-interpretation.
+GeneFunnel answers a different question. It does not rank values or estimate a
+distribution across samples. Instead, it applies the formula above to each set
+and sample independently. The score therefore depends on measurement scale,
+set size, and observed coverage. Choose the method that matches the quantity
+you want to preserve.
 
-# Coverage is caller controlled
+# Check coverage before scoring
 
 A declared member absent from the matrix changes global assay coverage. It is
 different from a missing cell, which affects only one sample, and from an
@@ -201,8 +199,8 @@ knitr::kable(coverage, digits = 3)
 ```
 
 GeneFunnel can score a set whenever at least two unique members match. It does
-not impose a coverage fraction because assay-specific policies differ. A strict
-transcriptomic analysis might require complete coverage:
+not impose a coverage fraction because suitable thresholds depend on the
+experiment. A transcriptomic analysis might require complete coverage:
 
 ```{r strict-coverage}
 strict <- !is.na(coverage$coverage) & coverage$coverage == 1
@@ -226,8 +224,8 @@ relaxed_scores <- genefunnel(
 knitr::kable(relaxed_scores, digits = 3)
 ```
 
-These thresholds are examples, not package recommendations. Record the exact
-gene-set collection and version alongside the chosen policy.
+These thresholds are examples rather than package recommendations. Record the
+gene-set collection, its version, and the threshold used in the analysis.
 
 # Dense and sparse matrices
 
@@ -309,7 +307,7 @@ Gene-set database revisions can change scores. The package does not guarantee
 that the resulting distribution meets the assumptions of every downstream
 statistical method. Validate those assumptions for the intended analysis.
 
-The complete normative contract is installed as `SCIENTIFIC_SPEC.md`:
+The full scoring specification is installed as `SCIENTIFIC_SPEC.md`:
 
 ```{r specification-path}
 specification <- system.file("SCIENTIFIC_SPEC.md", package = "genefunnel")
@@ -319,8 +317,8 @@ basename(specification)
 
 # Citation
 
-The package citation includes the software and the thesis that defines its
-scientific intent.
+The package citation includes the software and the thesis that describes the
+method.
 
 ```{r citation}
 citation("genefunnel")

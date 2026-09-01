@@ -1,11 +1,11 @@
 
 # GeneFunnel scientific specification
 
-This document is the durable public contract for GeneFunnel scoring. It is
-derived from Sections 4.3-4.12 and 5.1 of Emir Turkes' 2025 University College
-London PhD thesis, *Development of Gene Set Enrichment and Imputation Methods
-for Transcriptomics and Proteomics: Application in the Study of
-Neurofibrillary Tangle-bearing Neurons in Alzheimer's Disease*.
+This document defines how GeneFunnel calculates and interprets scores. The
+method is described in Sections 4.3-4.12 and 5.1 of Emir Turkes' 2025
+University College London PhD thesis, *Development of Gene Set Enrichment and
+Imputation Methods for Transcriptomics and Proteomics: Application in the Study
+of Neurofibrillary Tangle-bearing Neurons in Alzheimer's Disease*.
 
 ## Scope
 
@@ -25,7 +25,7 @@ The result is a base numeric matrix. Retained gene sets and samples preserve
 their input order and names. Missing column names remain `NULL`. One sample and
 one gene set are valid.
 
-## Exact score
+## Score calculation
 
 For input matrix \(X\), declared gene set \(G\), and sample \(j\):
 
@@ -97,8 +97,8 @@ deduplication, and matching rules. It returns:
 - whether at least two members are globally scoreable.
 
 Coverage is undefined (`NA`) for an empty declared set. Empty sets are valid
-diagnostic inputs but cannot be scored. Experimental policy belongs to the
-caller. Examples include:
+diagnostic inputs but cannot be scored. Choose a coverage rule that fits the
+experiment. Examples include:
 
 - strict transcriptomic policy: `coverage == 1`; and
 - low-coverage proteomic policy: `coverage >= 0.5` and `matched_size >= 2`.
@@ -109,7 +109,7 @@ must be a non-missing, non-empty string. GeneFunnel performs no case folding,
 synonym resolution, annotation lookup, or identifier conversion. Overlapping
 gene sets are valid and remain independent.
 
-## Canonical values
+## Worked values
 
 | Observed values | Score | Explanation |
 |---|---:|---|
@@ -123,9 +123,9 @@ gene sets are valid and remain independent.
 
 For a declared set `c("A", "B", "C")` and matrix rows containing only `A`
 and `B`, GeneFunnel scores the available pair, reports coverage `2/3`, and
-leaves the acceptance threshold to the caller.
+leaves the acceptance threshold to the user.
 
-## Required properties
+## Properties of the score
 
 For finite, observed, non-negative values:
 
@@ -145,7 +145,7 @@ Numerical cleanup may turn a theoretically zero negative round-off result into
 exact zero only within a scale-aware tolerance. A materially negative or
 non-finite result is an internal error and must not be hidden.
 
-## Scientific interpretation and limits
+## Interpretation and limitations
 
 The score combines total observed activity with a scaled absolute-deviation
 penalty. Treating within-set variability as evidence against coherent activity
@@ -166,7 +166,7 @@ Raw non-negative measurements can be preferable where scientifically
 appropriate because prior filtering or transformation can remove zeros or
 alter magnitude. The package does not prescribe or enforce a pipeline position.
 
-## Computational equivalence
+## Dense, sparse, and parallel calculations
 
 Dense input follows a dense native path. Sparse input remains sparse and
 accounts analytically for implicit zeros. Work is split into bounded column

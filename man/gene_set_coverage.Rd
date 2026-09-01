@@ -7,31 +7,28 @@
 gene_set_coverage(gene_sets, features)
 }
 \arguments{
-\item{gene_sets}{A non-empty unclassed named list of unclassed character
-vectors. Set names must be unique, non-missing, and non-empty. Member
-identifiers must be non-missing and non-empty.}
+\item{gene_sets}{A non-empty named base list of character vectors. Set names
+and member identifiers must be non-missing and non-empty.}
 
-\item{features}{An unclassed character vector of unique, non-missing,
-non-empty feature identifiers, typically \code{rownames(mat)}.}
+\item{features}{A base character vector of unique, non-missing, non-empty
+feature identifiers, usually \code{rownames(mat)}.}
 }
 \value{
 A data frame with one row per gene set and columns \code{gene_set},
 \code{declared_size} (unique declared members), \code{matched_size},
 \code{unmatched_size}, \code{coverage}, \code{duplicate_member_count}, and \code{scoreable}.
-Coverage is \code{NA} for an empty declared set; a set is scoreable when at
-least two unique members match.
+Coverage is \code{NA} for an empty set. A set is scoreable when at least two
+unique members match.
 }
 \description{
-Reports exact, case-sensitive overlap between declared gene-set members and
-available features. Duplicate members are counted, then removed while
-preserving their first occurrence. The function reports facts only; callers
-choose a coverage policy appropriate to their experiment.
+Compare the members of each gene set with the available feature names.
+Matching is exact and case-sensitive. Duplicate members are counted but used
+only once when coverage is calculated.
 }
 \details{
-This function uses the same validation, stable member deduplication, and
-exact matching rules as \code{\link[=genefunnel]{genefunnel()}}. It performs no identifier mapping or
-case conversion. An empty character vector is a valid declared set: its
-coverage is undefined and it is not scoreable.
+This function uses the same matching rules as \code{\link[=genefunnel]{genefunnel()}}. It does not map
+identifiers or change case. An empty set is allowed, but its coverage is
+\code{NA} and it cannot be scored.
 }
 \examples{
 sets <- list(

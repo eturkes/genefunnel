@@ -1,28 +1,23 @@
-# Assisted-by: OpenAI GPT-5.6 Pro
-# Scope: submission-readiness metadata and documentation, 2026-09-01.
-
 #' GeneFunnel gene-set activity scoring
 #'
 #' @description
-#' GeneFunnel converts a non-negative feature-by-sample matrix into a numeric
-#' gene-set-by-sample score matrix. Every gene set and sample is scored
-#' independently from the available member values. Equal-total patterns can
-#' receive different scores when their within-set coherence differs.
+#' GeneFunnel scores predefined gene sets in each sample of a non-negative
+#' feature-by-sample matrix. The score reflects both the total observed signal
+#' and the agreement among members of the set.
 #'
 #' @details
-#' [genefunnel()] is the primary scorer. [gene_set_coverage()] reports exact
-#' identifier coverage so callers can apply an experiment-specific coverage
-#' policy before scoring. Dense and sparse inputs are supported; zeros are
-#' observed values, `NA` and `NaN` are omitted per sample, and partially
-#' covered sets remain scoreable when at least two unique members match.
+#' Use [genefunnel()] to calculate scores. Use [gene_set_coverage()] first when
+#' you need to check how many members of each set are present. Dense and sparse
+#' matrices are supported. Zeros are treated as observations, while `NA` and
+#' `NaN` are omitted separately in each sample.
 #'
-#' GeneFunnel does not normalize or impute measurements, map identifiers,
-#' retrieve gene sets, perform downstream tests, or supply biological
-#' interpretation.
+#' GeneFunnel only calculates scores. It does not normalize or impute data, map
+#' identifiers, retrieve gene sets, run statistical tests, or interpret the
+#' results biologically.
 #'
 #' See `vignette("genefunnel")` for a worked workflow and
-#' `system.file("SCIENTIFIC_SPEC.md", package = "genefunnel")` for the durable
-#' mathematical and behavioral contract.
+#' `system.file("SCIENTIFIC_SPEC.md", package = "genefunnel")` for the full
+#' scoring specification.
 #'
 #' @seealso [genefunnel()], [gene_set_coverage()], `citation("genefunnel")`
 #' @aliases genefunnel-package NULL

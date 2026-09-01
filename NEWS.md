@@ -1,24 +1,24 @@
 # genefunnel 0.99.2 (2026-09-01)
 
-## Value-focused polish
+## Documentation and examples
 
-- Adds an executable equal-total comparison that shows the distinction between
-  a plain member sum and the GeneFunnel coherence penalty.
-- Surfaces the independent-oracle, dense/sparse, serial/parallel, and scientific
-  invariant evidence behind the implementation.
-- Tightens package metadata and help text around the score's intended use.
+- Adds an equal-total example that shows how GeneFunnel differs from a plain
+  member sum.
+- Summarises the dense/sparse, serial/parallel, and reference-implementation
+  checks used by the test suite.
+- Clarifies when the score is useful and which preprocessing steps remain the
+  user's responsibility.
 
 # genefunnel 0.99.1 (2026-09-01)
 
-## Submission readiness
+## Bioconductor submission updates
 
 - Records the maintainer ORCID and the BiocCheck-suggested `Coverage` view.
-- Adds an explicit comparison with complementary Bioconductor gene-set scoring
+- Adds a comparison with complementary Bioconductor gene-set scoring
   methods and documents the intended invariances of the GeneFunnel score.
 - Removes benchmark-only tooling from the default submission branch so it
   contains package source only.
-- Regenerates package documentation with the current roxygen2 release and
-  records AI-assisted submission-preparation provenance in source control.
+- Regenerates package documentation with the current roxygen2 release.
 
 # genefunnel 0.99.0
 
@@ -27,7 +27,7 @@
 - Implements the GeneFunnel score for dense and sparse non-negative matrices,
   with sample-specific omission of `NA` and `NaN` values.
 - Adds `gene_set_coverage()` for exact-match coverage diagnostics and
-  caller-controlled filtering.
+  user-defined filtering.
 - Supports deterministic, bounded parallel scoring through BiocParallel.
 
 ## User-visible changes from the prototype
@@ -42,7 +42,7 @@
 - Dense inputs remain dense and sparse inputs remain sparse through bounded
   scoring chunks.
 
-## Quality
+## Reliability
 
 - Adds deterministic formula, invariant, randomized-oracle, dense-sparse, and
   serial-parallel tests.
@@ -50,17 +50,16 @@
   on platforms whose C++ `long double` has the range of `double`.
 - Preserves representable finite scores when an intermediate sum or weighted
   term would overflow on those platforms.
-- Adds a reproducible synthetic benchmark harness with identity-checked output
-  digests and environment metadata.
-- Adds a versioned controlled-science protocol covering analytic score cases,
-  sparse/dense identity, partial coverage, missingness, and independence, with
-  machine-readable results and regenerated Markdown reports.
+- Adds a reproducible synthetic benchmark with checked outputs and environment
+  metadata.
+- Adds controlled tests for analytic score cases, dense/sparse agreement,
+  partial coverage, missingness, and independent scoring.
 
 ## Documentation
 
-- Adds a durable scientific specification for the equation, value and coverage
+- Adds a scientific specification for the equation, value and coverage
   semantics, invariants, computational equivalence, and limitations.
-- Adds an executable BiocStyle vignette covering canonical examples,
-  caller-controlled coverage, dense/sparse matrices, and parallel execution.
-- Expands function help and the README with the complete public contract and
-  accurate development status.
+- Adds a BiocStyle vignette with worked examples, coverage checks,
+  dense/sparse matrices, and parallel execution.
+- Expands the function help and README with the full scoring rules and current
+  development status.

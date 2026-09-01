@@ -7,34 +7,30 @@
 genefunnel(mat, gene_sets, BPPARAM = BiocParallel::bpparam())
 }
 \arguments{
-\item{mat}{An unclassed base numeric or integer matrix, or a numeric
-dense/sparse \link[Matrix:Matrix]{Matrix::Matrix} object, with features in rows and samples in
-columns. It must have at least one row and column. Row names must be
-unique, non-missing, and non-empty. Values may be finite and non-negative,
-\code{NA}, or \code{NaN}; negative and infinite values are rejected.}
+\item{mat}{A base numeric or integer matrix without an extra class, or a
+numeric dense or sparse \link[Matrix:Matrix]{Matrix::Matrix} object. Features must be in rows
+and samples in columns. Row names must be unique and non-empty. Values can
+be non-negative finite numbers, \code{NA}, or \code{NaN}.}
 
-\item{gene_sets}{A non-empty unclassed named list of unclassed character
-vectors. Set names must be unique, non-missing, and non-empty. Member
-identifiers must be non-missing and non-empty; duplicate members are
-deduplicated in first occurrence order.}
+\item{gene_sets}{A non-empty named base list of character vectors. Set names
+and member identifiers must be non-missing and non-empty. Duplicate members
+within a set are used once, in their original order.}
 
 \item{BPPARAM}{A \link[BiocParallel:BiocParallelParam]{BiocParallel::BiocParallelParam} backend. The default is
 the currently registered \code{\link[BiocParallel:bpparam]{BiocParallel::bpparam()}} backend.}
 }
 \value{
-A base numeric matrix with retained gene sets in rows and samples in
-columns. Retained set order, set names, sample order, and existing column
-names are preserved. When every set is omitted, the result has zero rows
-and \code{ncol(mat)} columns.
+A base numeric matrix with scored gene sets in rows and samples in
+columns. Gene-set and sample order are preserved. If no set has at least
+two matched members, the result has zero rows and \code{ncol(mat)} columns.
 }
 \description{
-Convert a non-negative feature-by-sample matrix into sample-wise gene-set
-scores. Every retained gene set and sample is calculated independently.
-Unlike a plain member sum, equal-total patterns can receive different scores
-when their within-set coherence differs.
+Calculate one score for each gene set and sample in a non-negative
+feature-by-sample matrix. Unlike a plain sum, GeneFunnel gives lower scores
+when the observed members of a set disagree.
 }
 \details{
-For the members of one gene set that match matrix rows, \code{NA} and \code{NaN} are
+Gene-set members are matched to matrix row names. \code{NA} and \code{NaN} values are
 removed separately in each sample. Given the remaining values
 \eqn{x_1,\ldots,x_n}, where \eqn{n \ge 2}, the score is
 
@@ -45,30 +41,25 @@ removed separately in each sample. Given the remaining values
 \bar{x}=\frac{1}{n}\sum_{i=1}^{n}x_i.
 }
 
-Zeros are observed values: explicit dense zeros and implicit sparse zeros
-contribute to the effective size, sum, mean, and deviation. Missing values
-are absent information and reduce the sample-specific effective size. A
-cell with fewer than two observed members is returned as \code{NA_real_}.
+Both explicit and implicit sparse zeros count as observed values. A score is
+\code{NA_real_} when fewer than two members remain after missing values are
+removed.
 }
 \section{Matching and coverage}{
 
-Matching against \code{rownames(mat)} is exact and case-sensitive. The function
-performs no identifier conversion or annotation lookup. Unmatched members
-are ignored. Sets with at least two unique matched members are scored; all
-other sets are omitted with at most one aggregate warning. Use
-\code{\link[=gene_set_coverage]{gene_set_coverage()}} to inspect coverage and apply an experiment-specific
-threshold before scoring.
+Matching is exact and case-sensitive. GeneFunnel does not convert identifiers
+or query annotation resources. Unmatched members are ignored. A set is
+scored when at least two unique members match. Use \code{\link[=gene_set_coverage]{gene_set_coverage()}} to
+inspect coverage and choose an appropriate threshold for your experiment.
 }
 
 \section{Interpretation}{
 
-The deviation penalty treats within-set absolute variability as evidence
-against coherent activity. The sum term retains the effects of units,
-library size, preprocessing, gene-set size, and assay coverage. GeneFunnel
-performs no normalization, imputation, identifier mapping, downstream
-testing, or biological interpretation. Scores from unrelated data sets are
-comparable only when units, preprocessing, identifiers, gene-set versions,
-and coverage are compatible.
+The score is high when a set has both a large total signal and similar member
+values. It therefore depends on measurement units, preprocessing, set size,
+and feature coverage. Compare scores across data sets only when these inputs
+are compatible. GeneFunnel does not normalize, impute, test, or interpret the
+data.
 }
 
 \examples{

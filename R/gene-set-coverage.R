@@ -87,7 +87,10 @@
     }
     warning(
         sprintf(
-            "Omitting %d gene set%s with fewer than two unique members ",
+            paste0(
+                "GeneFunnel skipped %d gene set%s because fewer than two ",
+                "unique members "
+            ),
             count,
             if (count == 1L) "" else "s"
         ),
@@ -101,28 +104,25 @@
 
 #' Gene-set coverage diagnostics
 #'
-#' Reports exact, case-sensitive overlap between declared gene-set members and
-#' available features. Duplicate members are counted, then removed while
-#' preserving their first occurrence. The function reports facts only; callers
-#' choose a coverage policy appropriate to their experiment.
+#' Compare the members of each gene set with the available feature names.
+#' Matching is exact and case-sensitive. Duplicate members are counted but used
+#' only once when coverage is calculated.
 #'
-#' @param gene_sets A non-empty unclassed named list of unclassed character
-#'   vectors. Set names must be unique, non-missing, and non-empty. Member
-#'   identifiers must be non-missing and non-empty.
-#' @param features An unclassed character vector of unique, non-missing,
-#'   non-empty feature identifiers, typically `rownames(mat)`.
+#' @param gene_sets A non-empty named base list of character vectors. Set names
+#'   and member identifiers must be non-missing and non-empty.
+#' @param features A base character vector of unique, non-missing, non-empty
+#'   feature identifiers, usually `rownames(mat)`.
 #'
 #' @details
-#' This function uses the same validation, stable member deduplication, and
-#' exact matching rules as [genefunnel()]. It performs no identifier mapping or
-#' case conversion. An empty character vector is a valid declared set: its
-#' coverage is undefined and it is not scoreable.
+#' This function uses the same matching rules as [genefunnel()]. It does not map
+#' identifiers or change case. An empty set is allowed, but its coverage is
+#' `NA` and it cannot be scored.
 #'
 #' @return A data frame with one row per gene set and columns `gene_set`,
 #'   `declared_size` (unique declared members), `matched_size`,
 #'   `unmatched_size`, `coverage`, `duplicate_member_count`, and `scoreable`.
-#'   Coverage is `NA` for an empty declared set; a set is scoreable when at
-#'   least two unique members match.
+#'   Coverage is `NA` for an empty set. A set is scoreable when at least two
+#'   unique members match.
 #'
 #' @seealso [genefunnel()]
 #' @export
