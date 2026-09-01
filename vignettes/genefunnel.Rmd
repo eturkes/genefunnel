@@ -1,7 +1,7 @@
 ---
 title: "GeneFunnel: scientific scoring and practical use"
 author: "Emir Turkes"
-date: "14 July 2026"
+date: "1 September 2026"
 package: genefunnel
 output:
   BiocStyle::html_document:
@@ -44,15 +44,17 @@ source and issue tracker are on the
 
 # Installation
 
-Install the development version from GitHub with Bioconductor-compatible
-dependencies:
+After acceptance, install GeneFunnel from a Bioconductor package repository:
 
 ```{r installation, eval=FALSE}
 if (!requireNamespace("BiocManager", quietly = TRUE)) {
     install.packages("BiocManager")
 }
-BiocManager::install("eturkes/genefunnel")
+BiocManager::install("genefunnel")
 ```
+
+During review, replace the package name with `"eturkes/genefunnel"` to install
+the development repository.
 
 Load the installed package and choose a serial backend for the first examples.
 
@@ -123,6 +125,24 @@ stopifnot(
 Equal values score their sum. All-zero sets and sets with only one non-zero
 member score zero. The missing-pair column scores the observed values `c(1, 2)`
 as 2; the last column has only one observed value and returns `NA`.
+
+# Relationship to existing Bioconductor methods
+
+Gene-set scoring is already supported by several complementary packages.
+[`GSVA`](https://bioconductor.org/packages/GSVA) offers unsupervised gene-set
+transformations whose methods use relative expression or rank information.
+[`singscore`](https://bioconductor.org/packages/singscore) and
+[`UCell`](https://bioconductor.org/packages/UCell) calculate single-sample
+scores from within-sample feature ranks, with UCell using a Mann-Whitney U
+statistic.
+
+GeneFunnel answers a different question. It neither ranks values nor estimates
+a distribution across samples. It applies the fixed
+sum-minus-absolute-deviation formula above independently to each set and
+sample. Consequently, input magnitude, units, gene-set size, and observed
+coverage remain part of the score. These methods are complementary rather than
+interchangeable; choose among them according to the desired invariances and
+interpretation.
 
 # Coverage is caller controlled
 

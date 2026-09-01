@@ -1,9 +1,10 @@
 Package: genefunnel
 Title: Gene Set Activity Scoring with GeneFunnel
-Version: 0.99.0
+Version: 0.99.1
 Authors@R: 
     person("Emir", "Turkes", email = "emir.turkes@eturkes.com",
-        role = c("aut", "cre", "cph"))
+        role = c("aut", "cre", "cph"),
+        comment = c(ORCID = "0000-0002-7447-1476"))
 Description: Computes sample-wise gene set activity scores from non-negative
     feature-by-sample matrices. Each score combines the sum of observed member
     values with a scaled within-set absolute-deviation penalty, independently
@@ -16,6 +17,7 @@ URL: https://github.com/eturkes/genefunnel
 BugReports: https://github.com/eturkes/genefunnel/issues
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
+RoxygenNote: 8.1.0
 Imports:
     methods,
     Matrix,
@@ -32,5 +34,6 @@ LinkingTo:
 VignetteBuilder: knitr
 SystemRequirements: C++17
 Config/testthat/edition: 3
-Config/roxygen2/version: 8.0.0
-biocViews: GeneExpression, GeneSetEnrichment, Proteomics, Transcriptomics
+Config/roxygen2/version: 8.1.0
+biocViews: Coverage, GeneExpression, GeneSetEnrichment, Proteomics,
+    Transcriptomics

@@ -1,3 +1,15 @@
+# genefunnel 0.99.1 (2026-09-01)
+
+## Submission readiness
+
+- Records the maintainer ORCID and the BiocCheck-suggested `Coverage` view.
+- Adds an explicit comparison with complementary Bioconductor gene-set scoring
+  methods and documents the intended invariances of the GeneFunnel score.
+- Removes benchmark-only tooling from the default submission branch so it
+  contains package source only.
+- Regenerates package documentation with the current roxygen2 release and
+  records AI-assisted submission-preparation provenance in source control.
+
 # genefunnel 0.99.0
 
 ## New features

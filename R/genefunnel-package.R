@@ -1,3 +1,5 @@
+# Assisted-by: OpenAI GPT-5.6 Pro
+# Scope: submission-readiness metadata and documentation, 2026-09-01.
 
 #' GeneFunnel gene-set activity scoring
 #'

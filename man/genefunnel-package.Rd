@@ -28,11 +28,11 @@ mathematical and behavioral contract.
 \code{\link[=genefunnel]{genefunnel()}}, \code{\link[=gene_set_coverage]{gene_set_coverage()}}, \code{citation("genefunnel")}
 }
 \author{
-\strong{Maintainer}: Emir Turkes \email{emir.turkes@eturkes.com} [copyright holder]
+\strong{Maintainer}: Emir Turkes \email{emir.turkes@eturkes.com} (\href{https://orcid.org/0000-0002-7447-1476}{ORCID}) [copyright holder]
 
 Authors:
 \itemize{
-  \item Emir Turkes \email{emir.turkes@eturkes.com} [copyright holder]
+  \item Emir Turkes \email{emir.turkes@eturkes.com} (\href{https://orcid.org/0000-0002-7447-1476}{ORCID}) [copyright holder]
 }
 
 }

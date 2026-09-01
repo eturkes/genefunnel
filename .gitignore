@@ -8,6 +8,7 @@
 
 # RStudio state
 .Rproj.user/
+*.Rproj
 
 # Package build and check output
 /*.tar.gz

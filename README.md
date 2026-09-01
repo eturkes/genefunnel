@@ -19,6 +19,12 @@ if (!requireNamespace("BiocManager", quietly = TRUE)) {
 BiocManager::install("eturkes/genefunnel")
 ```
 
+After acceptance, install the Bioconductor package with:
+
+```r
+BiocManager::install("genefunnel")
+```
+
 ## Quick start
 
 ```r
@@ -76,9 +82,8 @@ an arbitrary positive shift changes the score and is not a valid workaround.
   coverage semantics, invariants, and limitations.
 - [Vignette](vignettes/genefunnel.Rmd) - canonical examples, dense/sparse use,
   coverage policies, and serial/parallel execution.
-- [Benchmark protocol](https://github.com/eturkes/genefunnel/blob/main/benchmark/README.md)
-  - controlled scientific assertions plus reproducible timing, memory,
-  output-identity, and environment evidence.
+- [Tests](tests/testthat) - deterministic formula, coverage, dense/sparse,
+  serial/parallel, randomized-oracle, and validation checks.
 
 After installation, run `vignette("genefunnel", package = "genefunnel")` or
 `citation("genefunnel")`.
