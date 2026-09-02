@@ -180,39 +180,47 @@ when agreement within the set is part of the biological question. The example
 explains the mathematical difference; it does not show that one method is best
 for every analysis.
 
-# A pipeline example: prioritizing coherent hits
+# Research use case: triaging compounds by an interferon-response panel
 
-Consider a perturbation screen that sends promising samples to an expensive
-validation assay. Upstream steps have produced comparable non-negative values,
-mapped identifiers, and established that zero has a meaningful interpretation.
-The screen measures one four-member response program.
+Consider a translational screen in patient-derived melanoma cultures. The team
+uses a four-gene interferon-response panel before costly single-cell validation.
+The values below are synthetic, plate-normalised, background-subtracted signal
+units. Zero means that the targeted assay detected no signal.
 
-The example applies the same threshold of 10 to either total signal or the
-GeneFunnel response-program score. This threshold illustrates the decision
-point; it is not a package default.
+The positive control and three candidate wells have the same total panel
+signal. Their within-panel patterns differ. The example applies a threshold of
+10 to either the total signal or the GeneFunnel score. This threshold only
+illustrates a triage decision; it is not a package default.
 
 ```{r screening-pipeline}
 screen_assay <- rbind(
-    marker_1 = c(
+    ISG15 = c(
         vehicle = 1,
-        coherent_hit = 3,
-        partial_hit = 6,
-        single_feature_spike = 12
+        IFNB_control = 3,
+        compound_GF17 = 3,
+        compound_GF42 = 6,
+        compound_GF93 = 12
     ),
-    marker_2 = c(1, 3, 6, 0),
-    marker_3 = c(1, 3, 0, 0),
-    marker_4 = c(1, 3, 0, 0)
+    IFIT1 = c(1, 3, 3, 6, 0),
+    MX1 = c(1, 3, 3, 0, 0),
+    OAS1 = c(1, 3, 3, 0, 0)
+)
+screen_samples <- data.frame(
+    sample = colnames(screen_assay),
+    treatment = c("Vehicle", "IFN-β control", "GF-17", "GF-42", "GF-93"),
+    role = c("negative control", "positive control", rep("candidate", 3)),
+    stringsAsFactors = FALSE
 )
 screen_scores <- genefunnel(
     screen_assay,
-    list(response_program = rownames(screen_assay)),
+    list(interferon_response = rownames(screen_assay)),
     BPPARAM = serial
 )
 screen_total <- unname(colSums(screen_assay))
-response_score <- unname(screen_scores["response_program", ])
+response_score <- unname(screen_scores["interferon_response", ])
 
 screen_decisions <- data.frame(
-    sample = colnames(screen_assay),
+    screen_samples,
     total_signal = screen_total,
     genefunnel_score = response_score,
     advance_by_sum = screen_total >= 10,
@@ -224,6 +232,8 @@ knitr::kable(
     digits = 3,
     col.names = c(
         "Sample",
+        "Treatment",
+        "Role",
         "Total signal",
         "GeneFunnel score",
         "Sum gate",
@@ -234,29 +244,32 @@ knitr::kable(
 
 ```{r screening-pipeline-check, include=FALSE}
 stopifnot(
-    identical(screen_decisions$total_signal, c(4, 12, 12, 12)),
-    identical(screen_decisions$genefunnel_score, c(4, 12, 4, 0)),
+    identical(screen_decisions$total_signal, c(4, 12, 12, 12, 12)),
+    identical(screen_decisions$genefunnel_score, c(4, 12, 12, 4, 0)),
     identical(
         screen_decisions$advance_by_sum,
-        c(FALSE, TRUE, TRUE, TRUE)
+        c(FALSE, TRUE, TRUE, TRUE, TRUE)
     ),
     identical(
         screen_decisions$advance_by_genefunnel,
-        c(FALSE, TRUE, FALSE, FALSE)
+        c(FALSE, TRUE, TRUE, FALSE, FALSE)
     )
 )
 ```
 
-The sum gate advances all three candidate hits because their totals are equal.
-The GeneFunnel gate advances only `coherent_hit`; the partial response and the
-single-feature spike no longer tie with a coordinated program. In a larger
-pipeline, every declared set becomes one row of the score matrix. That matrix
-can be transposed, joined to sample metadata, and passed to the next analysis
-stage without carrying every member as a separate feature.
+The positive control passes both gates. The sum gate also advances every
+candidate because their totals are equal. Among candidates, the GeneFunnel gate
+advances only GF-17, whose four markers rise together. GF-42 has a two-marker
+response, and GF-93 is driven by `ISG15` alone.
 
-This example demonstrates a possible pipeline benefit, not a validated
-screening rule. Select thresholds and downstream models for the experiment, and
-compare GeneFunnel with suitable alternatives.
+In a larger screen, every declared panel becomes one score-matrix row. The team
+can transpose that matrix, join it to plate metadata, and rank candidates for
+validation without carrying every marker into the decision table.
+
+The gene names and values are illustrative. This example demonstrates workflow,
+not a validated interferon panel or screening rule. Select thresholds and
+downstream models for the experiment, and compare GeneFunnel with suitable
+alternatives.
 
 # Choosing between GeneFunnel and rank-based methods
 
