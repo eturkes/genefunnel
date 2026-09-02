@@ -2,3 +2,12 @@
 #TOC .toc-section-number {
     display: none;
 }
+
+.horizontal-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.horizontal-scroll > table {
+    margin-right: 0;
+}

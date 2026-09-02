@@ -115,7 +115,11 @@ canonical_scores <- genefunnel(
     canonical_sets,
     BPPARAM = serial
 )
-knitr::kable(canonical_scores, digits = 3)
+knitr::kable(
+    canonical_scores,
+    digits = 3,
+    col.names = c("Equal", "Zeros", "One non-zero", "Missing pair", "One observed")
+)
 
 stopifnot(
     identical(
@@ -157,7 +161,11 @@ same_total_comparison <- data.frame(
     genefunnel_score = unname(same_total_scores["pathway", ]),
     check.names = FALSE
 )
-knitr::kable(same_total_comparison, digits = 3)
+knitr::kable(
+    same_total_comparison,
+    digits = 3,
+    col.names = c("Pattern", "Observed sum", "GeneFunnel score")
+)
 
 stopifnot(
     identical(same_total_comparison$observed_sum, c(12, 12, 12)),
@@ -211,7 +219,17 @@ screen_decisions <- data.frame(
     advance_by_genefunnel = response_score >= 10,
     check.names = FALSE
 )
-knitr::kable(screen_decisions, digits = 3)
+knitr::kable(
+    screen_decisions,
+    digits = 3,
+    col.names = c(
+        "Sample",
+        "Total signal",
+        "GeneFunnel score",
+        "Sum gate",
+        "GeneFunnel gate"
+    )
+)
 ```
 
 ```{r screening-pipeline-check, include=FALSE}
@@ -270,7 +288,19 @@ catalogue <- list(
     insufficient = c("A", "Z")
 )
 coverage <- gene_set_coverage(catalogue, rownames(canonical))
-knitr::kable(coverage, digits = 3)
+knitr::kable(
+    coverage,
+    digits = 3,
+    col.names = c(
+        "Gene set",
+        "Declared",
+        "Matched",
+        "Unmatched",
+        "Coverage",
+        "Duplicates",
+        "Scoreable"
+    )
+)
 ```
 
 GeneFunnel can score a set whenever at least two unique members match. It does
@@ -296,7 +326,11 @@ relaxed_scores <- genefunnel(
     catalogue[relaxed],
     BPPARAM = serial
 )
-knitr::kable(relaxed_scores, digits = 3)
+knitr::kable(
+    relaxed_scores,
+    digits = 3,
+    col.names = c("Equal", "Zeros", "One non-zero", "Missing pair", "One observed")
+)
 ```
 
 These thresholds are examples rather than package recommendations. Record the
