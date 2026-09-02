@@ -94,388 +94,268 @@ observed value, including an implicit sparse zero, so it participates in $n$,
 the sum, the mean, and the deviation. Infinities and negative values are
 invalid.
 
-These small examples show the main edge cases.
+The controlled panel below follows the exploratory logic used to motivate the
+method. It holds total signal constant while changing within-set dispersion, and
+it distinguishes observed zeros from unavailable measurements.
 
-```{r canonical}
-canonical <- matrix(
-    c(4, 4, 4, 0, 0, 0, 4, 0, 0, 1, 2, NA, 4, NA, NA),
-    nrow = 3,
-    dimnames = list(
-        c("A", "B", "C"),
-        c("equal", "zeros", "one_nonzero", "missing_pair", "one_observed")
-    )
-)
-canonical_sets <- list(
-    three_members = c("A", "B", "C"),
-    two_members = c("A", "B")
-)
+# Controlled expression patterns
 
-canonical_scores <- genefunnel(
-    canonical,
-    canonical_sets,
+Ten features form two five-member modules and one broader program. The six
+samples represent deliberately different expression patterns rather than
+biological replicates.
+
+```{r controlled-patterns}
+pattern_assay <- rbind(
+    gene_A = c(38, 0, 80, 80, 80, 80),
+    gene_B = c(41, 0, 80, 80, 80, 0),
+    gene_C = c(39, 92, 80, 80, 80, 0),
+    gene_D = c(42, 4, 80, 80, 80, 0),
+    gene_E = c(40, 112, 80, 80, 80, 0),
+    gene_F = c(37, 82, 80, NA, 0, 0),
+    gene_G = c(43, 5, 80, NA, 0, 0),
+    gene_H = c(40, 18, 80, NA, 0, 0),
+    gene_I = c(41, 85, 80, NA, 0, 0),
+    gene_J = c(39, 2, 80, NA, 0, 0)
+)
+colnames(pattern_assay) <- c(
+    "coherent",
+    "same_total_dispersed",
+    "uniform_high",
+    "partial_observation",
+    "half_active",
+    "single_driver"
+)
+pattern_sets <- list(
+    module_A = rownames(pattern_assay)[1:5],
+    module_B = rownames(pattern_assay)[6:10],
+    broad_program = rownames(pattern_assay)
+)
+pattern_scores <- genefunnel(
+    pattern_assay,
+    pattern_sets,
     BPPARAM = serial
 )
-knitr::kable(
-    canonical_scores,
-    digits = 3,
-    col.names = c("Equal", "Zeros", "One non-zero", "Missing pair", "One observed")
-)
 
-stopifnot(
-    identical(
-        unname(canonical_scores["three_members", ]),
-        c(12, 0, 0, 2, NA_real_)
-    ),
-    identical(
-        unname(canonical_scores["two_members", ]),
-        c(8, 0, 0, 2, NA_real_)
+knitr::kable(
+    pattern_assay,
+    digits = 0,
+    col.names = c(
+        "Coherent",
+        "Same total, dispersed",
+        "Uniform high",
+        "Partial observation",
+        "Half active",
+        "Single driver"
     )
 )
 ```
 
-Equal values score their sum. All-zero sets and sets with only one non-zero
-member score zero. The missing-pair column scores the observed values `c(1, 2)`
-as 2; the last column has only one observed value and returns `NA`.
+The following diagnostics expose the calculation for the broad program. The
+scaled deviation is the complete penalty subtracted from the observed total.
 
-# Why the penalty matters
+```{r controlled-pattern-diagnostics}
+pattern_diagnostics <- t(vapply(
+    seq_len(ncol(pattern_assay)),
+    function(column_index) {
+        observed <- pattern_assay[, column_index]
+        observed <- observed[!is.na(observed)]
+        member_count <- length(observed)
+        total <- sum(observed)
+        average <- mean(observed)
+        scaled_deviation <- member_count / (2 * (member_count - 1)) *
+            sum(abs(observed - average))
 
-A plain member sum cannot distinguish the same total distributed across every
-member from a total concentrated in one or two members. The following three
-samples all sum to 12.
-
-```{r same-total}
-same_total <- rbind(
-    A = c(coherent = 3, split = 6, concentrated = 12),
-    B = c(coherent = 3, split = 6, concentrated = 0),
-    C = c(coherent = 3, split = 0, concentrated = 0),
-    D = c(coherent = 3, split = 0, concentrated = 0)
-)
-same_total_scores <- genefunnel(
-    same_total,
-    list(pathway = rownames(same_total)),
-    BPPARAM = serial
-)
-same_total_comparison <- data.frame(
-    pattern = colnames(same_total),
-    observed_sum = unname(colSums(same_total)),
-    genefunnel_score = unname(same_total_scores["pathway", ]),
-    check.names = FALSE
-)
-knitr::kable(
-    same_total_comparison,
-    digits = 3,
-    col.names = c("Pattern", "Observed sum", "GeneFunnel score")
-)
-
-stopifnot(
-    identical(same_total_comparison$observed_sum, c(12, 12, 12)),
-    identical(same_total_comparison$genefunnel_score, c(12, 4, 0))
-)
-```
-
-GeneFunnel gives full credit to the coherent sample, partial credit to the
-two-member split, and zero to the single-feature concentration. This is the
-information added by the absolute-deviation penalty. The score is most useful
-when agreement within the set is part of the biological question. The example
-explains the mathematical difference; it does not show that one method is best
-for every analysis.
-
-# Real-data example: presynaptic expression across Braak stages
-
-The [GSE125583](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE125583)
-series was released in 2019 and accompanies
-[Srinivasan et al. (2020)](https://doi.org/10.1016/j.celrep.2020.107843). It
-contains processed bulk RNA-seq from fusiform gyrus tissue of 70 neurologically
-normal controls and 219 autopsy-confirmed Alzheimer's disease subjects. GEO
-records diagnosis, age, sex, and Braak stage; 287 of the 289 subjects have a
-reported stage.
-
-The per-sample processed tables contain size-factor-adjusted RPKM (`nRPKM`) and
-raw counts. This vignette embeds the nRPKM values for all subjects and six genes:
-`SYN1`, `SYN2`, `SYP`, `SNAP25`, `STX1A`, and `VAMP2`. The source repository's
-`data-raw/build-gse125583-example.R` script regenerates the 43 kB fixture from
-checksum-verified GEO archives.
-
-The synapsins and synaptophysin represent synaptic-vesicle organization, while
-`SNAP25`, `STX1A`, and `VAMP2` form core presynaptic fusion machinery. Together
-they provide a compact, fixed presynaptic-release panel. It is an illustrative
-panel, not a validated Alzheimer's disease signature or a complete pathway.
-Each gene is divided by its median nRPKM among the 70 controls before scoring.
-This places the six positive trajectories on a common, non-negative relative
-scale; GeneFunnel does not perform that preprocessing itself.
-
-```{r gse125583-pipeline}
-gse125583_path <- system.file(
-    "extdata",
-    "GSE125583_presynaptic_release.csv",
-    package = "genefunnel"
-)
-stopifnot(nzchar(gse125583_path))
-gse125583 <- utils::read.csv(
-    gse125583_path,
-    check.names = FALSE,
-    stringsAsFactors = FALSE
-)
-
-presynaptic_genes <- c("SYN1", "SYN2", "SYP", "SNAP25", "STX1A", "VAMP2")
-presynaptic_gene_ids <- c(
-    SYN1 = 6853L,
-    SYN2 = 6854L,
-    SYP = 6855L,
-    SNAP25 = 6616L,
-    STX1A = 6804L,
-    VAMP2 = 6844L
-)
-gse125583_expression <- t(as.matrix(gse125583[presynaptic_genes]))
-colnames(gse125583_expression) <- gse125583$sample
-storage.mode(gse125583_expression) <- "double"
-
-control_columns <- gse125583$diagnosis == "control"
-control_medians <- apply(
-    gse125583_expression[, control_columns, drop = FALSE],
-    1L,
-    median
-)
-gse125583_relative <- sweep(
-    gse125583_expression,
-    1L,
-    control_medians,
-    "/"
-)
-gse125583_scores <- genefunnel(
-    gse125583_relative,
-    list(presynaptic_release = presynaptic_genes),
-    BPPARAM = serial
-)
-presynaptic_total <- unname(colSums(gse125583_relative))
-presynaptic_score <- unname(gse125583_scores["presynaptic_release", ])
-braak_available <- !is.na(gse125583$braak)
-
-gene_summary <- data.frame(
-    gene = presynaptic_genes,
-    entrez_gene_id = unname(presynaptic_gene_ids[presynaptic_genes]),
-    control_median_nrpkm = unname(control_medians[presynaptic_genes]),
-    check.names = FALSE
-)
-knitr::kable(
-    gene_summary,
-    digits = 1,
-    col.names = c("Gene", "NCBI Gene ID", "Control median nRPKM")
-)
-
-association_summary <- data.frame(
-    measure = c("Pearson correlation", "Spearman correlation"),
-    six_gene_total = c(
-        cor(presynaptic_total[braak_available], gse125583$braak[braak_available]),
-        cor(
-            presynaptic_total[braak_available],
-            gse125583$braak[braak_available],
-            method = "spearman"
+        c(
+            observed_members = member_count,
+            total = total,
+            mean = average,
+            scaled_deviation = scaled_deviation,
+            genefunnel_score =
+                pattern_scores["broad_program", column_index]
         )
-    ),
-    genefunnel_score = c(
-        cor(presynaptic_score[braak_available], gse125583$braak[braak_available]),
-        cor(
-            presynaptic_score[braak_available],
-            gse125583$braak[braak_available],
-            method = "spearman"
-        )
-    ),
+    },
+    numeric(5L)
+))
+pattern_diagnostics <- data.frame(
+    pattern = colnames(pattern_assay),
+    pattern_diagnostics,
     check.names = FALSE
 )
+rownames(pattern_diagnostics) <- NULL
 knitr::kable(
-    association_summary,
+    pattern_diagnostics,
     digits = 3,
     col.names = c(
-        "Association with Braak stage",
-        "Six-gene total",
+        "Pattern",
+        "Observed members",
+        "Total",
+        "Mean",
+        "Scaled deviation",
         "GeneFunnel score"
     )
 )
+
+stopifnot(isTRUE(all.equal(
+    unname(pattern_scores["broad_program", ]),
+    c(3530 / 9, 1490 / 9, 800, 400, 1600 / 9, 0),
+    tolerance = 1e-10
+)))
 ```
 
-```{r gse125583-figure, echo=FALSE, fig.width=7.5, fig.height=4.4, fig.cap="Presynaptic expression across Braak stages in GSE125583 fusiform gyrus. A, median control-scaled nRPKM for each selected gene at stages I-VI. B, individual six-gene GeneFunnel scores; black diamonds and lines show stage medians. The display is descriptive and does not fit a disease model."}
-braak_stages <- 1:6
-braak_labels <- c("I", "II", "III", "IV", "V", "VI")
-gene_colours <- c(
-    "#4477AA", "#66CCEE", "#228833", "#CCBB44", "#EE6677", "#AA3377"
-)
-gene_symbols <- c(16, 17, 15, 18, 8, 3)
-diagnosis_colours <- c(control = "#4477AA", "Alzheimer's disease" = "#CC6677")
-diagnosis_symbols <- c(control = 16, "Alzheimer's disease" = 17)
+The coherent and dispersed samples each total 400. The coherent sample has only
+small feature-to-feature differences, so its score remains close to 400. The
+dispersed sample contains the same total in a mixture of high values and zeros;
+its larger deviation penalty reduces the score to 165.6.
 
-stage_gene_medians <- vapply(
-    braak_stages,
-    function(stage) {
-        stage_columns <- which(gse125583$braak == stage)
-        apply(
-            gse125583_relative[, stage_columns, drop = FALSE],
-            1L,
-            median
-        )
-    },
-    numeric(length(presynaptic_genes))
+The uniformly high sample has no deviation and therefore scores its full total
+of 800. The partial-observation sample contains five observed values of 80 and
+five `NA` values. GeneFunnel omits the unavailable values, uses an effective set
+size of five, and scores the observed total of 400. In contrast, the zeros in the
+half-active and single-driver samples remain observed evidence. Half activation
+receives partial credit, while one non-zero feature among nine zeros gives the
+maximally dispersed score of zero.
+
+# A narrower set can explain partial activity
+
+The same panel can be scored against nested definitions. In the half-active
+sample, every member of module A is measured at 80, while every member of module
+B is zero.
+
+```{r nested-sets}
+nested_comparison <- data.frame(
+    gene_set = rownames(pattern_scores),
+    half_active_score = unname(pattern_scores[, "half_active"]),
+    check.names = FALSE
 )
-stage_score_medians <- vapply(
-    braak_stages,
-    function(stage) {
-        median(presynaptic_score[which(gse125583$braak == stage)])
-    },
-    numeric(1L)
+knitr::kable(
+    nested_comparison,
+    digits = 3,
+    col.names = c("Gene set", "Score in half-active sample")
 )
 
-old_par <- par(no.readonly = TRUE)
-layout(matrix(c(1, 2), nrow = 1), widths = c(1.15, 1))
+stopifnot(isTRUE(all.equal(
+    nested_comparison$half_active_score,
+    c(400, 0, 1600 / 9),
+    tolerance = 1e-10
+)))
+```
 
-par(
-    mar = c(4.7, 4.2, 2.2, 0.8),
-    mgp = c(2.5, 0.7, 0),
-    las = 1,
-    bty = "l"
-)
-matplot(
-    braak_stages,
-    t(stage_gene_medians),
-    type = "o",
-    pch = gene_symbols,
-    lty = 1,
-    lwd = 1.3,
-    col = gene_colours,
-    xaxt = "n",
-    xlab = "Braak stage",
-    ylab = "Median expression / control median",
-    ylim = range(c(1, stage_gene_medians))
-)
-axis(1, at = braak_stages, labels = braak_labels)
-abline(h = 1, col = "#B3B3B3", lty = 3)
-legend(
-    "topright",
-    legend = presynaptic_genes,
-    col = gene_colours,
-    pch = gene_symbols,
-    lty = 1,
-    bty = "n",
-    cex = 0.72,
-    ncol = 2
-)
-mtext("A  Selected-gene medians", side = 3, adj = 0, font = 2)
+Module A scores its full total, module B scores zero, and the broader program is
+penalized because only half of its members are active. This mirrors a useful
+interpretive property of the method: a specific active module can explain a
+partial signal better than an encompassing set. The sets should still be
+predeclared. The example is not a reason to search adaptively for whichever
+subset gives the largest score.
 
-par(
-    mar = c(4.7, 4.2, 2.2, 0.8),
-    mgp = c(2.5, 0.7, 0),
-    las = 1,
-    bty = "l"
+# Controlled gene-set perturbations
+
+A second experiment separates two changes that can produce a higher score. It
+starts from one synthetic sample and makes a modified copy. For the six-member
+assembly set, the modified values are all set to their original mean. Its total
+stays fixed while its within-set variation disappears. For the five-member
+receptor set, every value increases by 40 while its variation stays unchanged.
+Three background features are not members of either primary set.
+
+```{r controlled-perturbations}
+assembly_members <- paste0("assembly_", seq_len(6L))
+receptor_members <- paste0("receptor_", seq_len(5L))
+background_members <- paste0("background_", seq_len(3L))
+
+original_values <- c(
+    setNames(c(10, 25, 40, 55, 70, 100), assembly_members),
+    setNames(c(28, 31, 30, 29, 32), receptor_members),
+    setNames(c(18, 44, 65), background_members)
 )
-plot(
-    NA,
-    xlim = c(0.65, 6.35),
-    ylim = c(0, max(presynaptic_score) * 1.04),
-    xaxt = "n",
-    xlab = "Braak stage",
-    ylab = "GeneFunnel score"
+modified_values <- original_values
+modified_values[assembly_members] <- mean(original_values[assembly_members])
+modified_values[receptor_members] <-
+    original_values[receptor_members] + 40
+
+perturbation_assay <- cbind(
+    original = original_values,
+    modified = modified_values
 )
-axis(1, at = braak_stages, labels = braak_labels)
-for (stage in braak_stages) {
-    sample_indices <- which(gse125583$braak == stage)
-    offsets <- seq(-0.18, 0.18, length.out = length(sample_indices))
-    sample_diagnoses <- gse125583$diagnosis[sample_indices]
-    points(
-        stage + offsets,
-        presynaptic_score[sample_indices],
-        pch = unname(diagnosis_symbols[sample_diagnoses]),
-        col = grDevices::adjustcolor(
-            unname(diagnosis_colours[sample_diagnoses]),
-            alpha.f = 0.55
-        ),
-        cex = 0.72
+perturbation_sets <- list(
+    complex_assembly = assembly_members,
+    receptor_activity = receptor_members,
+    overlapping_response = c(
+        assembly_members[5:6],
+        receptor_members[1:3]
     )
-}
-lines(braak_stages, stage_score_medians, col = "#222222", lwd = 1.5)
-points(
-    braak_stages,
-    stage_score_medians,
-    pch = 18,
-    col = "#222222",
-    cex = 1.05
 )
-legend(
-    "topright",
-    legend = c("Control", "Alzheimer's disease", "Stage median"),
-    col = c(unname(diagnosis_colours), "#222222"),
-    pch = c(unname(diagnosis_symbols), 18),
-    bty = "n",
-    cex = 0.72
+perturbation_scores <- genefunnel(
+    perturbation_assay,
+    perturbation_sets,
+    BPPARAM = serial
 )
-mtext("B  Panel score", side = 3, adj = 0, font = 2)
 
-layout(1)
-par(old_par)
+knitr::kable(
+    perturbation_assay,
+    digits = 0,
+    col.names = c("Original", "Modified")
+)
 ```
 
-```{r gse125583-pipeline-check, include=FALSE}
+```{r controlled-perturbation-diagnostics}
+perturbation_diagnostics <- do.call(
+    rbind,
+    lapply(names(perturbation_sets), function(set_name) {
+        members <- perturbation_sets[[set_name]]
+        totals <- colSums(perturbation_assay[members, , drop = FALSE])
+        scores <- perturbation_scores[set_name, ]
+
+        data.frame(
+            gene_set = set_name,
+            sample = colnames(perturbation_assay),
+            total = unname(totals),
+            scaled_deviation = unname(totals - scores),
+            genefunnel_score = unname(scores),
+            check.names = FALSE
+        )
+    })
+)
+rownames(perturbation_diagnostics) <- NULL
+knitr::kable(
+    perturbation_diagnostics,
+    digits = 2,
+    col.names = c(
+        "Gene set",
+        "Sample",
+        "Total",
+        "Scaled deviation",
+        "GeneFunnel score"
+    )
+)
+
 stopifnot(
-    identical(dim(gse125583_expression), c(6L, 289L)),
     identical(
-        as.integer(table(gse125583$diagnosis)[
-            c("Alzheimer's disease", "control")
-        ]),
-        c(219L, 70L)
+        unname(colSums(perturbation_assay[assembly_members, ])),
+        c(300, 300)
     ),
-    sum(braak_available) == 287L,
-    all(gse125583_expression > 0),
     isTRUE(all.equal(
-        control_medians,
-        c(
-            SYN1 = 119.521414801991,
-            SYN2 = 53.495229040887,
-            SYP = 230.823767700279,
-            SNAP25 = 547.602073827910,
-            STX1A = 68.824085690708,
-            VAMP2 = 231.024436070715
-        ),
+        unname(perturbation_scores["complex_assembly", ]),
+        c(210, 300),
         tolerance = 1e-10
     )),
     isTRUE(all.equal(
-        apply(
-            gse125583_relative[, control_columns, drop = FALSE],
-            1L,
-            median
-        ),
-        stats::setNames(rep(1, 6), presynaptic_genes),
-        tolerance = 1e-12
-    )),
-    isTRUE(all.equal(
-        presynaptic_score[c(1, 13, 101, 289)],
-        c(3.11895741616489, 5.76116235839454, 5.17394506339094,
-            7.02428095444394),
-        tolerance = 1e-10
-    )),
-    isTRUE(all.equal(
-        cor(
-            presynaptic_score[braak_available],
-            gse125583$braak[braak_available],
-            method = "spearman"
-        ),
-        -0.4092210329,
+        unname(perturbation_scores["receptor_activity", ]),
+        c(146.25, 346.25),
         tolerance = 1e-10
     ))
 )
 ```
 
-Across the 287 subjects with a recorded stage, the GeneFunnel score has a
-Spearman correlation of -0.409 with Braak stage; the plain six-gene total has a
-correlation of -0.393. The stage-median score decreases from 6.39 at stage I to
-1.93 at stage VI, although adjacent stages are not strictly monotonic.
-GeneFunnel's contribution is the sample-specific disagreement penalty, not a
-claim that this compact panel has a materially stronger pathology association
-than its sum.
+The assembly score rises from 210 to 300 without any change in its total. The
+change is entirely due to greater coherence. The receptor score rises by 200
+because its total rises by 200 and its deviation penalty remains 3.75. The
+overlapping response also changes because it shares members with both modified
+sets, but every set is still calculated independently.
 
-The result is descriptive. Braak stage and diagnosis are closely related in
-this autopsy cohort, and the calculation does not adjust for age, sex, technical
-variation, or tissue cell composition. It also does not fit or test an
-association. A full analysis should predeclare a complete gene set and
-preprocessing plan, assess coverage, and use an appropriate downstream model.
-The six-gene panel is an inspectable scoring example, not a biomarker.
+This controlled design reflects two questions that appear in practical
+analyses: did the members move together, and did their combined magnitude
+change? GeneFunnel can register either effect in its sample-wise score. A
+subsequent model is still required to estimate uncertainty or test differences
+between biological groups.
 
 # Choosing between GeneFunnel and rank-based methods
 
@@ -501,12 +381,12 @@ observed zero. `gene_set_coverage()` exposes these facts before scoring.
 
 ```{r coverage}
 catalogue <- list(
-    complete = c("A", "B"),
-    partial = c("A", "B", "D"),
-    duplicated = c("A", "A", "B"),
-    insufficient = c("A", "Z")
+    complete_module = rownames(pattern_assay)[1:5],
+    partial_catalogue = c("gene_A", "gene_B", "gene_C", "gene_K"),
+    duplicated_members = c("gene_A", "gene_A", "gene_B"),
+    insufficient = c("gene_A", "gene_Z")
 )
-coverage <- gene_set_coverage(catalogue, rownames(canonical))
+coverage <- gene_set_coverage(catalogue, rownames(pattern_assay))
 knitr::kable(
     coverage,
     digits = 3,
@@ -541,14 +421,21 @@ relaxed <- !is.na(coverage$coverage) &
 names(catalogue[relaxed])
 
 relaxed_scores <- genefunnel(
-    canonical,
+    pattern_assay,
     catalogue[relaxed],
     BPPARAM = serial
 )
 knitr::kable(
     relaxed_scores,
     digits = 3,
-    col.names = c("Equal", "Zeros", "One non-zero", "Missing pair", "One observed")
+    col.names = c(
+        "Coherent",
+        "Same total, dispersed",
+        "Uniform high",
+        "Partial observation",
+        "Half active",
+        "Single driver"
+    )
 )
 ```
 
@@ -562,16 +449,16 @@ Stored sparse `NA` and `NaN` values follow the same sample-specific omission
 rule as dense missing values.
 
 ```{r sparse}
-sparse_canonical <- Matrix::Matrix(canonical, sparse = TRUE)
-sparse_scores <- genefunnel(
-    sparse_canonical,
-    canonical_sets,
+pattern_sparse <- Matrix::Matrix(pattern_assay, sparse = TRUE)
+pattern_sparse_scores <- genefunnel(
+    pattern_sparse,
+    pattern_sets,
     BPPARAM = serial
 )
 
 isTRUE(all.equal(
-    sparse_scores,
-    canonical_scores,
+    pattern_sparse_scores,
+    pattern_scores,
     tolerance = 0,
     check.attributes = TRUE
 ))
@@ -594,11 +481,11 @@ sock <- BiocParallel::bpstart(BiocParallel::SnowParam(
     progressbar = FALSE
 ))
 parallel_scores <- tryCatch(
-    genefunnel(canonical, canonical_sets, BPPARAM = sock),
+    genefunnel(pattern_assay, pattern_sets, BPPARAM = sock),
     finally = BiocParallel::bpstop(sock)
 )
 
-identical(parallel_scores, canonical_scores)
+identical(parallel_scores, pattern_scores)
 ```
 
 Process startup and data transfer can outweigh parallel work on small inputs.
