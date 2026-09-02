@@ -41,6 +41,12 @@ perturbation_benchmark_caption <- paste(
     "perturbations. The assembly total is held fixed, whereas receptor magnitude",
     "is increased."
 )
+gse129308_caption <- paste(
+    "Paired GeneFunnel scores for four illustrative panels in GSE129308.",
+    "Each line joins MAP2-sorted NFT-free and AT8-sorted NFT-bearing neurons",
+    "from one Alzheimer's disease donor. Scores use donor-population",
+    "pseudobulk log2(CPM + 1) and are descriptive."
+)
 ```
 
 # Introduction
@@ -544,6 +550,257 @@ analyses: did the members move together, and did their combined magnitude
 change? GeneFunnel can register either effect in its sample-wise score. A
 subsequent model is still required to estimate uncertainty or test differences
 between biological groups.
+
+# Real-data case study: NFT-bearing neurons
+
+The thesis applied GeneFunnel to molecular changes in neurofibrillary
+tangle-bearing neurons. A public component of that work reanalysed
+[GSE129308](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE129308), the
+single-soma transcriptomic study reported by
+[Otero-Garcia et al.](https://doi.org/10.1016/j.neuron.2022.06.021). The study
+paired AT8-sorted NFT-bearing neurons with neighbouring MAP2-sorted NFT-free
+neurons from eight Braak stage VI Alzheimer's disease donors.
+
+Package vignettes must build without downloading hundreds of megabytes. The
+installed fixture therefore contains selected-gene UMI totals aggregated from
+the 16 deposited Cell Ranger-filtered matrices. It records one MAP2 and one AT8
+aggregate per donor, together with the number of deposited barcodes and total
+library size. The source repository includes a checksum-verified regeneration
+script under `data-raw/`.
+
+The compact workflow below converts each aggregate to counts per million and
+then calculates `log2(CPM + 1)`. This preserves non-negative values while
+adjusting for library size. The full thesis workflow instead scored individual
+somas before donor-level pseudobulk aggregation and included additional quality
+control. This vignette is a practical package example, not a reproduction of
+that analysis.
+
+Four illustrative panels connect the fixture to thesis themes. The first uses
+the eight hub genes prioritised in the integrated analysis. The others sample
+protein-folding, postsynaptic-structure, and synaptic-vesicle biology discussed
+there. They are compact teaching panels, not canonical ontology definitions.
+
+```{r gse129308-data}
+gse129308_gene_sets <- list(
+    thesis_hubs = c(
+        "NEFM", "APP", "SQSTM1", "HSP90AA1",
+        "YWHAE", "WASF1", "CNTNAP1", "GOT2"
+    ),
+    protein_folding = c(
+        "HSP90AA1", "HSP90AB1", "HSPA8", "CCT2", "CCT3", "CCT4",
+        "CCT5", "CCT6A", "CCT7", "CCT8", "TCP1"
+    ),
+    postsynaptic_structure = c(
+        "NEFM", "WASF1", "CNTNAP1", "DLG4", "SHANK1", "SHANK2",
+        "SHANK3", "ACTB", "TUBB", "TUBB3"
+    ),
+    synaptic_vesicle_release = c("SYN1", "SYP", "SNAP25", "STX1A", "VAMP2")
+)
+gse129308_genes <- unique(unlist(gse129308_gene_sets, use.names = FALSE))
+gse129308_path <- system.file(
+    "extdata",
+    "GSE129308_AD_pseudobulk_counts.csv",
+    package = "genefunnel"
+)
+stopifnot(nzchar(gse129308_path))
+gse129308 <- utils::read.csv(
+    gse129308_path,
+    check.names = FALSE,
+    stringsAsFactors = FALSE
+)
+stopifnot(all(gse129308_genes %in% names(gse129308)))
+
+gse129308_counts <- t(as.matrix(
+    gse129308[, gse129308_genes, drop = FALSE]
+))
+colnames(gse129308_counts) <- gse129308$sample
+storage.mode(gse129308_counts) <- "double"
+gse129308_cpm <- sweep(
+    gse129308_counts,
+    2L,
+    gse129308$library_size,
+    "/"
+) * 1e6
+gse129308_expression <- log2(gse129308_cpm + 1)
+
+gse129308_coverage <- gene_set_coverage(
+    gse129308_gene_sets,
+    rownames(gse129308_expression)
+)
+knitr::kable(
+    gse129308_coverage,
+    digits = 2,
+    col.names = c(
+        "Panel",
+        "Declared",
+        "Matched",
+        "Unmatched",
+        "Coverage",
+        "Duplicates",
+        "Scoreable"
+    )
+)
+
+gse129308_scores <- genefunnel(
+    gse129308_expression,
+    gse129308_gene_sets,
+    BPPARAM = serial
+)
+```
+
+The fixture has complete identifier coverage for these declared panels. The
+scores can therefore be reshaped into paired donor trajectories without any
+sample-specific member loss.
+
+```{r gse129308-summary}
+gse129308_panel_labels <- c(
+    thesis_hubs = "Thesis hubs",
+    protein_folding = "Protein folding",
+    postsynaptic_structure = "Postsynaptic structure",
+    synaptic_vesicle_release = "Synaptic vesicle release"
+)
+gse129308_score_long <- data.frame(
+    panel = rep(rownames(gse129308_scores), times = ncol(gse129308_scores)),
+    sample = rep(colnames(gse129308_scores), each = nrow(gse129308_scores)),
+    score = as.vector(gse129308_scores),
+    stringsAsFactors = FALSE
+)
+gse129308_sample_index <- match(
+    gse129308_score_long$sample,
+    gse129308$sample
+)
+gse129308_score_long$donor <- gse129308$donor[gse129308_sample_index]
+gse129308_score_long$sort_marker <-
+    gse129308$sort_marker[gse129308_sample_index]
+
+gse129308_summary <- do.call(
+    rbind,
+    lapply(names(gse129308_gene_sets), function(panel_name) {
+        panel_data <- gse129308_score_long[
+            gse129308_score_long$panel == panel_name,
+            ,
+            drop = FALSE
+        ]
+        donors <- sort(unique(panel_data$donor))
+        map2_scores <- vapply(
+            donors,
+            function(donor) {
+                panel_data$score[
+                    panel_data$donor == donor &
+                        panel_data$sort_marker == "MAP2"
+                ]
+            },
+            numeric(1L)
+        )
+        at8_scores <- vapply(
+            donors,
+            function(donor) {
+                panel_data$score[
+                    panel_data$donor == donor &
+                        panel_data$sort_marker == "AT8"
+                ]
+            },
+            numeric(1L)
+        )
+        data.frame(
+            panel = unname(gse129308_panel_labels[[panel_name]]),
+            matched_members = gse129308_coverage$matched_size[
+                match(panel_name, gse129308_coverage$gene_set)
+            ],
+            mean_map2 = mean(map2_scores),
+            mean_at8 = mean(at8_scores),
+            mean_paired_difference = mean(at8_scores - map2_scores),
+            at8_higher_donors = sprintf(
+                "%d / %d",
+                sum(at8_scores > map2_scores),
+                length(donors)
+            ),
+            check.names = FALSE
+        )
+    })
+)
+rownames(gse129308_summary) <- NULL
+knitr::kable(
+    gse129308_summary,
+    digits = 2,
+    col.names = c(
+        "Panel",
+        "Matched members",
+        "Mean MAP2 score",
+        "Mean AT8 score",
+        "Mean paired difference",
+        "Donors with AT8 > MAP2"
+    )
+)
+```
+
+```{r gse129308-figure, echo=FALSE, fig.width=8, fig.height=5.8, fig.cap=gse129308_caption}
+gse129308_score_long$population <- factor(
+    gse129308_score_long$sort_marker,
+    levels = c("MAP2", "AT8"),
+    labels = c("NFT-free (MAP2)", "NFT-bearing (AT8)")
+)
+gse129308_score_long$panel <- factor(
+    gse129308_score_long$panel,
+    levels = names(gse129308_panel_labels),
+    labels = unname(gse129308_panel_labels)
+)
+
+ggplot2::ggplot(
+    gse129308_score_long,
+    ggplot2::aes(x = population, y = score, group = donor)
+) +
+    ggplot2::geom_line(colour = "#8C8C8C", linewidth = 0.6, alpha = 0.7) +
+    ggplot2::geom_point(
+        ggplot2::aes(fill = population),
+        shape = 21,
+        size = 2.4,
+        colour = "#333333"
+    ) +
+    ggplot2::facet_wrap(ggplot2::vars(panel), ncol = 2, scales = "free_y") +
+    ggplot2::scale_fill_manual(
+        values = c(
+            "NFT-free (MAP2)" = "#4477AA",
+            "NFT-bearing (AT8)" = "#CC6677"
+        ),
+        guide = "none"
+    ) +
+    ggplot2::labs(x = NULL, y = "GeneFunnel score") +
+    ggplot2::theme_minimal(base_size = 11) +
+    ggplot2::theme(
+        panel.grid.major.x = ggplot2::element_blank(),
+        panel.grid.minor = ggplot2::element_blank(),
+        strip.background = ggplot2::element_rect(
+            fill = "#F2F2F2",
+            colour = NA
+        ),
+        strip.text = ggplot2::element_text(face = "bold"),
+        axis.text.x = ggplot2::element_text(size = 9)
+    )
+```
+
+```{r gse129308-check, include=FALSE}
+stopifnot(
+    identical(dim(gse129308_counts), c(30L, 16L)),
+    identical(
+        as.integer(table(gse129308$sort_marker)[c("MAP2", "AT8")]),
+        c(8L, 8L)
+    ),
+    all(gse129308_coverage$coverage == 1),
+    identical(
+        gse129308_summary$at8_higher_donors,
+        c("8 / 8", "7 / 8", "8 / 8", "7 / 8")
+    ),
+    all(gse129308_summary$mean_paired_difference > 0)
+)
+```
+
+The selected hub and postsynaptic panels score higher in every paired AT8
+aggregate. The other two panels show the same direction in seven of eight
+donors. This example adds realistic donor variation and assay scale to the
+controlled demonstrations. It does not establish differential pathway activity:
+the panels were selected for illustration, the aggregate differs from the full
+thesis pipeline, and no inferential model is fitted here.
 
 # Choosing between GeneFunnel and rank-based methods
 
