@@ -553,8 +553,8 @@ between biological groups.
 
 # Real-data case study: NFT-bearing neurons
 
-The thesis applied GeneFunnel to molecular changes in neurofibrillary
-tangle-bearing neurons. A public component of that work reanalysed
+One real-world application of GeneFunnel examined molecular changes in
+neurofibrillary tangle-bearing neurons. Its public transcriptomic component reanalysed
 [GSE129308](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE129308), the
 single-soma transcriptomic study reported by
 [Otero-Garcia et al.](https://doi.org/10.1016/j.neuron.2022.06.021). The study
@@ -570,19 +570,19 @@ script under `data-raw/`.
 
 The compact workflow below converts each aggregate to counts per million and
 then calculates `log2(CPM + 1)`. This preserves non-negative values while
-adjusting for library size. The full thesis workflow instead scored individual
-somas before donor-level pseudobulk aggregation and included additional quality
+adjusting for library size. The source workflow instead scored individual somas
+before donor-level pseudobulk aggregation and included additional quality
 control. This vignette is a practical package example, not a reproduction of
-that analysis.
+the source analysis.
 
-Four illustrative panels connect the fixture to thesis themes. The first uses
-the eight hub genes prioritised in the integrated analysis. The others sample
-protein-folding, postsynaptic-structure, and synaptic-vesicle biology discussed
-there. They are compact teaching panels, not canonical ontology definitions.
+Four illustrative panels connect the fixture to biological themes from the
+integrated analysis. The first uses eight prioritised hub genes. The others
+sample protein-folding, postsynaptic-structure, and synaptic-vesicle biology.
+They are compact teaching panels, not canonical ontology definitions.
 
 ```{r gse129308-data}
 gse129308_gene_sets <- list(
-    thesis_hubs = c(
+    integrated_hubs = c(
         "NEFM", "APP", "SQSTM1", "HSP90AA1",
         "YWHAE", "WASF1", "CNTNAP1", "GOT2"
     ),
@@ -654,7 +654,7 @@ sample-specific member loss.
 
 ```{r gse129308-summary}
 gse129308_panel_labels <- c(
-    thesis_hubs = "Thesis hubs",
+    integrated_hubs = "Prioritised hubs",
     protein_folding = "Protein folding",
     postsynaptic_structure = "Postsynaptic structure",
     synaptic_vesicle_release = "Synaptic vesicle release"
@@ -800,7 +800,7 @@ aggregate. The other two panels show the same direction in seven of eight
 donors. This example adds realistic donor variation and assay scale to the
 controlled demonstrations. It does not establish differential pathway activity:
 the panels were selected for illustration, the aggregate differs from the full
-thesis pipeline, and no inferential model is fitted here.
+source pipeline, and no inferential model is fitted here.
 
 # Choosing between GeneFunnel and rank-based methods
 
@@ -977,11 +977,10 @@ basename(specification)
 
 # Citation
 
-The package citation includes the software and the thesis that describes the
-method.
+Use the package citation below.
 
 ```{r citation}
-citation("genefunnel")
+citation("genefunnel")[1L]
 ```
 
 # Session information
