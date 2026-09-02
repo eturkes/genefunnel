@@ -50,11 +50,11 @@ gse_score_cap <- paste(
     "Diamonds and lines show stage medians. The display is descriptive and",
     "does not fit a disease model."
 )
-airway_cap <- paste(
-    "Paired untreated and dexamethasone-treated airway smooth-muscle cell",
-    "lines for nested 500- and 5,000-gene panels. Values are divided by panel",
-    "size. Thin lines connect the same cell line; diamonds and dark lines show",
-    "medians."
+gse60361_cap <- paste(
+    "GeneFunnel score per gene versus the member total per gene across 47",
+    "mouse brain cell-subtype pseudobulk profiles. The dotted identity line",
+    "is the unpenalized total; distance below it is the deviation penalty.",
+    "Panels use nested 500- and 5,000-gene abundance sets."
 )
 ```
 
@@ -889,335 +889,352 @@ association. A full analysis should predeclare a complete gene set and
 preprocessing plan, assess coverage, and use an appropriate downstream model.
 The six-gene panel is an inspectable scoring example, not a biomarker.
 
-# Real-data scale study: hundreds to thousands of genes
+# Real-data scale study: mouse brain cell types
 
 The presynaptic case study makes every member inspectable, but its six-gene
 panel does not demonstrate scoring at larger set sizes. The
-[`airway`](https://bioconductor.org/packages/airway) experiment package contains
-gene-level RNA-seq counts from four primary human airway smooth-muscle cell
-lines, each measured untreated and after 18 hours with 1 micromolar
-dexamethasone. The experiment accompanies
-[Himes et al. (2014)](https://doi.org/10.1371/journal.pone.0099625).
+[GSE60361](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE60361)
+experiment from
+[Zeisel et al. (2015)](https://doi.org/10.1126/science.aaa1934) profiled 3,005
+single cells from juvenile mouse somatosensory cortex and CA1 hippocampus.
 
-This section uses nested panels of 500 and 5,000 protein-coding genes. They are
-abundance-defined scale panels, not pathways or treatment signatures. Counts
-are first converted to counts per million (CPM). Genes with a positive median
-CPM among the four untreated samples are ranked by that median, without using
-the treated-minus-untreated difference. The top 5,000 genes form the larger
-panel, and its top 500 form the smaller panel. Each retained gene is then
-divided by its untreated median CPM before GeneFunnel scoring.
+The compact fixture contains all 19,972 endogenous genes aggregated into 47
+named cell-subtype profiles. These profiles represent 2,816 cells in seven
+broad classes. Aggregation reduces single-cell sparsity and makes each column a
+pseudobulk profile. The fixture-generation script retrieves the versioned
+`zeisel-brain-2015` resource through `scRNAseq::ZeiselBrainData()`.
 
-```{r airway-scale-pipeline}
-data("airway", package = "airway")
-airway_counts <- SummarizedExperiment::assay(airway, "counts")
-airway_sample_data <- as.data.frame(
-    SummarizedExperiment::colData(airway)
+Counts are converted to counts per million (CPM). The seven broad-class
+profiles define an equal-class abundance reference. Genes with a positive
+median CPM across those profiles are ranked by that median, with gene name as a
+deterministic tie-breaker. The top 5,000 genes form the larger panel, and the
+top 500 form the nested smaller panel. Each subtype CPM is divided by the
+corresponding broad-class median before scoring. These are abundance-defined
+scale panels, not pathways or cell-type signatures.
+
+```{r gse60361-scale-pipeline}
+gse60361_path <- system.file(
+    "extdata",
+    "GSE60361_brain_cell_types.rds",
+    package = "genefunnel"
 )
-airway_gene_data <- as.data.frame(
-    SummarizedExperiment::rowData(airway)
-)
+stopifnot(nzchar(gse60361_path))
+gse60361 <- readRDS(gse60361_path)
+gse60361_subtype_counts <- gse60361$subtype_counts
+gse60361_broad_counts <- gse60361$broad_class_counts
 
-airway_cpm <- sweep(
-    airway_counts,
+gse60361_broad_cpm <- sweep(
+    gse60361_broad_counts,
     2L,
-    colSums(airway_counts) / 1e6,
+    colSums(gse60361_broad_counts) / 1e6,
     "/"
 )
-airway_untreated <- airway_sample_data$dex == "untrt"
-airway_untreated_medians <- apply(
-    airway_cpm[, airway_untreated, drop = FALSE],
+gse60361_reference <- apply(
+    gse60361_broad_cpm,
     1L,
     median
 )
-airway_protein_coding <-
-    !is.na(airway_gene_data$gene_biotype) &
-    airway_gene_data$gene_biotype == "protein_coding"
-airway_eligible_rows <- which(
-    airway_protein_coding &
-    is.finite(airway_untreated_medians) &
-    airway_untreated_medians > 0
+gse60361_eligible_rows <- which(
+    is.finite(gse60361_reference) &
+    gse60361_reference > 0
 )
-airway_abundance_order <- airway_eligible_rows[
+gse60361_abundance_order <- gse60361_eligible_rows[
     order(
-        -airway_untreated_medians[airway_eligible_rows],
-        rownames(airway_counts)[airway_eligible_rows]
+        -gse60361_reference[gse60361_eligible_rows],
+        rownames(gse60361_broad_counts)[gse60361_eligible_rows]
     )
 ]
-airway_5000_genes <- rownames(airway_counts)[
-    airway_abundance_order[seq_len(5000L)]
+gse60361_5000_genes <- rownames(gse60361_broad_counts)[
+    gse60361_abundance_order[seq_len(5000L)]
 ]
-airway_gene_sets <- list(
-    `500-gene panel` = airway_5000_genes[seq_len(500L)],
-    `5,000-gene panel` = airway_5000_genes
+gse60361_gene_sets <- list(
+    `500-gene panel` = gse60361_5000_genes[seq_len(500L)],
+    `5,000-gene panel` = gse60361_5000_genes
 )
-airway_relative <- sweep(
-    airway_cpm[airway_5000_genes, , drop = FALSE],
-    1L,
-    airway_untreated_medians[airway_5000_genes],
+
+gse60361_subtype_cpm <- sweep(
+    gse60361_subtype_counts,
+    2L,
+    colSums(gse60361_subtype_counts) / 1e6,
     "/"
 )
-airway_scores <- genefunnel(
-    airway_relative,
-    airway_gene_sets,
+gse60361_relative <- sweep(
+    gse60361_subtype_cpm[
+        gse60361_5000_genes,
+        ,
+        drop = FALSE
+    ],
+    1L,
+    gse60361_reference[gse60361_5000_genes],
+    "/"
+)
+gse60361_scores <- genefunnel(
+    gse60361_relative,
+    gse60361_gene_sets,
     BPPARAM = serial
 )
+gse60361_totals <- t(vapply(
+    gse60361_gene_sets,
+    function(members) {
+        colSums(gse60361_relative[members, , drop = FALSE])
+    },
+    numeric(ncol(gse60361_relative))
+))
 ```
 
 Absolute GeneFunnel scores are not directly comparable across panel sizes
 because the formula includes the member sum. Dividing the total and score by
-panel size supports this display without changing the underlying calculation.
-The retained fraction is the GeneFunnel score divided by the observed total.
+panel size supports this display without changing the calculation. The
+retained fraction is the score divided by the observed total.
 
-```{r airway-scale-summary, echo=FALSE}
-airway_sample_scores <- do.call(
+```{r gse60361-scale-summary, echo=FALSE}
+gse60361_class_order <- c(
+    "pyramidal CA1",
+    "pyramidal SS",
+    "interneurons",
+    "oligodendrocytes",
+    "astrocytes_ependymal",
+    "microglia",
+    "endothelial-mural"
+)
+gse60361_class_labels <- c(
+    "pyramidal CA1" = "CA1 pyramidal",
+    "pyramidal SS" = "Somatosensory pyramidal",
+    interneurons = "Interneurons",
+    oligodendrocytes = "Oligodendrocytes",
+    astrocytes_ependymal = "Astrocytes / ependymal",
+    microglia = "Microglia",
+    `endothelial-mural` = "Endothelial / mural"
+)
+gse60361_subtype_metadata <- gse60361$subtype_metadata
+gse60361_sample_scores <- do.call(
     rbind,
-    lapply(names(airway_gene_sets), function(panel_name) {
-        members <- airway_gene_sets[[panel_name]]
-        totals <- colSums(airway_relative[members, , drop = FALSE])
-        scores <- unname(airway_scores[panel_name, ])
+    lapply(names(gse60361_gene_sets), function(panel_name) {
+        members <- gse60361_gene_sets[[panel_name]]
+        totals <- unname(gse60361_totals[panel_name, ])
+        scores <- unname(gse60361_scores[panel_name, ])
 
         data.frame(
             panel = panel_name,
             genes = length(members),
-            cell_line = airway_sample_data$cell,
-            treatment = ifelse(
-                airway_sample_data$dex == "trt",
-                "Dexamethasone",
-                "Untreated"
-            ),
-            total_per_gene = unname(totals) / length(members),
+            subtype = gse60361_subtype_metadata$subtype,
+            broad_class = gse60361_subtype_metadata$broad_class,
+            cells = gse60361_subtype_metadata$cells,
+            total_per_gene = totals / length(members),
             score_per_gene = scores / length(members),
-            retained_fraction = scores / unname(totals),
+            retained_fraction = scores / totals,
             check.names = FALSE,
             stringsAsFactors = FALSE
         )
     })
 )
-rownames(airway_sample_scores) <- NULL
+rownames(gse60361_sample_scores) <- NULL
+gse60361_sample_scores$class_label <- factor(
+    gse60361_sample_scores$broad_class,
+    levels = gse60361_class_order,
+    labels = unname(gse60361_class_labels[gse60361_class_order])
+)
 
-airway_pair_columns <- c(
-    "panel",
-    "genes",
-    "cell_line",
-    "total_per_gene",
-    "score_per_gene",
-    "retained_fraction"
-)
-airway_pairs <- merge(
-    airway_sample_scores[
-        airway_sample_scores$treatment == "Untreated",
-        airway_pair_columns,
-        drop = FALSE
-    ],
-    airway_sample_scores[
-        airway_sample_scores$treatment == "Dexamethasone",
-        airway_pair_columns,
-        drop = FALSE
-    ],
-    by = c("panel", "genes", "cell_line"),
-    suffixes = c("_untreated", "_treated"),
-    sort = FALSE
-)
-airway_panel_summary <- do.call(
+gse60361_panel_summary <- do.call(
     rbind,
-    lapply(names(airway_gene_sets), function(panel_name) {
-        panel_pairs <- airway_pairs[
-            airway_pairs$panel == panel_name,
+    lapply(names(gse60361_gene_sets), function(panel_name) {
+        panel_scores <- gse60361_sample_scores[
+            gse60361_sample_scores$panel == panel_name,
             ,
             drop = FALSE
         ]
 
         data.frame(
             panel = panel_name,
-            genes = panel_pairs$genes[[1L]],
-            total_untreated = median(
-                panel_pairs$total_per_gene_untreated
-            ),
-            total_treated = median(
-                panel_pairs$total_per_gene_treated
-            ),
-            total_change = median(
-                panel_pairs$total_per_gene_treated -
-                    panel_pairs$total_per_gene_untreated
-            ),
-            score_untreated = median(
-                panel_pairs$score_per_gene_untreated
-            ),
-            score_treated = median(
-                panel_pairs$score_per_gene_treated
-            ),
-            score_change = median(
-                panel_pairs$score_per_gene_treated -
-                    panel_pairs$score_per_gene_untreated
-            ),
-            retained_untreated = 100 * median(
-                panel_pairs$retained_fraction_untreated
-            ),
-            retained_treated = 100 * median(
-                panel_pairs$retained_fraction_treated
-            ),
+            genes = panel_scores$genes[[1L]],
+            median_total = median(panel_scores$total_per_gene),
+            median_score = median(panel_scores$score_per_gene),
+            median_retained = median(panel_scores$retained_fraction),
+            minimum_retained = min(panel_scores$retained_fraction),
+            maximum_retained = max(panel_scores$retained_fraction),
             check.names = FALSE,
             stringsAsFactors = FALSE
         )
     })
 )
-rownames(airway_panel_summary) <- NULL
-airway_500_summary <- airway_panel_summary[
-    airway_panel_summary$panel == "500-gene panel",
+rownames(gse60361_panel_summary) <- NULL
+gse60361_class_summary <- stats::aggregate(
+    retained_fraction ~ panel + broad_class,
+    data = gse60361_sample_scores,
+    FUN = median
+)
+gse60361_class_summary$class_label <- unname(
+    gse60361_class_labels[gse60361_class_summary$broad_class]
+)
+
+gse60361_500_summary <- gse60361_panel_summary[
+    gse60361_panel_summary$panel == "500-gene panel",
     ,
     drop = FALSE
 ]
-airway_5000_summary <- airway_panel_summary[
-    airway_panel_summary$panel == "5,000-gene panel",
+gse60361_5000_summary <- gse60361_panel_summary[
+    gse60361_panel_summary$panel == "5,000-gene panel",
+    ,
+    drop = FALSE
+]
+gse60361_500_classes <- gse60361_class_summary[
+    gse60361_class_summary$panel == "500-gene panel",
+    ,
+    drop = FALSE
+]
+gse60361_5000_classes <- gse60361_class_summary[
+    gse60361_class_summary$panel == "5,000-gene panel",
+    ,
+    drop = FALSE
+]
+gse60361_500_low <- gse60361_500_classes[
+    which.min(gse60361_500_classes$retained_fraction),
+    ,
+    drop = FALSE
+]
+gse60361_500_high <- gse60361_500_classes[
+    which.max(gse60361_500_classes$retained_fraction),
+    ,
+    drop = FALSE
+]
+gse60361_5000_low <- gse60361_5000_classes[
+    which.min(gse60361_5000_classes$retained_fraction),
+    ,
+    drop = FALSE
+]
+gse60361_5000_high <- gse60361_5000_classes[
+    which.max(gse60361_5000_classes$retained_fraction),
     ,
     drop = FALSE
 ]
 
-airway_panel_display <- data.frame(
-    panel = airway_panel_summary$panel,
+gse60361_panel_display <- data.frame(
+    panel = gse60361_panel_summary$panel,
     genes = format(
-        airway_panel_summary$genes,
+        gse60361_panel_summary$genes,
         big.mark = ",",
         scientific = FALSE,
         trim = TRUE
     ),
-    total_change = sprintf("%+.3f", airway_panel_summary$total_change),
-    score_change = sprintf("%+.3f", airway_panel_summary$score_change),
-    retained_untreated = sprintf(
-        "%.1f",
-        airway_panel_summary$retained_untreated
+    median_total = sprintf(
+        "%.3f",
+        gse60361_panel_summary$median_total
     ),
-    retained_treated = sprintf(
+    median_score = sprintf(
+        "%.3f",
+        gse60361_panel_summary$median_score
+    ),
+    median_retained = sprintf(
         "%.1f",
-        airway_panel_summary$retained_treated
+        100 * gse60361_panel_summary$median_retained
+    ),
+    retained_range = sprintf(
+        "%.1f-%.1f",
+        100 * gse60361_panel_summary$minimum_retained,
+        100 * gse60361_panel_summary$maximum_retained
     ),
     check.names = FALSE,
     stringsAsFactors = FALSE
 )
 knitr::kable(
-    airway_panel_display,
+    gse60361_panel_display,
     align = c("l", "r", "r", "r", "r", "r"),
     col.names = c(
         "Panel",
         "Genes",
-        "Paired change, total/gene",
-        "Paired change, score/gene",
-        "Retained, untreated (%)",
-        "Retained, dex (%)"
+        "Median total/gene",
+        "Median score/gene",
+        "Median retained (%)",
+        "Retained range (%)"
     )
 )
 ```
 
 ## Hundreds of genes
 
-For the 500-gene panel, the median total per gene across the four cell lines
-rises from `r sprintf("%.3f", airway_500_summary$total_untreated)` untreated to
-`r sprintf("%.3f", airway_500_summary$total_treated)` after dexamethasone. The
-median GeneFunnel score per gene instead falls from
-`r sprintf("%.3f", airway_500_summary$score_untreated)` to
-`r sprintf("%.3f", airway_500_summary$score_treated)`. The median retained
-fraction falls from `r sprintf("%.1f", airway_500_summary$retained_untreated)`%
-to `r sprintf("%.1f", airway_500_summary$retained_treated)`%.
+Across the 47 subtype profiles, the 500-gene panel has a median total per gene
+of `r sprintf("%.3f", gse60361_500_summary$median_total)` and a median score per
+gene of `r sprintf("%.3f", gse60361_500_summary$median_score)`. The median
+retained fraction is
+`r sprintf("%.1f", 100 * gse60361_500_summary$median_retained)`%. Across broad
+classes, the median retained fraction ranges from
+`r sprintf("%.1f", 100 * gse60361_500_low$retained_fraction)`% for
+`r gse60361_500_low$class_label` to
+`r sprintf("%.1f", 100 * gse60361_500_high$retained_fraction)`% for
+`r gse60361_500_high$class_label`.
 
 ## Thousands of genes
 
-The 5,000-gene panel shows the same direction at ten times the set size. Its
-median total per gene rises from
-`r sprintf("%.3f", airway_5000_summary$total_untreated)` to
-`r sprintf("%.3f", airway_5000_summary$total_treated)`, while its median score
-per gene falls from `r sprintf("%.3f", airway_5000_summary$score_untreated)` to
-`r sprintf("%.3f", airway_5000_summary$score_treated)`. The retained fraction
-falls from `r sprintf("%.1f", airway_5000_summary$retained_untreated)`% to
-`r sprintf("%.1f", airway_5000_summary$retained_treated)`%.
+At ten times the set size, the 5,000-gene panel has a median total per gene of
+`r sprintf("%.3f", gse60361_5000_summary$median_total)` and a median score per
+gene of `r sprintf("%.3f", gse60361_5000_summary$median_score)`. Its median
+retained fraction is
+`r sprintf("%.1f", 100 * gse60361_5000_summary$median_retained)`%. Broad-class
+medians range from
+`r sprintf("%.1f", 100 * gse60361_5000_low$retained_fraction)`% for
+`r gse60361_5000_low$class_label` to
+`r sprintf("%.1f", 100 * gse60361_5000_high$retained_fraction)`% for
+`r gse60361_5000_high$class_label`.
 
-```{r airway-figure, echo=FALSE, fig.height=5.5, fig.cap=airway_cap}
-airway_metric_plot <- rbind(
-    data.frame(
-        panel = airway_sample_scores$panel,
-        treatment = airway_sample_scores$treatment,
-        cell_line = airway_sample_scores$cell_line,
-        metric = "Observed total per gene",
-        value = airway_sample_scores$total_per_gene,
-        stringsAsFactors = FALSE
+```{r gse60361-figure, echo=FALSE, fig.height=4.8, fig.cap=gse60361_cap}
+gse60361_plot <- gse60361_sample_scores
+gse60361_plot$panel <- factor(
+    gse60361_plot$panel,
+    levels = names(gse60361_gene_sets)
+)
+gse60361_palette <- stats::setNames(
+    c(
+        "#4477AA",
+        "#66CCEE",
+        "#228833",
+        "#CCBB44",
+        "#EE6677",
+        "#AA3377",
+        "#666666"
     ),
-    data.frame(
-        panel = airway_sample_scores$panel,
-        treatment = airway_sample_scores$treatment,
-        cell_line = airway_sample_scores$cell_line,
-        metric = "GeneFunnel score per gene",
-        value = airway_sample_scores$score_per_gene,
-        stringsAsFactors = FALSE
-    )
+    levels(gse60361_plot$class_label)
 )
-airway_metric_plot$panel <- factor(
-    airway_metric_plot$panel,
-    levels = names(airway_gene_sets)
-)
-airway_metric_plot$treatment <- factor(
-    airway_metric_plot$treatment,
-    levels = c("Untreated", "Dexamethasone")
-)
-airway_metric_plot$metric <- factor(
-    airway_metric_plot$metric,
-    levels = c("Observed total per gene", "GeneFunnel score per gene")
-)
-airway_metric_medians <- stats::aggregate(
-    value ~ panel + treatment + metric,
-    data = airway_metric_plot,
-    FUN = median
+gse60361_shapes <- stats::setNames(
+    c(16, 17, 15, 18, 8, 3, 4),
+    levels(gse60361_plot$class_label)
 )
 
 ggplot2::ggplot(
-    airway_metric_plot,
+    gse60361_plot,
     ggplot2::aes(
-        x = treatment,
-        y = value,
-        group = cell_line
+        x = total_per_gene,
+        y = score_per_gene,
+        colour = class_label,
+        shape = class_label
     )
 ) +
-    ggplot2::geom_hline(
-        yintercept = 1,
-        colour = "#B3B3B3",
+    ggplot2::geom_abline(
+        slope = 1,
+        intercept = 0,
+        colour = "#8C8C8C",
         linetype = "dotted"
     ) +
-    ggplot2::geom_line(colour = "#BDBDBD", linewidth = 0.6) +
-    ggplot2::geom_point(
-        ggplot2::aes(shape = cell_line),
-        colour = "#2C7FB8",
-        size = 2.2
+    ggplot2::geom_point(alpha = 0.8, size = 2.4) +
+    ggplot2::facet_wrap(ggplot2::vars(panel), nrow = 1) +
+    ggplot2::scale_colour_manual(
+        values = gse60361_palette,
+        name = "Broad class"
     ) +
-    ggplot2::geom_line(
-        data = airway_metric_medians,
-        mapping = ggplot2::aes(
-            x = treatment,
-            y = value,
-            group = 1
-        ),
-        inherit.aes = FALSE,
-        colour = "#222222",
-        linewidth = 0.9
-    ) +
-    ggplot2::geom_point(
-        data = airway_metric_medians,
-        mapping = ggplot2::aes(x = treatment, y = value),
-        inherit.aes = FALSE,
-        shape = 18,
-        colour = "#222222",
-        size = 3
-    ) +
-    ggplot2::facet_grid(
-        rows = ggplot2::vars(metric),
-        cols = ggplot2::vars(panel)
+    ggplot2::scale_shape_manual(
+        values = gse60361_shapes,
+        name = "Broad class"
     ) +
     ggplot2::labs(
-        x = NULL,
-        y = "Control-scaled value per gene",
-        shape = "Cell line"
+        x = "Observed total per gene",
+        y = "GeneFunnel score per gene"
+    ) +
+    ggplot2::guides(
+        colour = ggplot2::guide_legend(nrow = 2, byrow = TRUE),
+        shape = ggplot2::guide_legend(nrow = 2, byrow = TRUE)
     ) +
     ggplot2::theme_minimal(base_size = 11) +
     ggplot2::theme(
         panel.grid.minor = ggplot2::element_blank(),
-        panel.grid.major.x = ggplot2::element_blank(),
         strip.background = ggplot2::element_rect(
             fill = "#F2F2F2",
             colour = NA
@@ -1227,45 +1244,79 @@ ggplot2::ggplot(
     )
 ```
 
-```{r airway-scale-check, include=FALSE}
+```{r gse60361-scale-check, include=FALSE}
 stopifnot(
-    ncol(airway_counts) == 8L,
-    sum(airway_sample_data$dex == "untrt") == 4L,
-    sum(airway_sample_data$dex == "trt") == 4L,
-    length(unique(airway_sample_data$cell)) == 4L,
-    length(airway_eligible_rows) >= 5000L,
+    identical(gse60361$source$accession, "GSE60361"),
+    identical(gse60361$source$dataset, "zeisel-brain-2015"),
+    identical(gse60361$source$dataset_version, "2023-12-14"),
+    identical(dim(gse60361_subtype_counts), c(19972L, 47L)),
+    identical(dim(gse60361_broad_counts), c(19972L, 7L)),
+    typeof(gse60361_subtype_counts) == "integer",
+    typeof(gse60361_broad_counts) == "integer",
+    all(gse60361_subtype_counts >= 0L),
+    all(gse60361_broad_counts >= 0L),
+    sum(gse60361$subtype_metadata$cells) == 2816L,
+    length(gse60361_eligible_rows) >= 5000L,
     identical(
-        unname(vapply(airway_gene_sets, length, integer(1L))),
+        head(gse60361_5000_genes, 10L),
+        c(
+            "Malat1",
+            "Tmsb4x",
+            "Meg3",
+            "Ppia",
+            "Actb",
+            "Calm1",
+            "Hsp90aa1",
+            "App",
+            "Hsp90ab1",
+            "Fth1"
+        )
+    ),
+    isTRUE(all.equal(
+        unname(gse60361_reference[
+            gse60361_5000_genes[c(500L, 5000L)]
+        ]),
+        c(230.58259149905, 33.4246588837642),
+        tolerance = 1e-10
+    )),
+    identical(
+        unname(vapply(gse60361_gene_sets, length, integer(1L))),
         c(500L, 5000L)
     ),
-    all(airway_gene_sets[[1L]] %in% airway_gene_sets[[2L]]),
-    all(is.finite(airway_relative)),
-    all(airway_relative >= 0),
-    identical(dim(airway_scores), c(2L, 8L)),
-    nrow(airway_pairs) == 8L,
-    all(
-        airway_pairs$total_per_gene_treated >
-            airway_pairs$total_per_gene_untreated
-    ),
-    all(
-        airway_pairs$score_per_gene_treated <
-            airway_pairs$score_per_gene_untreated
-    ),
-    all(
-        airway_pairs$retained_fraction_treated <
-            airway_pairs$retained_fraction_untreated
-    )
+    all(gse60361_gene_sets[[1L]] %in% gse60361_gene_sets[[2L]]),
+    all(is.finite(gse60361_relative)),
+    all(gse60361_relative >= 0),
+    identical(dim(gse60361_scores), c(2L, 47L)),
+    all(gse60361_scores >= 0),
+    all(gse60361_scores <= gse60361_totals),
+    isTRUE(all.equal(
+        unname(gse60361_scores[
+            ,
+            c("Astro1", "Oligo3", "S1PyrL5")
+        ]),
+        matrix(
+            c(
+                474.815372360286,
+                4100.74526146677,
+                411.536717685261,
+                3380.13217420648,
+                458.474356781014,
+                5154.6619950742
+            ),
+            nrow = 2L
+        ),
+        tolerance = 1e-10
+    ))
 )
 ```
 
-All four paired cell lines show the same total-up and score-down pattern for
-both panel sizes. The dexamethasone response raises aggregate relative
-expression but also spreads the member values enough that the larger deviation
-penalty more than offsets that gain. The result demonstrates the same score
-mechanics with hundreds and thousands of genes. It is not an inferential
-treatment analysis: there are only four cell lines, CPM is a simple library-size
-adjustment, and the abundance-defined panels do not represent biological
-pathways.
+Every point lies below the identity line because the deviation penalty is
+non-negative. In this abundance-defined display, neuronal subtype profiles tend
+to retain a larger share of their totals than glial profiles. That pattern is
+descriptive and depends on the panel construction and scaling reference. It is
+not a cell-type enrichment test. Pseudobulk aggregation also removes
+within-subtype cell variation. The example demonstrates the score mechanics at
+500 and 5,000 genes rather than validated biological programs.
 
 # Choosing between GeneFunnel and rank-based methods
 
