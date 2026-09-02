@@ -8,6 +8,8 @@
   checks used by the test suite.
 - Adds benchmark-style heatmaps and score-composition figures for the controlled
   expression and perturbation examples.
+- Adds an independent airway RNA-seq scale study with nested 500- and
+  5,000-gene panels.
 - Clarifies when the score is useful and which preprocessing steps remain the
   user's responsibility.
 

@@ -1,7 +1,7 @@
 ---
 title: "GeneFunnel: scoring gene-set activity"
 author: "Emir Turkes"
-date: "2 September 2026"
+date: "3 September 2026"
 package: genefunnel
 output:
   BiocStyle::html_document:
@@ -32,23 +32,29 @@ pattern_heatmap_caption <- paste(
     "Benchmark-style view of the controlled expression patterns. Tiles show",
     "observed feature values; grey crossed cells are unavailable measurements."
 )
-pattern_components_caption <- paste(
+components_cap <- paste(
     "Share of each broad-program total retained as the GeneFunnel score or",
     "removed as the scaled absolute-deviation penalty."
 )
-perturbation_benchmark_caption <- paste(
+perturb_cap <- paste(
     "Observed totals and GeneFunnel scores before and after the controlled",
-    "perturbations. The assembly total is held fixed, whereas receptor magnitude",
-    "is increased."
+    "perturbations. The assembly total is held fixed, whereas receptor",
+    "magnitude is increased."
 )
-gse125583_gene_caption <- paste(
+gse_gene_cap <- paste(
     "Median control-scaled nRPKM for a fixed six-gene presynaptic panel across",
     "Braak stages in the independent GSE125583 fusiform-gyrus cohort."
 )
-gse125583_score_caption <- paste(
+gse_score_cap <- paste(
     "Individual six-gene GeneFunnel scores across Braak stages in GSE125583.",
     "Diamonds and lines show stage medians. The display is descriptive and",
     "does not fit a disease model."
+)
+airway_cap <- paste(
+    "Paired untreated and dexamethasone-treated airway smooth-muscle cell",
+    "lines for nested 500- and 5,000-gene panels. Values are divided by panel",
+    "size. Thin lines connect the same cell line; diamonds and dark lines show",
+    "medians."
 )
 ```
 
@@ -282,7 +288,7 @@ stopifnot(isTRUE(all.equal(
 )))
 ```
 
-```{r controlled-pattern-components, echo=FALSE, fig.height=4.2, fig.cap=pattern_components_caption}
+```{r pattern-components, echo=FALSE, fig.height=4.2, fig.cap=components_cap}
 pattern_components <- rbind(
     data.frame(
         pattern = pattern_diagnostics$pattern,
@@ -342,11 +348,11 @@ its larger deviation penalty reduces the score to 165.6.
 
 The uniformly high sample has no deviation and therefore scores its full total
 of 800. The partial-observation sample contains five observed values of 80 and
-five `NA` values. GeneFunnel omits the unavailable values, uses an effective set
-size of five, and scores the observed total of 400. In contrast, the zeros in the
-half-active and single-driver samples remain observed evidence. Half activation
-receives partial credit, while one non-zero feature among nine zeros gives the
-maximally dispersed score of zero.
+five `NA` values. GeneFunnel omits the unavailable values, uses an effective
+set size of five, and scores the observed total of 400. In contrast, the zeros
+in the half-active and single-driver samples remain observed evidence. Half
+activation receives partial credit, while one non-zero feature among nine zeros
+gives the maximally dispersed score of zero.
 
 # A narrower set can explain partial activity
 
@@ -478,7 +484,7 @@ stopifnot(
 )
 ```
 
-```{r controlled-perturbation-benchmark, echo=FALSE, fig.height=4.2, fig.cap=perturbation_benchmark_caption}
+```{r perturb-plot, echo=FALSE, fig.height=4.2, fig.cap=perturb_cap}
 perturbation_plot <- rbind(
     data.frame(
         gene_set = perturbation_diagnostics$gene_set,
@@ -643,7 +649,10 @@ knitr::kable(
 association_summary <- data.frame(
     measure = c("Pearson correlation", "Spearman correlation"),
     six_gene_total = c(
-        cor(presynaptic_total[braak_available], gse125583$braak[braak_available]),
+        cor(
+            presynaptic_total[braak_available],
+            gse125583$braak[braak_available]
+        ),
         cor(
             presynaptic_total[braak_available],
             gse125583$braak[braak_available],
@@ -651,7 +660,10 @@ association_summary <- data.frame(
         )
     ),
     genefunnel_score = c(
-        cor(presynaptic_score[braak_available], gse125583$braak[braak_available]),
+        cor(
+            presynaptic_score[braak_available],
+            gse125583$braak[braak_available]
+        ),
         cor(
             presynaptic_score[braak_available],
             gse125583$braak[braak_available],
@@ -671,7 +683,7 @@ knitr::kable(
 )
 ```
 
-```{r gse125583-gene-figure, echo=FALSE, fig.width=7.5, fig.height=4.4, fig.cap=gse125583_gene_caption}
+```{r gse-gene-figure, echo=FALSE, fig.height=4.4, fig.cap=gse_gene_cap}
 braak_stages <- 1:6
 braak_labels <- c("I", "II", "III", "IV", "V", "VI")
 stage_gene_medians <- vapply(
@@ -720,7 +732,14 @@ ggplot2::ggplot(
     ggplot2::geom_line(linewidth = 0.7) +
     ggplot2::geom_point(size = 2.2) +
     ggplot2::scale_colour_manual(
-        values = c("#4477AA", "#66CCEE", "#228833", "#CCBB44", "#EE6677", "#AA3377"),
+        values = c(
+            "#4477AA",
+            "#66CCEE",
+            "#228833",
+            "#CCBB44",
+            "#EE6677",
+            "#AA3377"
+        ),
         name = NULL
     ) +
     ggplot2::scale_shape_manual(
@@ -738,7 +757,7 @@ ggplot2::ggplot(
     )
 ```
 
-```{r gse125583-score-figure, echo=FALSE, fig.width=7.5, fig.height=4.4, fig.cap=gse125583_score_caption}
+```{r gse-score-figure, echo=FALSE, fig.height=4.4, fig.cap=gse_score_cap}
 gse125583_score_plot <- data.frame(
     braak = factor(
         gse125583$braak[braak_available],
@@ -765,7 +784,11 @@ ggplot2::ggplot(
 ) +
     ggplot2::geom_point(
         ggplot2::aes(colour = diagnosis, shape = diagnosis),
-        position = ggplot2::position_jitter(width = 0.16, height = 0, seed = 1L),
+        position = ggplot2::position_jitter(
+            width = 0.16,
+            height = 0,
+            seed = 1L
+        ),
         alpha = 0.5,
         size = 1.8
     ) +
@@ -865,6 +888,384 @@ variation, or tissue cell composition. It also does not fit or test an
 association. A full analysis should predeclare a complete gene set and
 preprocessing plan, assess coverage, and use an appropriate downstream model.
 The six-gene panel is an inspectable scoring example, not a biomarker.
+
+# Real-data scale study: hundreds to thousands of genes
+
+The presynaptic case study makes every member inspectable, but its six-gene
+panel does not demonstrate scoring at larger set sizes. The
+[`airway`](https://bioconductor.org/packages/airway) experiment package contains
+gene-level RNA-seq counts from four primary human airway smooth-muscle cell
+lines, each measured untreated and after 18 hours with 1 micromolar
+dexamethasone. The experiment accompanies
+[Himes et al. (2014)](https://doi.org/10.1371/journal.pone.0099625).
+
+This section uses nested panels of 500 and 5,000 protein-coding genes. They are
+abundance-defined scale panels, not pathways or treatment signatures. Counts
+are first converted to counts per million (CPM). Genes with a positive median
+CPM among the four untreated samples are ranked by that median, without using
+the treated-minus-untreated difference. The top 5,000 genes form the larger
+panel, and its top 500 form the smaller panel. Each retained gene is then
+divided by its untreated median CPM before GeneFunnel scoring.
+
+```{r airway-scale-pipeline}
+data("airway", package = "airway")
+airway_counts <- SummarizedExperiment::assay(airway, "counts")
+airway_sample_data <- as.data.frame(
+    SummarizedExperiment::colData(airway)
+)
+airway_gene_data <- as.data.frame(
+    SummarizedExperiment::rowData(airway)
+)
+
+airway_cpm <- sweep(
+    airway_counts,
+    2L,
+    colSums(airway_counts) / 1e6,
+    "/"
+)
+airway_untreated <- airway_sample_data$dex == "untrt"
+airway_untreated_medians <- apply(
+    airway_cpm[, airway_untreated, drop = FALSE],
+    1L,
+    median
+)
+airway_protein_coding <-
+    !is.na(airway_gene_data$gene_biotype) &
+    airway_gene_data$gene_biotype == "protein_coding"
+airway_eligible_rows <- which(
+    airway_protein_coding &
+    is.finite(airway_untreated_medians) &
+    airway_untreated_medians > 0
+)
+airway_abundance_order <- airway_eligible_rows[
+    order(
+        -airway_untreated_medians[airway_eligible_rows],
+        rownames(airway_counts)[airway_eligible_rows]
+    )
+]
+airway_5000_genes <- rownames(airway_counts)[
+    airway_abundance_order[seq_len(5000L)]
+]
+airway_gene_sets <- list(
+    `500-gene panel` = airway_5000_genes[seq_len(500L)],
+    `5,000-gene panel` = airway_5000_genes
+)
+airway_relative <- sweep(
+    airway_cpm[airway_5000_genes, , drop = FALSE],
+    1L,
+    airway_untreated_medians[airway_5000_genes],
+    "/"
+)
+airway_scores <- genefunnel(
+    airway_relative,
+    airway_gene_sets,
+    BPPARAM = serial
+)
+```
+
+Absolute GeneFunnel scores are not directly comparable across panel sizes
+because the formula includes the member sum. Dividing the total and score by
+panel size supports this display without changing the underlying calculation.
+The retained fraction is the GeneFunnel score divided by the observed total.
+
+```{r airway-scale-summary, echo=FALSE}
+airway_sample_scores <- do.call(
+    rbind,
+    lapply(names(airway_gene_sets), function(panel_name) {
+        members <- airway_gene_sets[[panel_name]]
+        totals <- colSums(airway_relative[members, , drop = FALSE])
+        scores <- unname(airway_scores[panel_name, ])
+
+        data.frame(
+            panel = panel_name,
+            genes = length(members),
+            cell_line = airway_sample_data$cell,
+            treatment = ifelse(
+                airway_sample_data$dex == "trt",
+                "Dexamethasone",
+                "Untreated"
+            ),
+            total_per_gene = unname(totals) / length(members),
+            score_per_gene = scores / length(members),
+            retained_fraction = scores / unname(totals),
+            check.names = FALSE,
+            stringsAsFactors = FALSE
+        )
+    })
+)
+rownames(airway_sample_scores) <- NULL
+
+airway_pair_columns <- c(
+    "panel",
+    "genes",
+    "cell_line",
+    "total_per_gene",
+    "score_per_gene",
+    "retained_fraction"
+)
+airway_pairs <- merge(
+    airway_sample_scores[
+        airway_sample_scores$treatment == "Untreated",
+        airway_pair_columns,
+        drop = FALSE
+    ],
+    airway_sample_scores[
+        airway_sample_scores$treatment == "Dexamethasone",
+        airway_pair_columns,
+        drop = FALSE
+    ],
+    by = c("panel", "genes", "cell_line"),
+    suffixes = c("_untreated", "_treated"),
+    sort = FALSE
+)
+airway_panel_summary <- do.call(
+    rbind,
+    lapply(names(airway_gene_sets), function(panel_name) {
+        panel_pairs <- airway_pairs[
+            airway_pairs$panel == panel_name,
+            ,
+            drop = FALSE
+        ]
+
+        data.frame(
+            panel = panel_name,
+            genes = panel_pairs$genes[[1L]],
+            total_untreated = median(
+                panel_pairs$total_per_gene_untreated
+            ),
+            total_treated = median(
+                panel_pairs$total_per_gene_treated
+            ),
+            total_change = median(
+                panel_pairs$total_per_gene_treated -
+                    panel_pairs$total_per_gene_untreated
+            ),
+            score_untreated = median(
+                panel_pairs$score_per_gene_untreated
+            ),
+            score_treated = median(
+                panel_pairs$score_per_gene_treated
+            ),
+            score_change = median(
+                panel_pairs$score_per_gene_treated -
+                    panel_pairs$score_per_gene_untreated
+            ),
+            retained_untreated = 100 * median(
+                panel_pairs$retained_fraction_untreated
+            ),
+            retained_treated = 100 * median(
+                panel_pairs$retained_fraction_treated
+            ),
+            check.names = FALSE,
+            stringsAsFactors = FALSE
+        )
+    })
+)
+rownames(airway_panel_summary) <- NULL
+airway_500_summary <- airway_panel_summary[
+    airway_panel_summary$panel == "500-gene panel",
+    ,
+    drop = FALSE
+]
+airway_5000_summary <- airway_panel_summary[
+    airway_panel_summary$panel == "5,000-gene panel",
+    ,
+    drop = FALSE
+]
+
+airway_panel_display <- data.frame(
+    panel = airway_panel_summary$panel,
+    genes = format(
+        airway_panel_summary$genes,
+        big.mark = ",",
+        scientific = FALSE,
+        trim = TRUE
+    ),
+    total_change = sprintf("%+.3f", airway_panel_summary$total_change),
+    score_change = sprintf("%+.3f", airway_panel_summary$score_change),
+    retained_untreated = sprintf(
+        "%.1f",
+        airway_panel_summary$retained_untreated
+    ),
+    retained_treated = sprintf(
+        "%.1f",
+        airway_panel_summary$retained_treated
+    ),
+    check.names = FALSE,
+    stringsAsFactors = FALSE
+)
+knitr::kable(
+    airway_panel_display,
+    align = c("l", "r", "r", "r", "r", "r"),
+    col.names = c(
+        "Panel",
+        "Genes",
+        "Paired change, total/gene",
+        "Paired change, score/gene",
+        "Retained, untreated (%)",
+        "Retained, dex (%)"
+    )
+)
+```
+
+## Hundreds of genes
+
+For the 500-gene panel, the median total per gene across the four cell lines
+rises from `r sprintf("%.3f", airway_500_summary$total_untreated)` untreated to
+`r sprintf("%.3f", airway_500_summary$total_treated)` after dexamethasone. The
+median GeneFunnel score per gene instead falls from
+`r sprintf("%.3f", airway_500_summary$score_untreated)` to
+`r sprintf("%.3f", airway_500_summary$score_treated)`. The median retained
+fraction falls from `r sprintf("%.1f", airway_500_summary$retained_untreated)`%
+to `r sprintf("%.1f", airway_500_summary$retained_treated)`%.
+
+## Thousands of genes
+
+The 5,000-gene panel shows the same direction at ten times the set size. Its
+median total per gene rises from
+`r sprintf("%.3f", airway_5000_summary$total_untreated)` to
+`r sprintf("%.3f", airway_5000_summary$total_treated)`, while its median score
+per gene falls from `r sprintf("%.3f", airway_5000_summary$score_untreated)` to
+`r sprintf("%.3f", airway_5000_summary$score_treated)`. The retained fraction
+falls from `r sprintf("%.1f", airway_5000_summary$retained_untreated)`% to
+`r sprintf("%.1f", airway_5000_summary$retained_treated)`%.
+
+```{r airway-figure, echo=FALSE, fig.height=5.5, fig.cap=airway_cap}
+airway_metric_plot <- rbind(
+    data.frame(
+        panel = airway_sample_scores$panel,
+        treatment = airway_sample_scores$treatment,
+        cell_line = airway_sample_scores$cell_line,
+        metric = "Observed total per gene",
+        value = airway_sample_scores$total_per_gene,
+        stringsAsFactors = FALSE
+    ),
+    data.frame(
+        panel = airway_sample_scores$panel,
+        treatment = airway_sample_scores$treatment,
+        cell_line = airway_sample_scores$cell_line,
+        metric = "GeneFunnel score per gene",
+        value = airway_sample_scores$score_per_gene,
+        stringsAsFactors = FALSE
+    )
+)
+airway_metric_plot$panel <- factor(
+    airway_metric_plot$panel,
+    levels = names(airway_gene_sets)
+)
+airway_metric_plot$treatment <- factor(
+    airway_metric_plot$treatment,
+    levels = c("Untreated", "Dexamethasone")
+)
+airway_metric_plot$metric <- factor(
+    airway_metric_plot$metric,
+    levels = c("Observed total per gene", "GeneFunnel score per gene")
+)
+airway_metric_medians <- stats::aggregate(
+    value ~ panel + treatment + metric,
+    data = airway_metric_plot,
+    FUN = median
+)
+
+ggplot2::ggplot(
+    airway_metric_plot,
+    ggplot2::aes(
+        x = treatment,
+        y = value,
+        group = cell_line
+    )
+) +
+    ggplot2::geom_hline(
+        yintercept = 1,
+        colour = "#B3B3B3",
+        linetype = "dotted"
+    ) +
+    ggplot2::geom_line(colour = "#BDBDBD", linewidth = 0.6) +
+    ggplot2::geom_point(
+        ggplot2::aes(shape = cell_line),
+        colour = "#2C7FB8",
+        size = 2.2
+    ) +
+    ggplot2::geom_line(
+        data = airway_metric_medians,
+        mapping = ggplot2::aes(
+            x = treatment,
+            y = value,
+            group = 1
+        ),
+        inherit.aes = FALSE,
+        colour = "#222222",
+        linewidth = 0.9
+    ) +
+    ggplot2::geom_point(
+        data = airway_metric_medians,
+        mapping = ggplot2::aes(x = treatment, y = value),
+        inherit.aes = FALSE,
+        shape = 18,
+        colour = "#222222",
+        size = 3
+    ) +
+    ggplot2::facet_grid(
+        rows = ggplot2::vars(metric),
+        cols = ggplot2::vars(panel)
+    ) +
+    ggplot2::labs(
+        x = NULL,
+        y = "Control-scaled value per gene",
+        shape = "Cell line"
+    ) +
+    ggplot2::theme_minimal(base_size = 11) +
+    ggplot2::theme(
+        panel.grid.minor = ggplot2::element_blank(),
+        panel.grid.major.x = ggplot2::element_blank(),
+        strip.background = ggplot2::element_rect(
+            fill = "#F2F2F2",
+            colour = NA
+        ),
+        strip.text = ggplot2::element_text(face = "bold"),
+        legend.position = "top"
+    )
+```
+
+```{r airway-scale-check, include=FALSE}
+stopifnot(
+    ncol(airway_counts) == 8L,
+    sum(airway_sample_data$dex == "untrt") == 4L,
+    sum(airway_sample_data$dex == "trt") == 4L,
+    length(unique(airway_sample_data$cell)) == 4L,
+    length(airway_eligible_rows) >= 5000L,
+    identical(
+        unname(vapply(airway_gene_sets, length, integer(1L))),
+        c(500L, 5000L)
+    ),
+    all(airway_gene_sets[[1L]] %in% airway_gene_sets[[2L]]),
+    all(is.finite(airway_relative)),
+    all(airway_relative >= 0),
+    identical(dim(airway_scores), c(2L, 8L)),
+    nrow(airway_pairs) == 8L,
+    all(
+        airway_pairs$total_per_gene_treated >
+            airway_pairs$total_per_gene_untreated
+    ),
+    all(
+        airway_pairs$score_per_gene_treated <
+            airway_pairs$score_per_gene_untreated
+    ),
+    all(
+        airway_pairs$retained_fraction_treated <
+            airway_pairs$retained_fraction_untreated
+    )
+)
+```
+
+All four paired cell lines show the same total-up and score-down pattern for
+both panel sizes. The dexamethasone response raises aggregate relative
+expression but also spreads the member values enough that the larger deviation
+penalty more than offsets that gain. The result demonstrates the same score
+mechanics with hundreds and thousands of genes. It is not an inferential
+treatment analysis: there are only four cell lines, CPM is a simple library-size
+adjustment, and the abundance-defined panels do not represent biological
+pathways.
 
 # Choosing between GeneFunnel and rank-based methods
 
