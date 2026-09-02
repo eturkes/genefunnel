@@ -180,123 +180,106 @@ when agreement within the set is part of the biological question. The example
 explains the mathematical difference; it does not show that one method is best
 for every analysis.
 
-# Real-data example: NFT-associated hippocampal expression
+# Real-data example: presynaptic expression across Braak stages
 
-The [GSE1297](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE1297)
-study by [Blalock et al. (2004)](https://doi.org/10.1073/pnas.0308512100)
-contains processed Affymetrix expression values from hippocampal CA1 tissue of
-nine control and 22 Alzheimer's disease subjects. GEO reports an NFT count and
-Braak stage for every subject. The widely used
-[`BLALOCK_ALZHEIMERS_DISEASE_DN`](https://www.gsea-msigdb.org/gsea/msigdb/human/geneset/BLALOCK_ALZHEIMERS_DISEASE_DN.html)
-MSigDB set was curated from the same study.
+The [GSE125583](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE125583)
+series was released in 2019 and accompanies
+[Srinivasan et al. (2020)](https://doi.org/10.1016/j.celrep.2020.107843). It
+contains processed bulk RNA-seq from fusiform gyrus tissue of 70 neurologically
+normal controls and 219 autopsy-confirmed Alzheimer's disease subjects. GEO
+records diagnosis, age, sex, and Braak stage; 287 of the 289 subjects have a
+reported stage.
 
-The example uses one probe each for `PPP2CA`, `CDK5`, `CAMK2A`, and `MAPK9`, all
-members of that down-regulated set. This phosphatase-and-kinase excerpt makes
-the worked example recognizable in a Tau setting without presenting it as a
-validated Tau signature. Each probe is divided by its median signal among the
-nine clinical controls before scoring. This puts the four trajectories on a
-common, non-negative relative scale; GeneFunnel does not perform that
-preprocessing itself.
+The per-sample processed tables contain size-factor-adjusted RPKM (`nRPKM`) and
+raw counts. This vignette embeds the nRPKM values for all subjects and six genes:
+`SYN1`, `SYN2`, `SYP`, `SNAP25`, `STX1A`, and `VAMP2`. The source repository's
+`data-raw/build-gse125583-example.R` script regenerates the 43 kB fixture from
+checksum-verified GEO archives.
 
-```{r blalock-pipeline}
-blalock_expression <- rbind(
-    PPP2CA = c(
-        1733.8, 2967.8, 1294.8, 2494.5, 516.2, 2535.1, 2203.1, 2770.7,
-        2483, 1347.4, 1831.2, 2687.4, 4845.1, 3040.7, 3381, 3902.8,
-        2400.6, 3428.1, 3307, 2756.9, 2078.2, 2215, 2459.9, 2740.7,
-        1791.7, 2363.9, 2425.6, 1815.4, 2565.9, 1822.8, 3028.4
-    ),
-    CDK5 = c(
-        518.3, 673.1, 1008.2, 808.3, 348, 813.7, 666.2, 1078.3, 731,
-        228.7, 267.2, 894.8, 1266.9, 2013.7, 1475.4, 1259.6, 895.1,
-        1056.9, 1983.9, 1118.6, 967.4, 568.3, 859.2, 714.9, 774.9,
-        771, 1029.7, 570.5, 902.4, 638.9, 1179.6
-    ),
-    CAMK2A = c(
-        4276.9, 2739.8, 4956.3, 2845.5, 2887.9, 6737.1, 3330.6,
-        7617.3, 2327.8, 2029.9, 1982.9, 2182.7, 4208.2, 6366.3,
-        7381.6, 4071.7, 6145, 6669.9, 5981.4, 7595.8, 9096.2, 2389.3,
-        2408.4, 2710.9, 3966.4, 4482.9, 2574.3, 2596.8, 7982.5,
-        4408.8, 3159.8
-    ),
-    MAPK9 = c(
-        662.7, 730.5, 413.4, 508.8, 405.8, 880.2, 564, 483.6, 543.9,
-        328.8, 277.7, 866.2, 1167.4, 723, 862.9, 1127.9, 610.1,
-        879.7, 883.8, 777.8, 642.8, 761.1, 867.6, 463.7, 595.9,
-        570.9, 686.5, 700.2, 687, 559.5, 1148.8
-    )
+The synapsins and synaptophysin represent synaptic-vesicle organization, while
+`SNAP25`, `STX1A`, and `VAMP2` form core presynaptic fusion machinery. Together
+they provide a compact, fixed presynaptic-release panel. It is an illustrative
+panel, not a validated Alzheimer's disease signature or a complete pathway.
+Each gene is divided by its median nRPKM among the 70 controls before scoring.
+This places the six positive trajectories on a common, non-negative relative
+scale; GeneFunnel does not perform that preprocessing itself.
+
+```{r gse125583-pipeline}
+gse125583_path <- system.file(
+    "extdata",
+    "GSE125583_presynaptic_release.csv",
+    package = "genefunnel"
 )
-colnames(blalock_expression) <- c(
-    "GSM21203", "GSM21204", "GSM21205", "GSM21206", "GSM21207",
-    "GSM21208", "GSM21209", "GSM21210", "GSM21211", "GSM21212",
-    "GSM21213", "GSM21214", "GSM21215", "GSM21216", "GSM21217",
-    "GSM21218", "GSM21219", "GSM21220", "GSM21221", "GSM21222",
-    "GSM21223", "GSM21224", "GSM21225", "GSM21226", "GSM21227",
-    "GSM21228", "GSM21229", "GSM21230", "GSM21231", "GSM21232",
-    "GSM21233"
-)
-blalock_samples <- data.frame(
-    sample = colnames(blalock_expression),
-    group = factor(
-        c(
-            "Severe", "Incipient", "Incipient", "Severe", "Severe",
-            "Severe", "Moderate", "Moderate", "Moderate", "Severe",
-            "Severe", "Moderate", "Control", "Incipient", "Control",
-            "Control", "Control", "Control", "Control", "Incipient",
-            "Moderate", "Moderate", "Incipient", "Control", "Moderate",
-            "Incipient", "Severe", "Moderate", "Control", "Control",
-            "Incipient"
-        ),
-        levels = c("Control", "Incipient", "Moderate", "Severe")
-    ),
-    nft = c(
-        21, 65.8, 12, 58.2, 62.5, 18.5, 35.2, 19, 42, 22.6, 24.6,
-        22, 8, 6.4, 7, 2, 0.4, 0.4, 4.8, 5.5, 15.8, 30.6, 7.2, 0,
-        13.8, 17.4, 21.5, 26.5, 0.3, 1.3, 8
-    ),
-    braak = c(
-        6, 5, 6, 6, 6, 6, 6, 5, 5, 5, 6, 5, 3, 5, 2, 2, 4, 1, 3,
-        6, 6, 6, 3, 1, 6, 5, 6, 6, 1, 2, 5
-    ),
+stopifnot(nzchar(gse125583_path))
+gse125583 <- utils::read.csv(
+    gse125583_path,
+    check.names = FALSE,
     stringsAsFactors = FALSE
 )
 
-control_columns <- blalock_samples$group == "Control"
+presynaptic_genes <- c("SYN1", "SYN2", "SYP", "SNAP25", "STX1A", "VAMP2")
+presynaptic_gene_ids <- c(
+    SYN1 = 6853L,
+    SYN2 = 6854L,
+    SYP = 6855L,
+    SNAP25 = 6616L,
+    STX1A = 6804L,
+    VAMP2 = 6844L
+)
+gse125583_expression <- t(as.matrix(gse125583[presynaptic_genes]))
+colnames(gse125583_expression) <- gse125583$sample
+storage.mode(gse125583_expression) <- "double"
+
+control_columns <- gse125583$diagnosis == "control"
 control_medians <- apply(
-    blalock_expression[, control_columns, drop = FALSE],
+    gse125583_expression[, control_columns, drop = FALSE],
     1L,
     median
 )
-blalock_relative <- sweep(blalock_expression, 1L, control_medians, "/")
-blalock_scores <- genefunnel(
-    blalock_relative,
-    list(tau_regulator_excerpt = rownames(blalock_relative)),
+gse125583_relative <- sweep(
+    gse125583_expression,
+    1L,
+    control_medians,
+    "/"
+)
+gse125583_scores <- genefunnel(
+    gse125583_relative,
+    list(presynaptic_release = presynaptic_genes),
     BPPARAM = serial
 )
-blalock_total <- unname(colSums(blalock_relative))
-tau_excerpt_score <- unname(blalock_scores["tau_regulator_excerpt", ])
+presynaptic_total <- unname(colSums(gse125583_relative))
+presynaptic_score <- unname(gse125583_scores["presynaptic_release", ])
+braak_available <- !is.na(gse125583$braak)
 
-probe_summary <- data.frame(
-    gene = rownames(blalock_expression),
-    probe = c("208652_at", "204247_s_at", "213108_at", "203218_at"),
-    control_median = unname(control_medians),
+gene_summary <- data.frame(
+    gene = presynaptic_genes,
+    entrez_gene_id = unname(presynaptic_gene_ids[presynaptic_genes]),
+    control_median_nrpkm = unname(control_medians[presynaptic_genes]),
     check.names = FALSE
 )
 knitr::kable(
-    probe_summary,
+    gene_summary,
     digits = 1,
-    col.names = c("Gene", "HG-U133A probe", "Control median")
+    col.names = c("Gene", "NCBI Gene ID", "Control median nRPKM")
 )
 
 association_summary <- data.frame(
     measure = c("Pearson correlation", "Spearman correlation"),
-    four_gene_total = c(
-        cor(blalock_total, blalock_samples$nft),
-        cor(blalock_total, blalock_samples$nft, method = "spearman")
+    six_gene_total = c(
+        cor(presynaptic_total[braak_available], gse125583$braak[braak_available]),
+        cor(
+            presynaptic_total[braak_available],
+            gse125583$braak[braak_available],
+            method = "spearman"
+        )
     ),
     genefunnel_score = c(
-        cor(tau_excerpt_score, blalock_samples$nft),
-        cor(tau_excerpt_score, blalock_samples$nft, method = "spearman")
+        cor(presynaptic_score[braak_available], gse125583$braak[braak_available]),
+        cor(
+            presynaptic_score[braak_available],
+            gse125583$braak[braak_available],
+            method = "spearman"
+        )
     ),
     check.names = FALSE
 )
@@ -304,25 +287,78 @@ knitr::kable(
     association_summary,
     digits = 3,
     col.names = c(
-        "Association with NFT count",
-        "Four-gene total",
+        "Association with Braak stage",
+        "Six-gene total",
         "GeneFunnel score"
     )
 )
 ```
 
-```{r blalock-figure, echo=FALSE, fig.width=7.5, fig.height=4.4, fig.cap="NFT-associated expression in GSE1297 hippocampal CA1 tissue. A, each selected probe relative to its clinical-control median, with a lowess curve as a visual guide. B, the four-gene GeneFunnel score for all 31 subjects; the dashed line is a least-squares summary, not a fitted disease model."}
-gene_colours <- c("#4477AA", "#EE6677", "#228833", "#CCBB44")
-group_colours <- c(
-    Control = "#4477AA",
-    Incipient = "#66CCEE",
-    Moderate = "#EE6677",
-    Severe = "#AA3377"
+```{r gse125583-figure, echo=FALSE, fig.width=7.5, fig.height=4.4, fig.cap="Presynaptic expression across Braak stages in GSE125583 fusiform gyrus. A, median control-scaled nRPKM for each selected gene at stages I-VI. B, individual six-gene GeneFunnel scores; black diamonds and lines show stage medians. The display is descriptive and does not fit a disease model."}
+braak_stages <- 1:6
+braak_labels <- c("I", "II", "III", "IV", "V", "VI")
+gene_colours <- c(
+    "#4477AA", "#66CCEE", "#228833", "#CCBB44", "#EE6677", "#AA3377"
 )
-group_symbols <- c(Control = 16, Incipient = 17, Moderate = 15, Severe = 18)
+gene_symbols <- c(16, 17, 15, 18, 8, 3)
+diagnosis_colours <- c(control = "#4477AA", "Alzheimer's disease" = "#CC6677")
+diagnosis_symbols <- c(control = 16, "Alzheimer's disease" = 17)
+
+stage_gene_medians <- vapply(
+    braak_stages,
+    function(stage) {
+        stage_columns <- which(gse125583$braak == stage)
+        apply(
+            gse125583_relative[, stage_columns, drop = FALSE],
+            1L,
+            median
+        )
+    },
+    numeric(length(presynaptic_genes))
+)
+stage_score_medians <- vapply(
+    braak_stages,
+    function(stage) {
+        median(presynaptic_score[which(gse125583$braak == stage)])
+    },
+    numeric(1L)
+)
 
 old_par <- par(no.readonly = TRUE)
-layout(matrix(c(1, 2), nrow = 1), widths = c(1.2, 1))
+layout(matrix(c(1, 2), nrow = 1), widths = c(1.15, 1))
+
+par(
+    mar = c(4.7, 4.2, 2.2, 0.8),
+    mgp = c(2.5, 0.7, 0),
+    las = 1,
+    bty = "l"
+)
+matplot(
+    braak_stages,
+    t(stage_gene_medians),
+    type = "o",
+    pch = gene_symbols,
+    lty = 1,
+    lwd = 1.3,
+    col = gene_colours,
+    xaxt = "n",
+    xlab = "Braak stage",
+    ylab = "Median expression / control median",
+    ylim = range(c(1, stage_gene_medians))
+)
+axis(1, at = braak_stages, labels = braak_labels)
+abline(h = 1, col = "#B3B3B3", lty = 3)
+legend(
+    "topright",
+    legend = presynaptic_genes,
+    col = gene_colours,
+    pch = gene_symbols,
+    lty = 1,
+    bty = "n",
+    cex = 0.72,
+    ncol = 2
+)
+mtext("A  Selected-gene medians", side = 3, adj = 0, font = 2)
 
 par(
     mar = c(4.7, 4.2, 2.2, 0.8),
@@ -332,68 +368,41 @@ par(
 )
 plot(
     NA,
-    xlim = range(blalock_samples$nft),
-    ylim = c(0, max(blalock_relative) * 1.08),
-    xlab = "NFT count",
-    ylab = "Expression / control median"
-)
-abline(h = 1, col = "#B3B3B3", lty = 3)
-for (gene_index in seq_len(nrow(blalock_relative))) {
-    points(
-        blalock_samples$nft,
-        blalock_relative[gene_index, ],
-        pch = 16,
-        cex = 0.72,
-        col = grDevices::adjustcolor(
-            gene_colours[gene_index],
-            alpha.f = 0.58
-        )
-    )
-    gene_trend <- lowess(
-        blalock_samples$nft,
-        blalock_relative[gene_index, ],
-        f = 0.7
-    )
-    lines(gene_trend, col = gene_colours[gene_index], lwd = 1.5)
-}
-legend(
-    "topright",
-    legend = rownames(blalock_relative),
-    col = gene_colours,
-    pch = 16,
-    lty = 1,
-    bty = "n",
-    cex = 0.76,
-    ncol = 2
-)
-mtext("A  Selected-gene expression", side = 3, adj = 0, font = 2)
-
-par(
-    mar = c(4.7, 4.2, 2.2, 0.8),
-    mgp = c(2.5, 0.7, 0),
-    las = 1,
-    bty = "l"
-)
-plot(
-    blalock_samples$nft,
-    tau_excerpt_score,
-    pch = unname(group_symbols[as.character(blalock_samples$group)]),
-    col = unname(group_colours[as.character(blalock_samples$group)]),
-    cex = 0.9,
-    xlab = "NFT count",
+    xlim = c(0.65, 6.35),
+    ylim = c(0, max(presynaptic_score) * 1.04),
+    xaxt = "n",
+    xlab = "Braak stage",
     ylab = "GeneFunnel score"
 )
-abline(
-    lm(tau_excerpt_score ~ blalock_samples$nft),
-    col = "#555555",
-    lty = 2,
-    lwd = 1.4
+axis(1, at = braak_stages, labels = braak_labels)
+for (stage in braak_stages) {
+    sample_indices <- which(gse125583$braak == stage)
+    offsets <- seq(-0.18, 0.18, length.out = length(sample_indices))
+    sample_diagnoses <- gse125583$diagnosis[sample_indices]
+    points(
+        stage + offsets,
+        presynaptic_score[sample_indices],
+        pch = unname(diagnosis_symbols[sample_diagnoses]),
+        col = grDevices::adjustcolor(
+            unname(diagnosis_colours[sample_diagnoses]),
+            alpha.f = 0.55
+        ),
+        cex = 0.72
+    )
+}
+lines(braak_stages, stage_score_medians, col = "#222222", lwd = 1.5)
+points(
+    braak_stages,
+    stage_score_medians,
+    pch = 18,
+    col = "#222222",
+    cex = 1.05
 )
 legend(
     "topright",
-    legend = names(group_symbols),
-    col = group_colours,
-    pch = group_symbols,
+    legend = c("Control", "Alzheimer's disease", "Stage median"),
+    col = c(unname(diagnosis_colours), "#222222"),
+    pch = c(unname(diagnosis_symbols), 18),
     bty = "n",
     cex = 0.72
 )
@@ -403,46 +412,70 @@ layout(1)
 par(old_par)
 ```
 
-```{r blalock-pipeline-check, include=FALSE}
+```{r gse125583-pipeline-check, include=FALSE}
 stopifnot(
-    identical(dim(blalock_expression), c(4L, 31L)),
+    identical(dim(gse125583_expression), c(6L, 289L)),
+    identical(
+        as.integer(table(gse125583$diagnosis)[
+            c("Alzheimer's disease", "control")
+        ]),
+        c(219L, 70L)
+    ),
+    sum(braak_available) == 287L,
+    all(gse125583_expression > 0),
     isTRUE(all.equal(
         control_medians,
-        c(PPP2CA = 3307, CDK5 = 1056.9, CAMK2A = 5981.4, MAPK9 = 862.9)
+        c(
+            SYN1 = 119.521414801991,
+            SYN2 = 53.495229040887,
+            SYP = 230.823767700279,
+            SNAP25 = 547.602073827910,
+            STX1A = 68.824085690708,
+            VAMP2 = 231.024436070715
+        ),
+        tolerance = 1e-10
     )),
     isTRUE(all.equal(
         apply(
-            blalock_relative[, control_columns, drop = FALSE],
+            gse125583_relative[, control_columns, drop = FALSE],
             1L,
             median
         ),
-        setNames(rep(1, 4), rownames(blalock_relative))
+        stats::setNames(rep(1, 6), presynaptic_genes),
+        tolerance = 1e-12
     )),
     isTRUE(all.equal(
-        tau_excerpt_score[c(1, 5, 24, 31)],
-        c(2.185472, 1.126626, 2.152716, 3.222515),
-        tolerance = 1e-6
+        presynaptic_score[c(1, 13, 101, 289)],
+        c(3.11895741616489, 5.76116235839454, 5.17394506339094,
+            7.02428095444394),
+        tolerance = 1e-10
     )),
     isTRUE(all.equal(
-        cor(tau_excerpt_score, blalock_samples$nft, method = "spearman"),
-        -0.5997177,
-        tolerance = 1e-6
+        cor(
+            presynaptic_score[braak_available],
+            gse125583$braak[braak_available],
+            method = "spearman"
+        ),
+        -0.4092210329,
+        tolerance = 1e-10
     ))
 )
 ```
 
-Across all 31 subjects, the score has a Spearman correlation of -0.60 with the
-reported NFT count. The plain four-gene total points in the same broad
-direction. GeneFunnel's contribution is the sample-specific disagreement
-penalty, not a claim that this small panel produces a stronger pathology
-association than a sum.
+Across the 287 subjects with a recorded stage, the GeneFunnel score has a
+Spearman correlation of -0.409 with Braak stage; the plain six-gene total has a
+correlation of -0.393. The stage-median score decreases from 6.39 at stage I to
+1.93 at stage VI, although adjacent stages are not strictly monotonic.
+GeneFunnel's contribution is the sample-specific disagreement penalty, not a
+claim that this compact panel has a materially stronger pathology association
+than its sum.
 
-This result is descriptive and uses genes selected from the same study being
-shown. GeneFunnel does not adjust for age, sex, post-mortem interval, Braak
-stage, or clinical group, and it does not fit or test the NFT association. A
-full analysis should predeclare the gene set and preprocessing, score the full
-cohort, and use an appropriate downstream model. The four-gene excerpt is an
-inspectable Tau-oriented example, not a diagnostic or mechanistic signature.
+The result is descriptive. Braak stage and diagnosis are closely related in
+this autopsy cohort, and the calculation does not adjust for age, sex, technical
+variation, or tissue cell composition. It also does not fit or test an
+association. A full analysis should predeclare a complete gene set and
+preprocessing plan, assess coverage, and use an appropriate downstream model.
+The six-gene panel is an inspectable scoring example, not a biomarker.
 
 # Choosing between GeneFunnel and rank-based methods
 

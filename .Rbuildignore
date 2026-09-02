@@ -1,6 +1,7 @@
 ^genefunnel\.Rproj$
 ^\.Rproj\.user$
 ^benchmark$
+^data-raw$
 ^.*\.Rcheck$
 ^.*\.BiocCheck$
 ^genefunnel_.*\.tar\.gz$
