@@ -3,11 +3,53 @@
     display: none;
 }
 
+/* Match BiocStyle's desktop text column. */
 .horizontal-scroll {
-    max-width: 100%;
+    box-sizing: border-box;
+    width: auto;
+    max-width: none;
+    margin-left: 65px;
+    margin-right: 150px;
     overflow-x: auto;
 }
 
 .horizontal-scroll > table {
-    margin-right: 0;
+    box-sizing: border-box;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    margin: 10px 0 !important;
+    font-size: 90%;
+}
+
+.horizontal-scroll > table th,
+.horizontal-scroll > table td {
+    padding-left: 4px !important;
+    padding-right: 4px !important;
+    overflow-wrap: break-word;
+    word-break: normal;
+    white-space: normal;
+}
+
+@media screen and (max-width: 991px) {
+    .horizontal-scroll {
+        max-width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+    }
+}
+
+@media print {
+    .horizontal-scroll {
+        overflow-x: visible;
+    }
+
+    .horizontal-scroll > table {
+        table-layout: fixed;
+    }
+
+    .horizontal-scroll > table th,
+    .horizontal-scroll > table td {
+        overflow-wrap: anywhere;
+    }
 }
