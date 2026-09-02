@@ -6,6 +6,8 @@
   member sum.
 - Summarises the dense/sparse, serial/parallel, and reference-implementation
   checks used by the test suite.
+- Adds benchmark-style heatmaps and score-composition figures for the controlled
+  expression and perturbation examples.
 - Clarifies when the score is useful and which preprocessing steps remain the
   user's responsibility.
 

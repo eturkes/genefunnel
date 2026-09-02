@@ -25,6 +25,7 @@ Imports:
     Rcpp (>= 1.0.5)
 Suggests:
     BiocStyle,
+    ggplot2,
     knitr,
     rmarkdown (>= 2.12),
     snow,

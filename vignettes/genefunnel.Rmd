@@ -21,9 +21,26 @@ vignette: >
 knitr::opts_chunk$set(
     collapse = TRUE,
     comment = "#>",
-    fig.align = "center"
+    fig.align = "center",
+    fig.width = 7.5,
+    fig.height = 4.5,
+    dpi = 96,
+    crop = NULL
 )
 Sys.setenv(TZ = "UTC")
+pattern_heatmap_caption <- paste(
+    "Benchmark-style view of the controlled expression patterns. Tiles show",
+    "observed feature values; grey crossed cells are unavailable measurements."
+)
+pattern_components_caption <- paste(
+    "Share of each broad-program total retained as the GeneFunnel score or",
+    "removed as the scaled absolute-deviation penalty."
+)
+perturbation_benchmark_caption <- paste(
+    "Observed totals and GeneFunnel scores before and after the controlled",
+    "perturbations. The assembly total is held fixed, whereas receptor magnitude",
+    "is increased."
+)
 ```
 
 # Introduction
@@ -150,6 +167,60 @@ knitr::kable(
 )
 ```
 
+```{r controlled-pattern-heatmap, echo=FALSE, fig.cap=pattern_heatmap_caption}
+pattern_heatmap <- data.frame(
+    feature = rep(rownames(pattern_assay), times = ncol(pattern_assay)),
+    pattern = rep(colnames(pattern_assay), each = nrow(pattern_assay)),
+    value = as.vector(pattern_assay),
+    stringsAsFactors = FALSE
+)
+pattern_heatmap$feature <- factor(
+    pattern_heatmap$feature,
+    levels = rev(rownames(pattern_assay))
+)
+pattern_heatmap$pattern <- factor(
+    pattern_heatmap$pattern,
+    levels = colnames(pattern_assay)
+)
+pattern_labels <- c(
+    coherent = "Coherent",
+    same_total_dispersed = "Same total,\ndispersed",
+    uniform_high = "Uniform\nhigh",
+    partial_observation = "Partial\nobservation",
+    half_active = "Half\nactive",
+    single_driver = "Single\ndriver"
+)
+
+ggplot2::ggplot(
+    pattern_heatmap,
+    ggplot2::aes(x = pattern, y = feature, fill = value)
+) +
+    ggplot2::geom_tile(colour = "white", linewidth = 0.7) +
+    ggplot2::geom_point(
+        data = pattern_heatmap[is.na(pattern_heatmap$value), , drop = FALSE],
+        mapping = ggplot2::aes(x = pattern, y = feature),
+        inherit.aes = FALSE,
+        shape = 4,
+        size = 2.1,
+        stroke = 0.7,
+        colour = "#555555"
+    ) +
+    ggplot2::scale_x_discrete(labels = pattern_labels) +
+    ggplot2::scale_fill_gradient(
+        low = "#F7FBFF",
+        high = "#08519C",
+        na.value = "#E0E0E0",
+        name = "Observed\nvalue"
+    ) +
+    ggplot2::labs(x = NULL, y = "Feature") +
+    ggplot2::theme_minimal(base_size = 11) +
+    ggplot2::theme(
+        panel.grid = ggplot2::element_blank(),
+        axis.text.x = ggplot2::element_text(size = 9),
+        legend.position = "right"
+    )
+```
+
 The following diagnostics expose the calculation for the broad program. The
 scaled deviation is the complete penalty subtracted from the observed total.
 
@@ -200,6 +271,59 @@ stopifnot(isTRUE(all.equal(
     c(3530 / 9, 1490 / 9, 800, 400, 1600 / 9, 0),
     tolerance = 1e-10
 )))
+```
+
+```{r controlled-pattern-components, echo=FALSE, fig.height=4.2, fig.cap=pattern_components_caption}
+pattern_components <- rbind(
+    data.frame(
+        pattern = pattern_diagnostics$pattern,
+        component = "GeneFunnel score",
+        fraction = pattern_diagnostics$genefunnel_score /
+            pattern_diagnostics$total
+    ),
+    data.frame(
+        pattern = pattern_diagnostics$pattern,
+        component = "Deviation penalty",
+        fraction = pattern_diagnostics$scaled_deviation /
+            pattern_diagnostics$total
+    )
+)
+pattern_components$pattern <- factor(
+    pattern_components$pattern,
+    levels = colnames(pattern_assay)
+)
+pattern_components$component <- factor(
+    pattern_components$component,
+    levels = c("Deviation penalty", "GeneFunnel score")
+)
+
+ggplot2::ggplot(
+    pattern_components,
+    ggplot2::aes(x = pattern, y = fraction, fill = component)
+) +
+    ggplot2::geom_col(width = 0.72) +
+    ggplot2::scale_x_discrete(labels = pattern_labels) +
+    ggplot2::scale_y_continuous(
+        limits = c(0, 1),
+        breaks = seq(0, 1, 0.25),
+        labels = function(value) paste0(round(100 * value), "%"),
+        expand = ggplot2::expansion(mult = c(0, 0.02))
+    ) +
+    ggplot2::scale_fill_manual(
+        values = c(
+            "Deviation penalty" = "#D9D9D9",
+            "GeneFunnel score" = "#2C7FB8"
+        ),
+        name = NULL
+    ) +
+    ggplot2::labs(x = NULL, y = "Share of observed total") +
+    ggplot2::theme_minimal(base_size = 11) +
+    ggplot2::theme(
+        panel.grid.major.x = ggplot2::element_blank(),
+        panel.grid.minor = ggplot2::element_blank(),
+        axis.text.x = ggplot2::element_text(size = 9),
+        legend.position = "top"
+    )
 ```
 
 The coherent and dispersed samples each total 400. The coherent sample has only
@@ -343,6 +467,70 @@ stopifnot(
         tolerance = 1e-10
     ))
 )
+```
+
+```{r controlled-perturbation-benchmark, echo=FALSE, fig.height=4.2, fig.cap=perturbation_benchmark_caption}
+perturbation_plot <- rbind(
+    data.frame(
+        gene_set = perturbation_diagnostics$gene_set,
+        sample = perturbation_diagnostics$sample,
+        metric = "Observed total",
+        value = perturbation_diagnostics$total
+    ),
+    data.frame(
+        gene_set = perturbation_diagnostics$gene_set,
+        sample = perturbation_diagnostics$sample,
+        metric = "GeneFunnel score",
+        value = perturbation_diagnostics$genefunnel_score
+    )
+)
+perturbation_plot$sample <- factor(
+    perturbation_plot$sample,
+    levels = c("original", "modified"),
+    labels = c("Original", "Modified")
+)
+perturbation_plot$metric <- factor(
+    perturbation_plot$metric,
+    levels = c("Observed total", "GeneFunnel score")
+)
+perturbation_plot$gene_set <- factor(
+    perturbation_plot$gene_set,
+    levels = names(perturbation_sets),
+    labels = c(
+        "Complex assembly",
+        "Receptor activity",
+        "Overlapping response"
+    )
+)
+
+ggplot2::ggplot(
+    perturbation_plot,
+    ggplot2::aes(x = sample, y = value, fill = metric)
+) +
+    ggplot2::geom_col(
+        position = ggplot2::position_dodge(width = 0.72),
+        width = 0.65
+    ) +
+    ggplot2::facet_wrap(ggplot2::vars(gene_set), nrow = 1) +
+    ggplot2::scale_fill_manual(
+        values = c(
+            "Observed total" = "#BDBDBD",
+            "GeneFunnel score" = "#2C7FB8"
+        ),
+        name = NULL
+    ) +
+    ggplot2::labs(x = NULL, y = "Value") +
+    ggplot2::theme_minimal(base_size = 11) +
+    ggplot2::theme(
+        panel.grid.major.x = ggplot2::element_blank(),
+        panel.grid.minor = ggplot2::element_blank(),
+        strip.background = ggplot2::element_rect(
+            fill = "#F2F2F2",
+            colour = NA
+        ),
+        strip.text = ggplot2::element_text(face = "bold"),
+        legend.position = "top"
+    )
 ```
 
 The assembly score rises from 210 to 300 without any change in its total. The
