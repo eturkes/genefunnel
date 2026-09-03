@@ -133,6 +133,9 @@ identifier mapping, and coverage checks. Its output can then provide
 gene-set-level features for sample prioritization, visualization, clustering, or
 statistical models.
 
+For method selection, see the
+[comparison with state-of-the-art methods](#state-of-the-art-comparison).
+
 The package is in development and has not been accepted into Bioconductor. Its
 source and issue tracker are on the
 [GeneFunnel repository](https://github.com/eturkes/genefunnel).
@@ -1513,21 +1516,98 @@ not a cell-type enrichment test. Pseudobulk aggregation also removes
 within-subtype cell variation. The example demonstrates the score mechanics at
 500 and 5,000 genes rather than validated biological programs.
 
-# Choosing between GeneFunnel and rank-based methods
+# Comparison with state-of-the-art methods {#state-of-the-art-comparison}
 
-Gene-set scoring is already supported by several complementary packages.
-[`GSVA`](https://bioconductor.org/packages/GSVA) offers unsupervised gene-set
-transformations whose methods use relative expression or rank information.
-[`singscore`](https://bioconductor.org/packages/singscore) and
-[`UCell`](https://bioconductor.org/packages/UCell) calculate single-sample
-scores from within-sample feature ranks, with UCell using a Mann-Whitney U
-statistic.
+GeneFunnel belongs to the field of sample-wise gene-set scoring. Relevant
+comparators include established reference methods and recent advances in
+large-scale scoring. They do not all estimate the same quantity. A
+[benchmark of 18 scoring methods][scoring-benchmark] evaluates stability,
+data integration, and downstream prediction separately. Its results support
+task-specific selection rather than one ranking for every application.
 
-GeneFunnel answers a different question. It does not rank values or estimate a
-distribution across samples. Instead, it applies the formula above to each set
-and sample independently. The score therefore depends on measurement scale,
-set size, and observed coverage. Choose the method that matches the quantity
-you want to preserve.
+## What each method measures
+
+| Method | Score and information used | Comparison with GeneFunnel |
+|:--|:--|:--|
+| **GeneFunnel** | Observed member total minus an absolute-deviation penalty; each set and sample is independent. | Preserves magnitude and penalizes within-sample disagreement. Units, member count, and missingness affect the score. |
+| [**PLAID (2025)**][plaid-paper] | Mean member intensity, implemented with sparse matrix operations; the published workflow also normalizes scores. | The closest magnitude-based comparator. Its core mean has no disagreement penalty, whereas GeneFunnel uses a penalized total. |
+| [**GSVA**][gsva-paper] | Estimates each gene's expression distribution across samples, then compares members with nonmembers within each sample. | Measures relative enrichment in a cohort. Unlike GeneFunnel, the GSVA transformation depends on the other samples and background genes. |
+| [**ssGSEA**][gsva-guide] | Compares the empirical distributions of within-sample ranks for members and nonmembers. | Targets relative enrichment, not observed magnitude. The GSVA implementation's optional final range normalization also depends on the collection of calculated scores. |
+| [**singscore**][singscore-paper] | Normalized mean within-sample ranks; supports up- and down-regulated signatures and reports rank dispersion. | Offers independent sample scoring without preserving absolute abundance. Its dispersion diagnostic is not GeneFunnel's penalty on measured values. |
+| [**UCell v2 (2026)**][ucell-paper] | A normalized Mann-Whitney U statistic over capped within-cell ranks. | Designed for single-cell signatures. Unsmoothed scores are cell-independent; optional neighbor smoothing adds information from other cells. GeneFunnel uses neither ranks nor smoothing. |
+| [**AUCell**][aucell-paper] | Area under a gene-set recovery curve near the top of each cell's expression ranking. | Scores the concentration of members among highly ranked genes. Rank-window choices differ from GeneFunnel's use of every available member value. |
+| [**decoupleR: ULM, MLM, and consensus**][decoupler-paper] | Linear-model and ensemble activity estimates using prior target relationships, including signed or weighted interactions. | Appropriate comparators for regulator activity. GeneFunnel accepts unweighted membership, not regulatory signs, interaction weights, or network structure. |
+
+The table distinguishes algorithms from packages. The `GSVA` package also
+implements ssGSEA and other transformations; `decoupleR` is a framework with
+several estimators. PLAID includes approximations of other scoring methods, but
+those are distinct from its core mean-based score
+([GSVA documentation][gsva-guide]; [PLAID paper][plaid-paper]).
+
+## How the worked examples distinguish the methods
+
+For the same observed members and input values, dividing GeneFunnel by the
+observed member count gives
+
+$$
+\frac{\operatorname{GeneFunnel}(x)}{n}
+=\bar{x}-\frac{1}{2(n-1)}\sum_{i=1}^{n}|x_i-\bar{x}|.
+$$
+
+This isolates its difference from a mean-based score. In the controlled panel,
+`coherent` and `same_total_dispersed` have the same member count and total.
+Their unnormalized member means therefore agree, while GeneFunnel penalizes
+the dispersed pattern more. This is an algebraic comparison with PLAID's core
+aggregation, not a run of the PLAID package or its score normalization.
+
+Magnitude and relative enrichment answer different questions. Multiplying a
+sample's non-negative values by a positive constant multiplies GeneFunnel by
+that constant. It leaves within-sample ranks unchanged. Rank-based singscore
+and unsmoothed UCell therefore discard that scale change when their gene
+universe and scoring settings remain fixed
+([singscore][singscore-paper]; [UCell v2][ucell-paper]). Preserving scale is
+useful only when it represents biology rather than technical variation.
+
+The six-gene presynaptic case study and the mouse pseudobulk example demonstrate
+GeneFunnel's calculations; they do not validate it against these alternatives.
+A rank-based comparison of the six-gene panel would need a suitable background
+gene universe, not just the selected members. Likewise, agreement among member
+values within a sample is not evidence of co-expression across samples or
+causal regulator activity.
+
+## Choosing a method and interpreting the evidence
+
+Use GeneFunnel when total signal and agreement among measured members are the
+intended summary. Compare it with PLAID or an unpenalized mean to assess whether
+the deviation penalty adds useful information. Prefer a rank-based comparator
+when within-sample relative expression is the target. For signed regulatory
+responses, compare a footprint estimator such as decoupleR's linear models
+rather than treating all pathway members as equally directed evidence.
+
+Published benchmarks establish performance only for their tested data,
+implementations, and endpoints. PLAID evaluates runtime, memory, and score
+concordance; the broader scoring benchmark also evaluates downstream behavior
+([PLAID][plaid-paper]; [18-method benchmark][scoring-benchmark]). Neither
+establishes GeneFunnel's superiority. This vignette contains methodological
+comparisons, not a head-to-head SOTA performance benchmark.
+
+A performance comparison must use matched gene identifiers, gene sets,
+coverage rules, and documented method-appropriate preprocessing. Record package
+versions, normalization, rank limits, seeds, and parallel settings. Assess
+independent biological endpoints, sensitivity to missing members, and runtime
+and peak memory on the same hardware. For prediction, keep preprocessing and
+method selection inside training folds. Score correlation alone does not
+establish biological accuracy, and unequal score scales cannot be compared as
+though a larger number meant better performance.
+
+[scoring-benchmark]: https://doi.org/10.1093/bib/bbaf684
+[plaid-paper]: https://doi.org/10.1093/bioinformatics/btaf621
+[gsva-paper]: https://doi.org/10.1186/1471-2105-14-7
+[gsva-guide]: https://bioconductor.org/packages/release/bioc/vignettes/GSVA/inst/doc/GSVA.html
+[singscore-paper]: https://doi.org/10.1186/s12859-018-2435-4
+[ucell-paper]: https://doi.org/10.1093/bioinformatics/btag055
+[aucell-paper]: https://doi.org/10.1038/nmeth.4463
+[decoupler-paper]: https://doi.org/10.1093/bioadv/vbac016
 
 # Check coverage before scoring
 
