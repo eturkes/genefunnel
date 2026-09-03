@@ -24,7 +24,7 @@ knitr::opts_chunk$set(
     fig.align = "center",
     fig.width = 7.5,
     fig.height = 4.5,
-    dpi = 96,
+    dpi = 144,
     crop = NULL
 )
 Sys.setenv(TZ = "UTC")
@@ -33,8 +33,25 @@ pattern_heatmap_caption <- paste(
     "observed feature values; grey crossed cells are unavailable measurements."
 )
 components_cap <- paste(
-    "Share of each broad-program total retained as the GeneFunnel score or",
-    "removed as the scaled absolute-deviation penalty."
+    "Unscaled broad-program scores with their calculation shown beneath each",
+    "tile. The observed member count, total, mean, and complete deviation",
+    "penalty distinguish unavailable measurements from observed zeros."
+)
+nested_cap <- paste(
+    "The ten-feature input becomes a three-set score matrix. Numbers show",
+    "scores and observed member counts (n). Grey NA tiles are unscoreable,",
+    "not zero. Both score heatmaps use the same unscaled colour range."
+)
+perturb_input_cap <- paste(
+    "Original and modified feature values on one unscaled colour range.",
+    "Assembly members converge without changing their total; receptor",
+    "members increase together. Background features remain unchanged."
+)
+membership_cap <- paste(
+    "Bipartite view of the declared synthetic gene sets. Each edge is a",
+    "membership in perturbation_sets, not an inferred interaction. Gold nodes",
+    "and bold labels identify members shared by two sets. Background features",
+    "have no memberships and are omitted."
 )
 perturb_cap <- paste(
     "Observed totals and GeneFunnel scores before and after the controlled",
@@ -42,8 +59,10 @@ perturb_cap <- paste(
     "magnitude is increased."
 )
 gse_gene_cap <- paste(
-    "Median control-scaled nRPKM for a fixed six-gene presynaptic panel across",
-    "Braak stages in the independent GSE125583 fusiform-gyrus cohort."
+    "Stage medians of source nRPKM in GSE125583. Left: unscaled abundance.",
+    "Right: each row's minimum and maximum mapped to -1 and 1, respectively.",
+    "Column labels give subject counts. Row scaling is for display only;",
+    "GeneFunnel uses individual control-scaled profiles, not either summary."
 )
 gse_score_cap <- paste(
     "Individual six-gene GeneFunnel scores across Braak stages in GSE125583.",
@@ -56,6 +75,43 @@ gse60361_cap <- paste(
     "is the unpenalized total; distance below it is the deviation penalty.",
     "Panels use nested 500- and 5,000-gene abundance sets."
 )
+class_heatmap_cap <- paste(
+    "Median retained fraction within each broad cell class. Each subtype",
+    "profile has equal weight, irrespective of its cell count. Labels report",
+    "the number of subtype profiles, not biological replicates. The colour",
+    "scale spans the full possible range from 0 to 100%."
+)
+
+matrix_cells <- function(values) {
+    stopifnot(is.matrix(values), !is.null(rownames(values)),
+        !is.null(colnames(values)))
+    data.frame(
+        feature = factor(rep(rownames(values), ncol(values)),
+            levels = rev(rownames(values))),
+        sample = factor(rep(colnames(values), each = nrow(values)),
+            levels = colnames(values)),
+        value = as.vector(values)
+    )
+}
+heatmap_theme <- ggplot2::theme_minimal(base_size = 11) +
+    ggplot2::theme(
+        panel.grid = ggplot2::element_blank(),
+        legend.position = "bottom",
+        strip.background = ggplot2::element_rect(fill = "#F2F2F2", colour = NA),
+        strip.text = ggplot2::element_text(face = "bold")
+    )
+draw_heatmap_pair <- function(left, right) {
+    panels <- lapply(list(left, right), ggplot2::ggplotGrob)
+    heights <- grid::unit.pmax(panels[[1L]]$heights, panels[[2L]]$heights)
+    grid::grid.newpage()
+    grid::pushViewport(grid::viewport(layout = grid::grid.layout(1L, 2L)))
+    for (index in seq_along(panels)) {
+        panels[[index]]$heights <- heights
+        grid::grid.draw(grid::grobTree(panels[[index]],
+            vp = grid::viewport(layout.pos.row = 1L, layout.pos.col = index)))
+    }
+    grid::popViewport()
+}
 ```
 
 # Introduction
@@ -288,57 +344,47 @@ stopifnot(isTRUE(all.equal(
 )))
 ```
 
-```{r pattern-components, echo=FALSE, fig.height=4.2, fig.cap=components_cap}
-pattern_components <- rbind(
-    data.frame(
-        pattern = pattern_diagnostics$pattern,
-        component = "GeneFunnel score",
-        fraction = pattern_diagnostics$genefunnel_score /
-            pattern_diagnostics$total
-    ),
-    data.frame(
-        pattern = pattern_diagnostics$pattern,
-        component = "Deviation penalty",
-        fraction = pattern_diagnostics$scaled_deviation /
-            pattern_diagnostics$total
-    )
-)
-pattern_components$pattern <- factor(
-    pattern_components$pattern,
+```{r pattern-components, echo=FALSE, fig.height=3.8, fig.cap=components_cap}
+pattern_calculation <- pattern_diagnostics
+pattern_calculation$pattern <- factor(
+    pattern_calculation$pattern,
     levels = colnames(pattern_assay)
 )
-pattern_components$component <- factor(
-    pattern_components$component,
-    levels = c("Deviation penalty", "GeneFunnel score")
+pattern_calculation$annotation <- sprintf(
+    "n = %d\nTotal = %.0f\nMean = %.1f\nPenalty = %.1f",
+    pattern_calculation$observed_members,
+    pattern_calculation$total,
+    pattern_calculation$mean,
+    pattern_calculation$scaled_deviation
 )
-
 ggplot2::ggplot(
-    pattern_components,
-    ggplot2::aes(x = pattern, y = fraction, fill = component)
+    pattern_calculation,
+    ggplot2::aes(x = pattern, y = 1, fill = genefunnel_score)
 ) +
-    ggplot2::geom_col(width = 0.72) +
-    ggplot2::scale_x_discrete(labels = pattern_labels) +
+    ggplot2::geom_tile(height = 0.9, colour = "white", linewidth = 0.8) +
+    ggplot2::geom_text(
+        ggplot2::aes(label = sprintf("%.1f", genefunnel_score),
+            colour = genefunnel_score > 450),
+        size = 3.4, fontface = "bold"
+    ) +
+    ggplot2::geom_text(
+        ggplot2::aes(y = -0.55, label = annotation),
+        colour = "#222222", size = 3.1, lineheight = 1.15
+    ) +
+    ggplot2::scale_colour_manual(values = c(`FALSE` = "#222222", `TRUE` = "white"),
+        guide = "none") +
+    ggplot2::scale_x_discrete(labels = pattern_labels, position = "top") +
     ggplot2::scale_y_continuous(
-        limits = c(0, 1),
-        breaks = seq(0, 1, 0.25),
-        labels = function(value) paste0(round(100 * value), "%"),
-        expand = ggplot2::expansion(mult = c(0, 0.02))
+        limits = c(-1.8, 1.6), breaks = NULL, expand = c(0, 0)
     ) +
-    ggplot2::scale_fill_manual(
-        values = c(
-            "Deviation penalty" = "#D9D9D9",
-            "GeneFunnel score" = "#2C7FB8"
-        ),
-        name = NULL
+    ggplot2::scale_fill_gradient(
+        low = "#F7FBFF", high = "#08519C",
+        limits = c(0, max(pattern_scores, na.rm = TRUE)),
+        name = "GeneFunnel score"
     ) +
-    ggplot2::labs(x = NULL, y = "Share of observed total") +
-    ggplot2::theme_minimal(base_size = 11) +
-    ggplot2::theme(
-        panel.grid.major.x = ggplot2::element_blank(),
-        panel.grid.minor = ggplot2::element_blank(),
-        axis.text.x = ggplot2::element_text(size = 9),
-        legend.position = "top"
-    )
+    ggplot2::labs(x = NULL, y = NULL, title = "Broad-program score and calculation") +
+    heatmap_theme +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(size = 9))
 ```
 
 The coherent and dispersed samples each total 400. The coherent sample has only
@@ -377,6 +423,47 @@ stopifnot(isTRUE(all.equal(
     c(400, 0, 1600 / 9),
     tolerance = 1e-10
 )))
+```
+
+```{r nested-score-heatmap, echo=FALSE, fig.height=4, fig.cap=nested_cap}
+pattern_observed <- t(vapply(pattern_sets, function(members) {
+    colSums(!is.na(pattern_assay[members, , drop = FALSE]))
+}, numeric(ncol(pattern_assay))))
+pattern_score_cells <- matrix_cells(pattern_scores)
+pattern_score_cells$observed <- as.vector(pattern_observed)
+pattern_score_cells$label <- ifelse(
+    is.na(pattern_score_cells$value),
+    paste0("NA\nn = ", pattern_score_cells$observed),
+    sprintf("%.1f\nn = %d", pattern_score_cells$value,
+        pattern_score_cells$observed)
+)
+ggplot2::ggplot(pattern_score_cells,
+    ggplot2::aes(x = sample, y = feature, fill = value)) +
+    ggplot2::geom_tile(colour = "white", linewidth = 0.8) +
+    ggplot2::geom_text(
+        ggplot2::aes(label = label, colour = !is.na(value) & value > 450),
+        size = 3.1
+    ) +
+    ggplot2::scale_colour_manual(values = c(`FALSE` = "#222222", `TRUE` = "white"),
+        guide = "none") +
+    ggplot2::scale_x_discrete(labels = pattern_labels) +
+    ggplot2::scale_y_discrete(labels = c(module_A = "Module A",
+        module_B = "Module B", broad_program = "Broad program")) +
+    ggplot2::scale_fill_gradient(
+        low = "#F7FBFF", high = "#08519C", na.value = "#E0E0E0",
+        limits = c(0, max(pattern_scores, na.rm = TRUE)),
+        name = "GeneFunnel score"
+    ) +
+    ggplot2::labs(x = NULL, y = NULL, title = "Feature matrix to gene-set matrix") +
+    heatmap_theme +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(size = 9))
+
+stopifnot(
+    identical(dimnames(pattern_observed), dimnames(pattern_scores)),
+    identical(is.na(pattern_scores), pattern_observed < 2),
+    pattern_observed["module_B", "partial_observation"] == 0,
+    pattern_observed["module_B", "half_active"] == 5
+)
 ```
 
 Module A scores its full total, module B scores zero, and the broader program is
@@ -433,6 +520,34 @@ knitr::kable(
     digits = 0,
     col.names = c("Original", "Modified")
 )
+```
+
+```{r perturbation-input-heatmap, echo=FALSE, fig.height=5.5, fig.cap=perturb_input_cap}
+perturbation_cells <- matrix_cells(perturbation_assay)
+perturbation_modules <- setNames(
+    rep(c("Assembly", "Receptor", "Background"), c(6L, 5L, 3L)),
+    rownames(perturbation_assay)
+)
+perturbation_cells$module <- factor(
+    perturbation_modules[as.character(perturbation_cells$feature)],
+    levels = c("Assembly", "Receptor", "Background")
+)
+ggplot2::ggplot(perturbation_cells,
+    ggplot2::aes(x = sample, y = feature, fill = value)) +
+    ggplot2::geom_tile(colour = "white", linewidth = 0.6) +
+    ggplot2::geom_text(
+        ggplot2::aes(label = sprintf("%.0f", value), colour = value > 60),
+        size = 3.1
+    ) +
+    ggplot2::facet_grid(rows = ggplot2::vars(module),
+        scales = "free_y", space = "free_y") +
+    ggplot2::scale_colour_manual(values = c(`FALSE` = "#222222", `TRUE` = "white"),
+        guide = "none") +
+    ggplot2::scale_x_discrete(labels = c(original = "Original", modified = "Modified")) +
+    ggplot2::scale_fill_gradient(low = "#F7FBFF", high = "#08519C",
+        limits = c(0, max(perturbation_assay)), name = "Observed value") +
+    ggplot2::labs(x = NULL, y = NULL, title = "Inspect the induced changes") +
+    heatmap_theme
 ```
 
 ```{r controlled-perturbation-diagnostics}
@@ -553,6 +668,57 @@ change is entirely due to greater coherence. The receptor score rises by 200
 because its total rises by 200 and its deviation penalty remains 3.75. The
 overlapping response also changes because it shares members with both modified
 sets, but every set is still calculated independently.
+
+```{r perturbation-membership-network, echo=FALSE, fig.height=4.8, fig.cap=membership_cap}
+membership_edges <- do.call(rbind, lapply(names(perturbation_sets), function(set) {
+    data.frame(gene_set = set, member = perturbation_sets[[set]])
+}))
+membership_members <- unique(unlist(perturbation_sets, use.names = FALSE))
+membership_y <- setNames(rev(seq_along(membership_members)), membership_members)
+membership_set_y <- c(complex_assembly = 9, receptor_activity = 2,
+    overlapping_response = 5.5)
+membership_edges$y <- unname(membership_set_y[membership_edges$gene_set])
+membership_edges$yend <- unname(membership_y[membership_edges$member])
+membership_nodes <- data.frame(
+    member = membership_members,
+    y = unname(membership_y),
+    shared = unname(table(membership_edges$member)[membership_members]) > 1L
+)
+membership_sets <- data.frame(
+    gene_set = names(perturbation_sets),
+    y = unname(membership_set_y[names(perturbation_sets)]),
+    label = c("Complex assembly", "Receptor activity", "Overlapping response")
+)
+ggplot2::ggplot() +
+    ggplot2::geom_segment(data = membership_edges,
+        ggplot2::aes(x = 0, xend = 1, y = y, yend = yend, colour = gene_set),
+        linewidth = 0.8, alpha = 0.65) +
+    ggplot2::geom_point(data = membership_sets,
+        ggplot2::aes(x = 0, y = y, colour = gene_set), shape = 15, size = 5) +
+    ggplot2::geom_text(data = membership_sets,
+        ggplot2::aes(x = -0.05, y = y, label = label), hjust = 1, size = 3.3) +
+    ggplot2::geom_point(data = membership_nodes,
+        ggplot2::aes(x = 1, y = y, fill = shared), shape = 21, size = 3.5) +
+    ggplot2::geom_text(data = membership_nodes,
+        ggplot2::aes(x = 1.05, y = y, label = member,
+            fontface = ifelse(shared, "bold", "plain")), hjust = 0, size = 3.2) +
+    ggplot2::scale_colour_manual(values = c(complex_assembly = "#4477AA",
+        receptor_activity = "#228833", overlapping_response = "#AA3377"),
+        guide = "none") +
+    ggplot2::scale_fill_manual(values = c("#DDDDDD", "#CCBB44"), guide = "none") +
+    ggplot2::coord_cartesian(xlim = c(-0.85, 1.65), ylim = c(0.5, 11.5)) +
+    ggplot2::labs(title = "Shared members connect independently scored sets",
+        subtitle = "Declared memberships, not a biological interaction network") +
+    ggplot2::theme_void(base_size = 11)
+
+stopifnot(
+    nrow(membership_edges) == sum(lengths(perturbation_sets)),
+    sum(membership_nodes$shared) == 5L,
+    !any(background_members %in% membership_edges$member),
+    identical(perturbation_assay[background_members, "original"],
+        perturbation_assay[background_members, "modified"])
+)
+```
 
 This controlled design reflects two questions that appear in practical
 analyses: did the members move together, and did their combined magnitude
@@ -683,7 +849,7 @@ knitr::kable(
 )
 ```
 
-```{r gse-gene-figure, echo=FALSE, fig.height=4.4, fig.cap=gse_gene_cap}
+```{r gse-gene-figure, echo=FALSE, fig.height=4.7, fig.cap=gse_gene_cap}
 braak_stages <- 1:6
 braak_labels <- c("I", "II", "III", "IV", "V", "VI")
 stage_gene_medians <- vapply(
@@ -691,71 +857,65 @@ stage_gene_medians <- vapply(
     function(stage) {
         stage_columns <- which(gse125583$braak == stage)
         apply(
-            gse125583_relative[, stage_columns, drop = FALSE],
+            gse125583_expression[, stage_columns, drop = FALSE],
             1L,
             median
         )
     },
     numeric(length(presynaptic_genes))
 )
-gse125583_gene_plot <- data.frame(
-    gene = rep(rownames(stage_gene_medians), times = length(braak_stages)),
-    braak = rep(braak_stages, each = nrow(stage_gene_medians)),
-    relative_expression = as.vector(stage_gene_medians),
-    stringsAsFactors = FALSE
+colnames(stage_gene_medians) <- braak_labels
+stage_counts <- table(factor(gse125583$braak, levels = braak_stages))
+stage_labels <- setNames(
+    paste0(braak_labels, "\n(n=", as.integer(stage_counts), ")"), braak_labels
 )
-gse125583_gene_plot$gene <- factor(
-    gse125583_gene_plot$gene,
-    levels = presynaptic_genes
-)
-gse125583_gene_plot$braak <- factor(
-    gse125583_gene_plot$braak,
-    levels = braak_stages,
-    labels = braak_labels
-)
+stage_minimum <- apply(stage_gene_medians, 1L, min)
+stage_range <- apply(stage_gene_medians, 1L, max) - stage_minimum
+stage_scaled <- 2 * sweep(
+    sweep(stage_gene_medians, 1L, stage_minimum, "-"),
+    1L, ifelse(stage_range > 0, stage_range, 1), "/"
+) - 1
+stage_scaled[stage_range == 0, ] <- 0
 
-ggplot2::ggplot(
-    gse125583_gene_plot,
-    ggplot2::aes(
-        x = braak,
-        y = relative_expression,
-        group = gene,
-        colour = gene,
-        shape = gene
-    )
-) +
-    ggplot2::geom_hline(
-        yintercept = 1,
-        colour = "#B3B3B3",
-        linetype = "dotted"
-    ) +
-    ggplot2::geom_line(linewidth = 0.7) +
-    ggplot2::geom_point(size = 2.2) +
-    ggplot2::scale_colour_manual(
-        values = c(
-            "#4477AA",
-            "#66CCEE",
-            "#228833",
-            "#CCBB44",
-            "#EE6677",
-            "#AA3377"
-        ),
-        name = NULL
-    ) +
-    ggplot2::scale_shape_manual(
-        values = c(16, 17, 15, 18, 8, 3),
-        name = NULL
-    ) +
-    ggplot2::labs(
-        x = "Braak stage",
-        y = "Median expression / control median"
-    ) +
-    ggplot2::theme_minimal(base_size = 11) +
-    ggplot2::theme(
-        panel.grid.minor = ggplot2::element_blank(),
-        legend.position = "top"
-    )
+gse_raw_heatmap <- ggplot2::ggplot(matrix_cells(stage_gene_medians),
+    ggplot2::aes(x = sample, y = feature, fill = value)) +
+    ggplot2::geom_tile(colour = "white", linewidth = 0.5) +
+    ggplot2::scale_x_discrete(labels = stage_labels) +
+    ggplot2::scale_fill_gradient(low = "#F7FBFF", high = "#08519C",
+        limits = c(0, max(stage_gene_medians)), name = "Median nRPKM") +
+    ggplot2::labs(x = "Braak stage", y = NULL, title = "Unscaled abundance") +
+    heatmap_theme +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(size = 8))
+gse_scaled_heatmap <- ggplot2::ggplot(matrix_cells(stage_scaled),
+    ggplot2::aes(x = sample, y = feature, fill = value)) +
+    ggplot2::geom_tile(colour = "white", linewidth = 0.5) +
+    ggplot2::scale_x_discrete(labels = stage_labels) +
+    ggplot2::scale_fill_gradient2(low = "#2166AC", mid = "white", high = "#B2182B",
+        midpoint = 0, limits = c(-1, 1), name = "Within-row range") +
+    ggplot2::labs(x = "Braak stage", y = NULL, title = "Within-gene pattern") +
+    heatmap_theme +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(size = 8))
+draw_heatmap_pair(gse_raw_heatmap, gse_scaled_heatmap)
+
+stopifnot(
+    sum(stage_counts) == sum(braak_available),
+    all(is.finite(stage_scaled)), all(abs(stage_scaled) <= 1),
+    isTRUE(all.equal(
+        sweep(sweep((stage_scaled + 1) / 2, 1L, stage_range, "*"),
+            1L, stage_minimum, "+"),
+        stage_gene_medians, tolerance = 1e-12
+    ))
+)
 ```
+
+The unscaled panel preserves abundance differences between genes. The companion
+panel maps each gene's stage-median range to -1 through 1. It reveals direction
+but removes between-gene magnitude information. A constant row would map to
+zero. These display values never enter the scorer.
+
+Each column summarizes different subjects, not repeated measurements of the
+same people. The following figure retains individual scores and diagnosis
+labels so that stage medians do not conceal subject-level variation.
 
 ```{r gse-score-figure, echo=FALSE, fig.height=4.4, fig.cap=gse_score_cap}
 gse125583_score_plot <- data.frame(
@@ -1241,6 +1401,42 @@ ggplot2::ggplot(
         strip.text = ggplot2::element_text(face = "bold"),
         legend.position = "top"
     )
+```
+
+```{r gse60361-class-heatmap, echo=FALSE, fig.height=4.8, fig.cap=class_heatmap_cap}
+gse60361_class_counts <- table(gse60361_subtype_metadata$broad_class)
+gse60361_class_plot <- gse60361_class_summary
+gse60361_class_plot$panel <- factor(gse60361_class_plot$panel,
+    levels = names(gse60361_gene_sets))
+gse60361_class_plot$broad_class <- factor(gse60361_class_plot$broad_class,
+    levels = rev(gse60361_class_order))
+gse60361_class_axis <- setNames(paste0(
+    gse60361_class_labels[gse60361_class_order], " (n=",
+    gse60361_class_counts[gse60361_class_order], ")"
+), gse60361_class_order)
+ggplot2::ggplot(gse60361_class_plot,
+    ggplot2::aes(x = panel, y = broad_class, fill = retained_fraction)) +
+    ggplot2::geom_tile(colour = "white", linewidth = 0.8) +
+    ggplot2::geom_text(
+        ggplot2::aes(label = sprintf("%.1f%%", 100 * retained_fraction),
+            colour = retained_fraction > 0.55), size = 3.4
+    ) +
+    ggplot2::scale_colour_manual(values = c(`FALSE` = "#222222", `TRUE` = "white"),
+        guide = "none") +
+    ggplot2::scale_y_discrete(labels = gse60361_class_axis) +
+    ggplot2::scale_fill_gradient(low = "#F7FBFF", high = "#08519C",
+        limits = c(0, 1), breaks = c(0, 0.5, 1),
+        labels = c("0%", "50%", "100%"), name = "Median score / total") +
+    ggplot2::labs(x = NULL, y = NULL,
+        title = "Retained fraction across broad cell classes") +
+    heatmap_theme
+
+stopifnot(
+    sum(gse60361_class_counts) == ncol(gse60361_scores),
+    nrow(gse60361_class_plot) == 14L,
+    all(gse60361_class_plot$retained_fraction >= 0),
+    all(gse60361_class_plot$retained_fraction <= 1)
+)
 ```
 
 ```{r gse60361-scale-check, include=FALSE}

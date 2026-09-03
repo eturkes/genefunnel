@@ -6,8 +6,10 @@
   member sum.
 - Summarises the dense/sparse, serial/parallel, and reference-implementation
   checks used by the test suite.
-- Adds benchmark-style heatmaps and score-composition figures for the controlled
-  expression and perturbation examples.
+- Adds annotated score heatmaps, a perturbation input heatmap, and a declared
+  gene-set membership network for the controlled examples.
+- Pairs unscaled and row-scaled real-data heatmaps and summarizes retained
+  score fractions across brain cell classes.
 - Adds a mouse cortex and hippocampus single-cell RNA-seq scale study with
   nested 500- and 5,000-gene panels.
 - Clarifies when the score is useful and which preprocessing steps remain the
