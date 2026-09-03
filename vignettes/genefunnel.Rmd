@@ -1150,7 +1150,7 @@ knitr::kable(
 )
 ```
 
-## Hundreds of genes
+## Results across panel sizes
 
 Across the 47 subtype profiles, the 500-gene panel has a median total per gene
 of `r sprintf("%.3f", gse60361_500_summary$median_total)` and a median score per
@@ -1163,9 +1163,8 @@ classes, the median retained fraction ranges from
 `r sprintf("%.1f", 100 * gse60361_500_high$retained_fraction)`% for
 `r gse60361_500_high$class_label`.
 
-## Thousands of genes
-
-At ten times the set size, the 5,000-gene panel has a median total per gene of
+With the nested panel expanded tenfold, the 5,000-gene panel has a median total
+per gene of
 `r sprintf("%.3f", gse60361_5000_summary$median_total)` and a median score per
 gene of `r sprintf("%.3f", gse60361_5000_summary$median_score)`. Its median
 retained fraction is
