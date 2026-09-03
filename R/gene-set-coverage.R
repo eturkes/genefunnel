@@ -1,4 +1,3 @@
-
 .validate_gene_sets <- function(gene_sets) {
     valid_list <- is.list(gene_sets) &&
         !is.object(gene_sets) &&
@@ -33,7 +32,7 @@
 
 .prepare_gene_sets <- function(gene_sets, features) {
     .validate_gene_sets(gene_sets)
-    .validate_features(features)
+    .validate_identifier_vector(features, "`features`")
 
     members <- lapply(gene_sets, function(set) set[!duplicated(set)])
     declared_size <- unname(lengths(members))

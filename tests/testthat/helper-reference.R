@@ -1,4 +1,3 @@
-
 reference_score <- function(values) {
     stopifnot(
         is.numeric(values),
@@ -15,8 +14,8 @@ reference_score <- function(values) {
     total <- sum(observed)
     if (!is.finite(total)) {
         # Finite inputs can overflow an intermediate sum even when deviation
-        # cancellation leaves a representable score. Evaluate the normative
-        # equation in max-scaled units for this oracle-only edge case.
+        # cancellation leaves a representable score. Evaluate the documented
+        # equation in max-scaled units for this reference-only edge case.
         value_scale <- max(observed)
         scaled <- observed / value_scale
         scaled_total <- sum(scaled)
@@ -36,7 +35,7 @@ reference_score <- function(values) {
         observed < center
     }
 
-    # Algebraically identical to the normative subtraction, but all terms are
+    # Algebraically identical to the documented subtraction, but all terms are
     # non-negative. This avoids catastrophic cancellation for valid inputs.
     total_weight <- n_observed - 1L - sum(below_center)
     total_term <- total_weight * total

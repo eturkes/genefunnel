@@ -1,5 +1,4 @@
-
-test_that("the reference scorer implements the normative formula", {
+test_that("the reference scorer implements the documented formula", {
     expect_identical(reference_score(c(4, 4, 4)), 12)
     expect_identical(reference_score(c(0, 0, 0)), 0)
     expect_identical(reference_score(c(4, 0)), 0)

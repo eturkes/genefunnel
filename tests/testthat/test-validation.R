@@ -1,5 +1,4 @@
-
-valid_contract_matrix <- function() {
+valid_score_matrix <- function() {
     matrix(
         c(1, 2, 3, 4),
         nrow = 2L,
@@ -7,7 +6,7 @@ valid_contract_matrix <- function() {
     )
 }
 
-score_contract_matrix <- function(mat, gene_sets = list(set = c("A", "B"))) {
+score_with_defaults <- function(mat, gene_sets = list(set = c("A", "B"))) {
     genefunnel(
         mat,
         gene_sets,
@@ -16,7 +15,7 @@ score_contract_matrix <- function(mat, gene_sets = list(set = c("A", "B"))) {
 }
 
 test_that("supported base and Matrix numeric classes are accepted", {
-    base_double <- valid_contract_matrix()
+    base_double <- valid_score_matrix()
     base_integer <- base_double
     storage.mode(base_integer) <- "integer"
     matrix_dense <- Matrix::Matrix(base_double, sparse = FALSE)
@@ -24,7 +23,7 @@ test_that("supported base and Matrix numeric classes are accepted", {
 
     observed <- lapply(
         list(base_double, base_integer, matrix_dense, matrix_sparse),
-        score_contract_matrix
+        score_with_defaults
     )
 
     expect_true(all(vapply(observed, is.matrix, logical(1))))
@@ -61,7 +60,7 @@ test_that("coercion-prone and non-numeric matrix inputs are rejected", {
         three_dimensional
     )) {
         expect_error(
-            score_contract_matrix(candidate),
+            score_with_defaults(candidate),
             "numeric or integer matrix"
         )
     }
@@ -79,19 +78,19 @@ test_that("S3 matrix subclasses are rejected before method dispatch", {
         }
     )
 
-    classed <- valid_contract_matrix()
+    classed <- valid_score_matrix()
     class(classed) <- c("genefunnel_test_matrix", class(classed))
 
     expect_error(
-        score_contract_matrix(classed),
+        score_with_defaults(classed),
         "base numeric or integer matrix"
     )
     expect_identical(calls$subsets, 0L)
 
-    spoofed_matrix_class <- valid_contract_matrix()
+    spoofed_matrix_class <- valid_score_matrix()
     class(spoofed_matrix_class) <- c("dMatrix", "matrix", "array")
     expect_error(
-        score_contract_matrix(spoofed_matrix_class),
+        score_with_defaults(spoofed_matrix_class),
         "base numeric or integer matrix"
     )
 })
@@ -109,12 +108,12 @@ test_that("matrix dimensions and feature identifiers are strict", {
         ncol = 0L,
         dimnames = list(c("A", "B"), character())
     )
-    expect_error(score_contract_matrix(zero_rows), "at least one row")
-    expect_error(score_contract_matrix(zero_columns), "at least one column")
+    expect_error(score_with_defaults(zero_rows), "at least one row")
+    expect_error(score_with_defaults(zero_columns), "at least one column")
 
-    missing_names <- valid_contract_matrix()
+    missing_names <- valid_score_matrix()
     rownames(missing_names) <- NULL
-    expect_error(score_contract_matrix(missing_names), "row names")
+    expect_error(score_with_defaults(missing_names), "row names")
 
     invalid_names <- list(
         missing = c("A", NA_character_),
@@ -122,16 +121,16 @@ test_that("matrix dimensions and feature identifiers are strict", {
         duplicated = c("A", "A")
     )
     for (kind in names(invalid_names)) {
-        candidate <- valid_contract_matrix()
+        candidate <- valid_score_matrix()
         rownames(candidate) <- invalid_names[[kind]]
-        expect_error(score_contract_matrix(candidate), kind)
+        expect_error(score_with_defaults(candidate), kind)
     }
 
-    classed_names <- valid_contract_matrix()
+    classed_names <- valid_score_matrix()
     features <- rownames(classed_names)
     class(features) <- c("genefunnel_test_features", "character")
     dimnames(classed_names)[[1L]] <- features
-    expect_error(score_contract_matrix(classed_names), "unclassed")
+    expect_error(score_with_defaults(classed_names), "unclassed")
 })
 
 test_that("negative and infinite values are rejected before scoring", {
@@ -142,10 +141,10 @@ test_that("negative and infinite values are rejected before scoring", {
     )
 
     for (kind in names(invalid_values)) {
-        candidate <- valid_contract_matrix()
+        candidate <- valid_score_matrix()
         candidate[1L, 1L] <- invalid_values[[kind]]
         expect_error(
-            score_contract_matrix(candidate),
+            score_with_defaults(candidate),
             if (kind == "negative") "negative" else "infinite"
         )
 
@@ -154,27 +153,27 @@ test_that("negative and infinite values are rejected before scoring", {
             j = 1L,
             x = invalid_values[[kind]],
             dims = c(2L, 2L),
-            dimnames = dimnames(valid_contract_matrix())
+            dimnames = dimnames(valid_score_matrix())
         )
         expect_error(
-            score_contract_matrix(sparse_candidate),
+            score_with_defaults(sparse_candidate),
             if (kind == "negative") "negative" else "infinite"
         )
     }
 
-    missing <- valid_contract_matrix()
+    missing <- valid_score_matrix()
     missing[1L, 1L] <- NA_real_
     missing[2L, 2L] <- NaN
-    expect_no_error(score_contract_matrix(missing))
+    expect_no_error(score_with_defaults(missing))
 
     sparse_missing <- Matrix::sparseMatrix(
         i = c(1L, 2L),
         j = c(1L, 2L),
         x = c(NA_real_, NaN),
         dims = c(2L, 2L),
-        dimnames = dimnames(valid_contract_matrix())
+        dimnames = dimnames(valid_score_matrix())
     )
-    expect_no_error(score_contract_matrix(sparse_missing))
+    expect_no_error(score_with_defaults(sparse_missing))
 })
 
 test_that("Matrix validation uses represented rather than raw stored values", {
@@ -196,11 +195,11 @@ test_that("Matrix validation uses represented rather than raw stored values", {
     )
 
     expect_identical(
-        score_contract_matrix(duplicate_triplet),
+        score_with_defaults(duplicate_triplet),
         matrix(2, nrow = 1L, dimnames = list("set", "sample"))
     )
     expect_identical(
-        score_contract_matrix(triangular_dense),
+        score_with_defaults(triangular_dense),
         matrix(
             c(0, 2),
             nrow = 1L,
@@ -209,13 +208,13 @@ test_that("Matrix validation uses represented rather than raw stored values", {
     )
 })
 
-test_that("gene-set structures use one strict shared contract", {
-    mat <- valid_contract_matrix()
+test_that("coverage and scoring share gene-set validation", {
+    mat <- valid_score_matrix()
     coverage_call <- function(gene_sets) {
         gene_set_coverage(gene_sets, rownames(mat))
     }
     scoring_call <- function(gene_sets) {
-        score_contract_matrix(mat, gene_sets)
+        score_with_defaults(mat, gene_sets)
     }
     calls <- list(coverage_call, scoring_call)
 
@@ -324,7 +323,7 @@ test_that("BPPARAM has a qualified default and rejects non-backends", {
     )) {
         expect_error(
             genefunnel(
-                valid_contract_matrix(),
+                valid_score_matrix(),
                 list(set = c("A", "B")),
                 candidate
             ),
@@ -343,7 +342,7 @@ test_that("the registered BiocParallel backend is usable by default", {
     BiocParallel::register(BiocParallel::SerialParam(), default = TRUE)
 
     observed <- genefunnel(
-        valid_contract_matrix(),
+        valid_score_matrix(),
         list(set = c("A", "B"))
     )
     expect_identical(unname(observed), matrix(c(2, 6), nrow = 1L))

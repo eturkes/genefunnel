@@ -1,5 +1,4 @@
-
-test_that("native scores match the oracle with sample-specific missingness", {
+test_that("native scores match the reference with sample-specific missingness", {
     values <- list(
         equal = c(4, 4, 4),
         zeros = c(0, 0, 0),

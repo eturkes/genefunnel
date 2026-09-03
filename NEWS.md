@@ -4,8 +4,6 @@
 
 - Adds an equal-total example that shows how GeneFunnel differs from a plain
   member sum.
-- Summarises the dense/sparse, serial/parallel, and reference-implementation
-  checks used by the test suite.
 - Adds annotated score heatmaps, a perturbation input heatmap, and a declared
   gene-set membership network for the controlled examples.
 - Pairs unscaled and row-scaled real-data heatmaps and summarizes retained
@@ -22,9 +20,6 @@
 - Records the maintainer ORCID and the BiocCheck-suggested `Coverage` view.
 - Adds a comparison with complementary Bioconductor gene-set scoring
   methods and documents the intended invariances of the GeneFunnel score.
-- Removes benchmark-only tooling from the default submission branch so it
-  contains package source only.
-- Regenerates package documentation with the current roxygen2 release.
 
 # genefunnel 0.99.0
 
@@ -36,30 +31,26 @@
   user-defined filtering.
 - Supports deterministic, bounded parallel scoring through BiocParallel.
 
-## User-visible changes from the prototype
+## Behavior and compatibility
 
 - Partially covered gene sets are scored when at least two unique members
   match; sets below that minimum are omitted with one aggregate warning.
 - Duplicate members are counted for diagnostics and deduplicated for scoring.
 - Invalid structures, negative values, and infinities are rejected before
   parallel or native work begins.
-- S3 subclasses that spoof matrices, gene sets, identifiers, or parallel
-  parameters are rejected before their methods can alter validation or scoring.
+- Unsupported matrix, identifier, gene-set, and parallel-backend classes are
+  rejected before scoring.
 - Dense inputs remain dense and sparse inputs remain sparse through bounded
   scoring chunks.
 
 ## Reliability
 
-- Adds deterministic formula, invariant, randomized-oracle, dense-sparse, and
-  serial-parallel tests.
 - Preserves exact-zero classification when positive subnormal means underflow
   on platforms whose C++ `long double` has the range of `double`.
 - Preserves representable finite scores when an intermediate sum or weighted
   term would overflow on those platforms.
-- Adds a reproducible synthetic benchmark with checked outputs and environment
-  metadata.
-- Adds controlled tests for analytic score cases, dense/sparse agreement,
-  partial coverage, missingness, and independent scoring.
+- Checks dense, sparse, missing-value, and parallel paths against independent
+  reference calculations.
 
 ## Documentation
 

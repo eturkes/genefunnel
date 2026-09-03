@@ -1,4 +1,3 @@
-
 random_score_fixture <- function(case_id) {
     set.seed(110000L + case_id)
     n_features <- sample.int(23L, 1L) + 1L
@@ -51,7 +50,7 @@ random_score_fixture <- function(case_id) {
     list(mat = mat, gene_sets = gene_sets)
 }
 
-test_that("deterministic randomized dense and sparse scores match the oracle", {
+test_that("randomized dense and sparse scores match the reference", {
     serial <- BiocParallel::SerialParam()
 
     for (case_id in seq_len(32L)) {

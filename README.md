@@ -1,4 +1,3 @@
-
 # GeneFunnel
 
 GeneFunnel scores predefined gene sets in each sample of a non-negative
@@ -118,13 +117,12 @@ the result. Input values must be non-negative, and zero must have a meaningful
 interpretation. Adding a constant to make negative data positive changes the
 score and is not an appropriate workaround.
 
-## How the package is tested
+## Verification
 
-The test suite compares 32 deterministic dense and sparse examples with an
-independent R implementation. It also checks score bounds, missing-value rules,
-partial coverage, dense/sparse agreement, and serial/parallel agreement. These
-tests verify the documented calculation; they do not measure biological
-performance against other methods.
+Tests compare the native implementations with an independent R calculation
+across dense and sparse inputs, missing values, partial coverage, numerical
+extremes, and serial or parallel execution. They verify the documented
+calculation, not biological performance.
 
 ## Further reading
 
@@ -132,8 +130,7 @@ performance against other methods.
   coverage rules, properties, and limitations.
 - [Vignette](vignettes/genefunnel.Rmd) - worked examples, coverage checks,
   dense and sparse matrices, and parallel execution.
-- [Tests](tests/testthat) - reference calculations, coverage checks, storage
-  agreement, parallel agreement, and input validation.
+- [Tests](tests/testthat) - reference calculations and implementation checks.
 
 After installation, run `vignette("genefunnel", package = "genefunnel")` or
 `citation("genefunnel")`.

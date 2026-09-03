@@ -1,4 +1,3 @@
-
 .validate_identifier_vector <- function(
     identifiers,
     label,
@@ -96,19 +95,11 @@
     contains_negative
 }
 
-.validate_features <- function(features) {
-    .validate_identifier_vector(features, "`features`")
-}
-
 .validate_bpparam <- function(BPPARAM) {
     if (!isS4(BPPARAM) || !methods::is(BPPARAM, "BiocParallelParam")) {
         stop("`BPPARAM` must be a BiocParallelParam object.", call. = FALSE)
     }
     invisible(BPPARAM)
-}
-
-.matrix_storage <- function(mat) {
-    if (inherits(mat, "sparseMatrix")) "sparse" else "dense"
 }
 
 .as_dense_numeric_chunk <- function(mat) {

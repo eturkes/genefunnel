@@ -1,4 +1,3 @@
-
 /*
  *    This file is part of GeneFunnel.
  *    Copyright (C) 2025-2026  Emir Turkes, UK DRI at UCL
@@ -68,7 +67,7 @@ double finalize_score(
   }
 
   // Since total absolute deviation equals twice the deviation below the
-  // mean, the normative formula is equivalently:
+  // mean, the documented formula is equivalently:
   // ((n - 1 - l) * sum(x) + n * sum(x[x < mean(x)])) / (n - 1),
   // where l is the number below the mean. For non-negative inputs every
   // term is non-negative, avoiding catastrophic subtraction near zero.

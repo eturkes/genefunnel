@@ -1,4 +1,3 @@
-
 #    This file is part of GeneFunnel.
 #    Copyright (C) 2025-2026  Emir Turkes, UK DRI at UCL
 #
@@ -118,7 +117,7 @@ genefunnel <- function(
     }
 
     indices <- prepared$indices[retained]
-    storage <- .matrix_storage(mat)
+    storage <- if (inherits(mat, "sparseMatrix")) "sparse" else "dense"
     ranges <- .column_chunk_ranges(
         ncol(mat),
         BiocParallel::bpnworkers(BPPARAM)
