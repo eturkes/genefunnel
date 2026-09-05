@@ -31,6 +31,13 @@
 #'   within a set are used once, in their original order.
 #' @param BPPARAM A [BiocParallel::BiocParallelParam] backend. The default is
 #'   the currently registered [BiocParallel::bpparam()] backend.
+#' @param min_coverage Minimum fraction of unique declared members observed in
+#'   each sample, between zero and one. Unmatched members reduce this fraction.
+#'   The default, zero, applies no fractional coverage requirement.
+#' @param min_observed Minimum number of observed members per sample. This must
+#'   be an integer of at least two. The default is two.
+#' @param details Return scores and coverage diagnostics when `TRUE`.
+#'   The default, `FALSE`, returns only the score matrix.
 #'
 #' @details
 #' Gene-set members are matched to matrix row names. `NA` and `NaN` values are
@@ -53,6 +60,11 @@
 #' or query annotation resources. Unmatched members are ignored. A set is
 #' scored when at least two unique members match. Use [gene_set_coverage()] to
 #' inspect coverage and choose an appropriate threshold for your experiment.
+#' Each sample must also meet `min_observed` and `min_coverage`. Otherwise its
+#' score is `NA`, but the row remains in the result. Coverage uses the unique
+#' declared set size, not only the matched size. Zeros count as observations;
+#' `NA`, `NaN`, and unmatched identifiers do not. These filters do not rescale
+#' scores or correct bias from missing members.
 #'
 #' @section Interpretation:
 #' The score is high when a set has both a large total signal and similar member
@@ -64,6 +76,10 @@
 #' @return A base numeric matrix with scored gene sets in rows and samples in
 #'   columns. Gene-set and sample order are preserved. If no set has at least
 #'   two matched members, the result has zero rows and `ncol(mat)` columns.
+#'   With `details = TRUE`, a list contains `scores`, integer `observed` counts,
+#'   per-sample `coverage` fractions, and `set_coverage`. The first three
+#'   matrices share dimensions. `set_coverage` contains all declared sets,
+#'   including skipped sets, as returned by [gene_set_coverage()].
 #'
 #' @references
 #' Turkes E (2025). *Development of Gene Set Enrichment and Imputation Methods
@@ -95,8 +111,12 @@
 genefunnel <- function(
     mat,
     gene_sets,
-    BPPARAM = BiocParallel::bpparam()
+    BPPARAM = BiocParallel::bpparam(),
+    min_coverage = 0,
+    min_observed = 2L,
+    details = FALSE
 ) {
+    .validate_observation_policy(min_coverage, min_observed, details)
     .validate_score_matrix(mat)
     prepared <- .prepare_gene_sets(gene_sets, rownames(mat))
     .validate_bpparam(BPPARAM)
@@ -106,17 +126,19 @@ genefunnel <- function(
         .warn_unscoreable_sets(prepared$coverage$gene_set[!retained])
     }
 
-    retained_names <- prepared$coverage$gene_set[retained]
     if (!any(retained)) {
-        return(matrix(
-            double(),
-            nrow = 0L,
-            ncol = ncol(mat),
-            dimnames = list(character(), colnames(mat))
-        ))
+        return(.assemble_score_output(NULL, mat, prepared$coverage, details))
     }
 
     indices <- prepared$indices[retained]
+    declared_size <- prepared$coverage$declared_size[retained]
+    minimum_observed <- pmax(
+        min_observed,
+        floor(min_coverage * declared_size)
+    )
+    # Compare fractions directly: ceiling(0.14 * 50) can incorrectly require 8.
+    minimum_observed <- as.integer(minimum_observed +
+        (minimum_observed / declared_size < min_coverage))
     storage <- if (inherits(mat, "sparseMatrix")) "sparse" else "dense"
     ranges <- .column_chunk_ranges(
         ncol(mat),
@@ -128,29 +150,65 @@ genefunnel <- function(
         .score_matrix_task,
         gene_indices = indices,
         storage = storage,
+        minimum_observed = minimum_observed,
+        return_observed = details,
         BPPARAM = BPPARAM
     )
 
-    scores <- .assemble_score_chunks(
-        chunks,
-        n_gene_sets = length(indices),
-        n_columns = ncol(mat)
-    )
-    rownames(scores) <- retained_names
-    colnames(scores) <- colnames(mat)
-    scores
+    .assemble_score_output(chunks, mat, prepared$coverage, details)
 }
 
-.score_matrix_chunk <- function(mat, gene_indices, storage) {
+.assemble_score_output <- function(chunks, mat, set_coverage, details) {
+    retained_names <- set_coverage$gene_set[set_coverage$scoreable]
+    assemble <- function(field) {
+        if (length(retained_names) == 0L) {
+            return(matrix(double(), 0L, ncol(mat)))
+        }
+        .assemble_score_chunks(
+            chunks, length(retained_names), ncol(mat), field = field
+        )
+    }
+    scores <- assemble("scores")
+    dimnames(scores) <- list(retained_names, colnames(mat))
+    observed <- NULL
+    if (details) {
+        observed <- assemble("observed")
+        storage.mode(observed) <- "integer"
+        dimnames(observed) <- dimnames(scores)
+    }
+    .score_output(scores, observed, set_coverage, details)
+}
+
+.score_output <- function(scores, observed, set_coverage, details) {
+    if (!details) {
+        return(scores)
+    }
+    declared_size <- set_coverage$declared_size[set_coverage$scoreable]
+    list(
+        scores = scores,
+        observed = observed,
+        coverage = observed / declared_size,
+        set_coverage = set_coverage
+    )
+}
+
+.score_matrix_chunk <- function(
+    mat, gene_indices, storage, minimum_observed = NULL,
+    return_observed = FALSE
+) {
     switch(
         storage,
         dense = calculateScoresDense(
             .as_dense_numeric_chunk(mat),
-            gene_indices
+            gene_indices,
+            minimum_observed,
+            return_observed
         ),
         sparse = calculateScoresSparse(
             .as_sparse_numeric_chunk(mat),
-            gene_indices
+            gene_indices,
+            minimum_observed,
+            return_observed
         ),
         stop("Internal matrix storage kind is invalid.", call. = FALSE)
     )

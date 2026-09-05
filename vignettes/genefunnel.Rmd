@@ -1638,8 +1638,8 @@ knitr::kable(
 )
 ```
 
-GeneFunnel can score a set whenever at least two unique members match. It does
-not impose a coverage fraction because suitable thresholds depend on the
+GeneFunnel can score a set whenever at least two unique members match. Its default
+does not impose a coverage fraction because suitable thresholds depend on the
 experiment. A transcriptomic analysis might require complete coverage:
 
 ```{r strict-coverage}
@@ -1677,6 +1677,30 @@ knitr::kable(
 
 These thresholds are examples rather than package recommendations. Record the
 gene-set collection, its version, and the threshold used in the analysis.
+
+Global matching can hide sample-specific gaps. Use `min_coverage` and
+`min_observed` to enforce observation requirements separately in every sample.
+Coverage uses unique declared members, including unmatched members, as its
+denominator. A rejected cell becomes `NA`; its gene-set row stays aligned.
+
+```{r sample-coverage-policy}
+checked <- genefunnel(
+    pattern_assay,
+    catalogue[relaxed],
+    BPPARAM = serial,
+    min_coverage = 0.8,
+    min_observed = 2L,
+    details = TRUE
+)
+knitr::kable(checked$observed, caption = "Observed members in each sample")
+knitr::kable(checked$coverage, digits = 2,
+    caption = "Observed fraction of unique declared members")
+knitr::kable(checked$scores, digits = 3,
+    caption = "Scores after the sample-level coverage filter")
+```
+
+These filters do not normalize scores or repair missingness bias. The default
+`details = FALSE` returns the original score matrix without diagnostic matrices.
 
 # Dense and sparse matrices
 

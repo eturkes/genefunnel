@@ -12,33 +12,37 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // calculateScoresDense
-NumericMatrix calculateScoresDense(const NumericMatrix& orig_mat, const List& gene_indices);
-RcppExport SEXP _genefunnel_calculateScoresDense(SEXP orig_matSEXP, SEXP gene_indicesSEXP) {
+NumericMatrix calculateScoresDense(const NumericMatrix& orig_mat, const List& gene_indices, Nullable<IntegerVector> minimum_observed, const bool return_observed);
+RcppExport SEXP _genefunnel_calculateScoresDense(SEXP orig_matSEXP, SEXP gene_indicesSEXP, SEXP minimum_observedSEXP, SEXP return_observedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const NumericMatrix& >::type orig_mat(orig_matSEXP);
     Rcpp::traits::input_parameter< const List& >::type gene_indices(gene_indicesSEXP);
-    rcpp_result_gen = Rcpp::wrap(calculateScoresDense(orig_mat, gene_indices));
+    Rcpp::traits::input_parameter< Nullable<IntegerVector> >::type minimum_observed(minimum_observedSEXP);
+    Rcpp::traits::input_parameter< const bool >::type return_observed(return_observedSEXP);
+    rcpp_result_gen = Rcpp::wrap(calculateScoresDense(orig_mat, gene_indices, minimum_observed, return_observed));
     return rcpp_result_gen;
 END_RCPP
 }
 // calculateScoresSparse
-NumericMatrix calculateScoresSparse(const arma::sp_mat& orig_mat, const List& gene_indices);
-RcppExport SEXP _genefunnel_calculateScoresSparse(SEXP orig_matSEXP, SEXP gene_indicesSEXP) {
+NumericMatrix calculateScoresSparse(const arma::sp_mat& orig_mat, const List& gene_indices, Nullable<IntegerVector> minimum_observed, const bool return_observed);
+RcppExport SEXP _genefunnel_calculateScoresSparse(SEXP orig_matSEXP, SEXP gene_indicesSEXP, SEXP minimum_observedSEXP, SEXP return_observedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::sp_mat& >::type orig_mat(orig_matSEXP);
     Rcpp::traits::input_parameter< const List& >::type gene_indices(gene_indicesSEXP);
-    rcpp_result_gen = Rcpp::wrap(calculateScoresSparse(orig_mat, gene_indices));
+    Rcpp::traits::input_parameter< Nullable<IntegerVector> >::type minimum_observed(minimum_observedSEXP);
+    Rcpp::traits::input_parameter< const bool >::type return_observed(return_observedSEXP);
+    rcpp_result_gen = Rcpp::wrap(calculateScoresSparse(orig_mat, gene_indices, minimum_observed, return_observed));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_genefunnel_calculateScoresDense", (DL_FUNC) &_genefunnel_calculateScoresDense, 2},
-    {"_genefunnel_calculateScoresSparse", (DL_FUNC) &_genefunnel_calculateScoresSparse, 2},
+    {"_genefunnel_calculateScoresDense", (DL_FUNC) &_genefunnel_calculateScoresDense, 4},
+    {"_genefunnel_calculateScoresSparse", (DL_FUNC) &_genefunnel_calculateScoresSparse, 4},
     {NULL, NULL, 0}
 };
 

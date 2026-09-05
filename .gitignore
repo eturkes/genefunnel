@@ -11,6 +11,7 @@
 *.Rproj
 
 # Package build and check output
+/.checks/
 /*.tar.gz
 /*.Rcheck/
 /*.BiocCheck/

@@ -102,6 +102,29 @@
     invisible(BPPARAM)
 }
 
+.validate_observation_policy <- function(min_coverage, min_observed, details) {
+    scalar_number <- function(value) {
+        is.numeric(value) && !is.object(value) && is.null(dim(value)) &&
+            length(value) == 1L && is.finite(value)
+    }
+    if (!scalar_number(min_coverage) ||
+        min_coverage < 0 || min_coverage > 1) {
+        stop("`min_coverage` must be one finite number in [0, 1].",
+            call. = FALSE)
+    }
+    if (!scalar_number(min_observed) || min_observed < 2 ||
+        min_observed > .Machine$integer.max ||
+        min_observed != floor(min_observed)) {
+        stop("`min_observed` must be one integer from 2 to .Machine$integer.max.",
+            call. = FALSE)
+    }
+    if (!is.logical(details) || is.object(details) ||
+        !is.null(dim(details)) || length(details) != 1L || is.na(details)) {
+        stop("`details` must be TRUE or FALSE.", call. = FALSE)
+    }
+    invisible(NULL)
+}
+
 .as_dense_numeric_chunk <- function(mat) {
     if (inherits(mat, "sparseMatrix")) {
         stop("Internal dense scoring received a sparse matrix.", call. = FALSE)

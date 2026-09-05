@@ -1,3 +1,14 @@
+# genefunnel 0.99.3
+
+- Adds sample-level `min_coverage` and `min_observed` filters. Unsupported
+  cells become `NA` before score arithmetic; retained rows stay aligned.
+- Adds `details = TRUE` for observed counts, sample coverage, scores, and
+  declared-set coverage. Counts include sparse zeros but exclude missing values.
+- Preserves the default score matrix and the existing scoring equation.
+- Adds native interrupt checks, coverage-boundary regressions, and reusable
+  socket-worker tests for detailed output.
+- Adds a reproducible package-check command and cross-platform CI configuration.
+
 # genefunnel 0.99.2 (2026-09-01)
 
 ## Documentation and examples

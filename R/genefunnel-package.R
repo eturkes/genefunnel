@@ -10,6 +10,8 @@
 #' you need to check how many members of each set are present. Dense and sparse
 #' matrices are supported. Zeros are treated as observations, while `NA` and
 #' `NaN` are omitted separately in each sample.
+#' Set `min_coverage` and `min_observed` to enforce sample-level observation
+#' requirements, and `details = TRUE` to inspect the effective coverage.
 #'
 #' GeneFunnel only calculates scores. It does not normalize or impute data, map
 #' identifiers, retrieve gene sets, run statistical tests, or interpret the

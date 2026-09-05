@@ -4,7 +4,14 @@
 \alias{genefunnel}
 \title{Calculate GeneFunnel scores}
 \usage{
-genefunnel(mat, gene_sets, BPPARAM = BiocParallel::bpparam())
+genefunnel(
+  mat,
+  gene_sets,
+  BPPARAM = BiocParallel::bpparam(),
+  min_coverage = 0,
+  min_observed = 2L,
+  details = FALSE
+)
 }
 \arguments{
 \item{mat}{A base numeric or integer matrix without an extra class, or a
@@ -18,11 +25,25 @@ within a set are used once, in their original order.}
 
 \item{BPPARAM}{A \link[BiocParallel:BiocParallelParam]{BiocParallel::BiocParallelParam} backend. The default is
 the currently registered \code{\link[BiocParallel:bpparam]{BiocParallel::bpparam()}} backend.}
+
+\item{min_coverage}{Minimum fraction of unique declared members observed in
+each sample, between zero and one. Unmatched members reduce this fraction.
+The default, zero, applies no fractional coverage requirement.}
+
+\item{min_observed}{Minimum number of observed members per sample. This must
+be an integer of at least two. The default is two.}
+
+\item{details}{Return scores and coverage diagnostics when \code{TRUE}.
+The default, \code{FALSE}, returns only the score matrix.}
 }
 \value{
 A base numeric matrix with scored gene sets in rows and samples in
 columns. Gene-set and sample order are preserved. If no set has at least
 two matched members, the result has zero rows and \code{ncol(mat)} columns.
+With \code{details = TRUE}, a list contains \code{scores}, integer \code{observed} counts,
+per-sample \code{coverage} fractions, and \code{set_coverage}. The first three
+matrices share dimensions. \code{set_coverage} contains all declared sets,
+including skipped sets, as returned by \code{\link[=gene_set_coverage]{gene_set_coverage()}}.
 }
 \description{
 Calculate one score for each gene set and sample in a non-negative
@@ -51,6 +72,11 @@ Matching is exact and case-sensitive. GeneFunnel does not convert identifiers
 or query annotation resources. Unmatched members are ignored. A set is
 scored when at least two unique members match. Use \code{\link[=gene_set_coverage]{gene_set_coverage()}} to
 inspect coverage and choose an appropriate threshold for your experiment.
+Each sample must also meet \code{min_observed} and \code{min_coverage}. Otherwise its
+score is \code{NA}, but the row remains in the result. Coverage uses the unique
+declared set size, not only the matched size. Zeros count as observations;
+\code{NA}, \code{NaN}, and unmatched identifiers do not. These filters do not rescale
+scores or correct bias from missing members.
 }
 
 \section{Interpretation}{

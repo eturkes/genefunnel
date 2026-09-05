@@ -99,6 +99,34 @@ For `sample_2`, GeneFunnel omits `C = NA` and scores the observed pair
 `c(1, 2)`. Zeros remain in the calculation. A score is `NA` when fewer than two
 members are observed in that sample.
 
+### Enforce sample-level coverage
+
+Global matching does not detect missing observations within a sample. Apply
+sample-level thresholds when those gaps affect interpretation:
+
+```r
+checked <- genefunnel(
+    mat,
+    gene_sets[keep],
+    BPPARAM = BiocParallel::SerialParam(),
+    min_coverage = 0.8,
+    min_observed = 2L,
+    details = TRUE
+)
+checked$scores
+checked$observed
+checked$coverage
+checked$set_coverage
+```
+
+Coverage divides the observed count by the **unique declared set size**.
+Unmatched members and missing cells reduce coverage; zeros count as observations.
+Cells below either threshold return `NA`, without removing their gene-set row.
+The thresholds do not rescale scores or correct missingness bias.
+
+The defaults are `min_coverage = 0`, `min_observed = 2L`, and `details = FALSE`.
+They preserve the original score-matrix API and numerical results.
+
 ## Sparse matrices and parallel processing
 
 Sparse matrices and portable parallel backends use the same API:
@@ -123,6 +151,18 @@ Tests compare the native implementations with an independent R calculation
 across dense and sparse inputs, missing values, partial coverage, numerical
 extremes, and serial or parallel execution. They verify the documented
 calculation, not biological performance.
+
+From the repository root, run the same build and check used by CI:
+
+```sh
+Rscript tools/check-package.R
+Rscript tools/check-package.R --bioc
+```
+
+The second command also runs BiocCheck. Install the package dependencies first.
+Logs remain under `.checks/`. The checks execute examples, tests, and vignettes.
+The workflow covers Linux, macOS, and Windows, plus an R-devel Linux job.
+Its configuration does not establish that every hosted platform has passed.
 
 ## Further reading
 

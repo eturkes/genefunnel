@@ -31,11 +31,11 @@ test_that("dense and sparse inputs reach distinct native kernels", {
     calls$sparse <- list()
 
     testthat::local_mocked_bindings(
-        calculateScoresDense = function(orig_mat, gene_indices) {
+        calculateScoresDense = function(orig_mat, gene_indices, ...) {
             calls$dense[[length(calls$dense) + 1L]] <- orig_mat
             matrix(0, nrow = length(gene_indices), ncol = ncol(orig_mat))
         },
-        calculateScoresSparse = function(orig_mat, gene_indices) {
+        calculateScoresSparse = function(orig_mat, gene_indices, ...) {
             calls$sparse[[length(calls$sparse) + 1L]] <- orig_mat
             matrix(0, nrow = length(gene_indices), ncol = ncol(orig_mat))
         },

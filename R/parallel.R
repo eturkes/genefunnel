@@ -65,18 +65,26 @@
     }
 }
 
-.score_matrix_task <- function(task, gene_indices, storage, ...) {
+.score_matrix_task <- function(
+    task, gene_indices, storage, minimum_observed = NULL,
+    return_observed = FALSE, ...
+) {
     tryCatch(
-        list(
-            id = task$id,
-            first = task$first,
-            last = task$last,
-            scores = .score_matrix_chunk(
-                task$mat,
-                gene_indices,
-                storage
+        {
+            scores <- .score_matrix_chunk(
+                task$mat, gene_indices, storage, minimum_observed,
+                return_observed
             )
-        ),
+            observed <- attr(scores, "observed", exact = TRUE)
+            attr(scores, "observed") <- NULL
+            list(
+                id = task$id,
+                first = task$first,
+                last = task$last,
+                scores = scores,
+                observed = observed
+            )
+        },
         error = function(condition) {
             stop(
                 sprintf(
@@ -117,7 +125,9 @@
     paste(columns, samples, sep = ", ")
 }
 
-.assemble_score_chunks <- function(chunks, n_gene_sets, n_columns) {
+.assemble_score_chunks <- function(
+    chunks, n_gene_sets, n_columns, field = "scores"
+) {
     if (length(chunks) == 0L) {
         stop(
             "Internal parallel scoring returned no chunks.",
@@ -154,13 +164,13 @@
             n_gene_sets,
             chunk$last - chunk$first + 1L
         )
-        if (!identical(dim(chunk$scores), expected_dimensions)) {
+        if (!identical(dim(chunk[[field]]), expected_dimensions)) {
             stop(
                 "Internal parallel scoring returned invalid score dimensions.",
                 call. = FALSE
             )
         }
-        scores[, seq.int(chunk$first, chunk$last)] <- chunk$scores
+        scores[, seq.int(chunk$first, chunk$last)] <- chunk[[field]]
     }
     scores
 }

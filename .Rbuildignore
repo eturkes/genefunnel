@@ -1,6 +1,9 @@
 ^genefunnel\.Rproj$
 ^\.Rproj\.user$
 ^benchmark$
+^\.github$
+^\.checks$
+^tools$
 ^data-raw$
 ^.*\.Rcheck$
 ^.*\.BiocCheck$

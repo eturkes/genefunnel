@@ -32,6 +32,25 @@ using namespace arma;
 
 namespace {
 
+IntegerVector observation_requirements(
+  const Nullable<IntegerVector>& supplied,
+  const int n_gene_sets
+) {
+  IntegerVector required(n_gene_sets, 2);
+  if (supplied.isNotNull()) {
+    required = IntegerVector(supplied.get());
+    if (required.size() != n_gene_sets) {
+      stop("Internal observation requirements have invalid length.");
+    }
+    for (const int value : required) {
+      if (value == NA_INTEGER || value < 2) {
+        stop("Internal observation requirements must be integers >= 2.");
+      }
+    }
+  }
+  return required;
+}
+
 long double score_tolerance(
   const std::size_t observed_size,
   const long double scale
@@ -163,25 +182,30 @@ NumericMatrix calculate_dense_scores(
   const int n_rows,
   const int n_columns,
   const List& gene_indices,
-  const ValueAt& value_at
+  const ValueAt& value_at,
+  const IntegerVector& minimum_observed,
+  const bool return_observed
 ) {
   const int n_gene_sets = gene_indices.size();
 
   NumericMatrix scores(n_gene_sets, n_columns);
+  IntegerMatrix observed_counts;
+  if (return_observed) {
+    observed_counts = IntegerMatrix(n_gene_sets, n_columns);
+    scores.attr("observed") = observed_counts;
+  }
 
   for (int j = 0; j < n_columns; ++j) {
+    checkUserInterrupt();
     for (int i = 0; i < n_gene_sets; ++i) {
+      if (i % 1024 == 0) checkUserInterrupt();
       IntegerVector indices = gene_indices[i];
-
-      if (indices.size() < 2) {
-        scores(i, j) = NA_REAL;
-        continue;
-      }
 
       std::vector<double> observed;
       observed.reserve(indices.size());
 
       for (R_xlen_t k = 0; k < indices.size(); ++k) {
+        if ((k + 1) % 65536 == 0) checkUserInterrupt();
         int index = indices[k];
         if (index == NA_INTEGER || index < 1 || index > n_rows) {
           stop("Internal gene-set index is invalid.");
@@ -213,7 +237,8 @@ NumericMatrix calculate_dense_scores(
       }
 
       const std::size_t observed_size = observed.size();
-      if (observed_size < 2) {
+      if (return_observed) observed_counts(i, j) = observed_size;
+      if (observed_size < static_cast<std::size_t>(minimum_observed[i])) {
         scores(i, j) = NA_REAL;
         continue;
       }
@@ -284,21 +309,30 @@ struct SparseEntry {
 
 NumericMatrix calculate_sparse_scores(
   const arma::sp_mat& orig_mat,
-  const List& gene_indices
+  const List& gene_indices,
+  const IntegerVector& minimum_observed,
+  const bool return_observed
 ) {
   const int n_rows = static_cast<int>(orig_mat.n_rows);
   const int n_columns = static_cast<int>(orig_mat.n_cols);
   const int n_gene_sets = gene_indices.size();
   NumericMatrix scores(n_gene_sets, n_columns);
+  IntegerMatrix observed_counts;
+  if (return_observed) {
+    observed_counts = IntegerMatrix(n_gene_sets, n_columns);
+    scores.attr("observed") = observed_counts;
+  }
 
   // Invert memberships once per bounded native chunk. Each sparse column can
   // then be streamed once; implicit zeros require neither lookup nor storage.
   std::vector<std::vector<SparseMembership>> memberships_by_row(n_rows);
   std::vector<std::size_t> gene_set_sizes(n_gene_sets);
   for (int i = 0; i < n_gene_sets; ++i) {
+    if (i % 1024 == 0) checkUserInterrupt();
     IntegerVector indices = gene_indices[i];
     gene_set_sizes[i] = indices.size();
     for (R_xlen_t k = 0; k < indices.size(); ++k) {
+      if ((k + 1) % 65536 == 0) checkUserInterrupt();
       const int index = indices[k];
       if (index == NA_INTEGER || index < 1 || index > n_rows) {
         stop("Internal gene-set index is invalid.");
@@ -309,13 +343,16 @@ NumericMatrix calculate_sparse_scores(
 
   std::vector<std::vector<SparseEntry>> entries_by_gene_set(n_gene_sets);
   for (int j = 0; j < n_columns; ++j) {
+    checkUserInterrupt();
     for (auto& entries : entries_by_gene_set) {
       entries.clear();
     }
 
+    std::size_t visited = 0;
     for (arma::sp_mat::const_col_iterator entry = orig_mat.begin_col(j);
          entry != orig_mat.end_col(j);
          ++entry) {
+      if (++visited % 65536 == 0) checkUserInterrupt();
       const int row = static_cast<int>(entry.row());
       const double value = *entry;
       const auto& memberships = memberships_by_row[row];
@@ -341,11 +378,8 @@ NumericMatrix calculate_sparse_scores(
     }
 
     for (int i = 0; i < n_gene_sets; ++i) {
+      if (i % 1024 == 0) checkUserInterrupt();
       const std::size_t gene_set_size = gene_set_sizes[i];
-      if (gene_set_size < 2) {
-        scores(i, j) = NA_REAL;
-        continue;
-      }
 
       auto& entries = entries_by_gene_set[i];
       std::sort(
@@ -378,7 +412,8 @@ NumericMatrix calculate_sparse_scores(
         }
       }
 
-      if (observed_size < 2) {
+      if (return_observed) observed_counts(i, j) = observed_size;
+      if (observed_size < static_cast<std::size_t>(minimum_observed[i])) {
         scores(i, j) = NA_REAL;
         continue;
       }
@@ -437,7 +472,9 @@ NumericMatrix calculate_sparse_scores(
 // [[Rcpp::export]]
 NumericMatrix calculateScoresDense(
   const NumericMatrix& orig_mat,
-  const List& gene_indices
+  const List& gene_indices,
+  Nullable<IntegerVector> minimum_observed = R_NilValue,
+  const bool return_observed = false
 ) {
   return calculate_dense_scores(
     orig_mat.nrow(),
@@ -445,14 +482,22 @@ NumericMatrix calculateScoresDense(
     gene_indices,
     [&orig_mat](const int row, const int column) {
       return orig_mat(row, column);
-    }
+    },
+    observation_requirements(minimum_observed, gene_indices.size()),
+    return_observed
   );
 }
 
 // [[Rcpp::export]]
 NumericMatrix calculateScoresSparse(
   const arma::sp_mat& orig_mat,
-  const List& gene_indices
+  const List& gene_indices,
+  Nullable<IntegerVector> minimum_observed = R_NilValue,
+  const bool return_observed = false
 ) {
-  return calculate_sparse_scores(orig_mat, gene_indices);
+  return calculate_sparse_scores(
+    orig_mat, gene_indices,
+    observation_requirements(minimum_observed, gene_indices.size()),
+    return_observed
+  );
 }

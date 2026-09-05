@@ -1,6 +1,6 @@
 Package: genefunnel
 Title: Gene Set Activity Scoring with GeneFunnel
-Version: 0.99.2
+Version: 0.99.3
 Authors@R: 
     person("Emir", "Turkes", email = "emir.turkes@eturkes.com",
         role = c("aut", "cre", "cph"),
@@ -17,7 +17,6 @@ URL: https://github.com/eturkes/genefunnel
 BugReports: https://github.com/eturkes/genefunnel/issues
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 8.1.0
 Imports:
     methods,
     Matrix,

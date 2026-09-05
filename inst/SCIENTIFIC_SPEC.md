@@ -14,16 +14,20 @@ feature-by-sample matrix into a numeric gene-set-by-sample matrix. It does not
 normalize or impute measurements, map identifiers, retrieve gene sets, perform
 differential testing, or provide biological interpretation.
 
-`genefunnel(mat, gene_sets, BPPARAM)` accepts:
+`genefunnel(mat, gene_sets, BPPARAM, min_coverage, min_observed, details)` accepts:
 
 - an unclassed base R numeric/integer matrix or supported numeric dense/sparse
   `Matrix`;
 - an unclassed named list of unclassed character gene-set members; and
 - a `BiocParallelParam`, defaulting to the registered backend.
 
-The result is a base numeric matrix. Retained gene sets and samples preserve
+The default result is a base numeric matrix. Retained gene sets and samples preserve
 their input order and names. Missing column names remain `NULL`. One sample and
 one gene set are valid.
+
+With `details = TRUE`, the result also contains per-sample observed counts,
+coverage fractions, and a global set-coverage table. Coverage filters extend the
+original workflow without changing its score equation.
 
 ## Score calculation
 
@@ -34,7 +38,8 @@ For input matrix \(X\), declared gene set \(G\), and sample \(j\):
    \(M = G \cap \operatorname{rownames}(X)\).
 3. For sample \(j\), remove `NA` and `NaN` values from the matched members. Let
    the remaining observed values be \(x_1,\ldots,x_n\).
-4. Return `NA_real_` when \(n < 2\).
+4. Return `NA_real_` when \(n < \texttt{min_observed}\) or
+   \(n / |G| < \texttt{min_coverage}\). The defaults are two and zero.
 5. Otherwise calculate
 
 \[
@@ -84,7 +89,9 @@ GeneFunnel scores every set with at least two unique members matched globally
 to matrix row names. Unmatched declared members are ignored during scoring.
 Sets below the two-match minimum are omitted from the result in input order,
 with at most one aggregate warning per call. The scoring API has no fixed
-coverage threshold.
+fractional threshold by default. Set `min_coverage` to enforce a fraction in each
+sample, using unique declared members as the denominator. Set `min_observed`
+to require more than two observations. A failed cell becomes `NA`; its row stays.
 
 `gene_set_coverage(gene_sets, features)` applies the scorer's exact validation,
 deduplication, and matching rules. It returns:
