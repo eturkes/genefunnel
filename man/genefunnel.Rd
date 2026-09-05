@@ -10,14 +10,17 @@ genefunnel(
   BPPARAM = BiocParallel::bpparam(),
   min_coverage = 0,
   min_observed = 2L,
-  details = FALSE
+  details = FALSE,
+  assay = NULL
 )
 }
 \arguments{
 \item{mat}{A base numeric or integer matrix without an extra class, or a
 numeric dense or sparse \link[Matrix:Matrix]{Matrix::Matrix} object. Features must be in rows
 and samples in columns. Row names must be unique and non-empty. Values can
-be non-negative finite numbers, \code{NA}, or \code{NaN}.}
+be non-negative finite numbers, \code{NA}, or \code{NaN}. A
+\link[SummarizedExperiment:SummarizedExperiment]{SummarizedExperiment::SummarizedExperiment} or subclass is also accepted
+when its selected assay has one of these matrix types.}
 
 \item{gene_sets}{A non-empty named base list of character vectors. Set names
 and member identifiers must be non-missing and non-empty. Duplicate members
@@ -35,6 +38,10 @@ be an integer of at least two. The default is two.}
 
 \item{details}{Return scores and coverage diagnostics when \code{TRUE}.
 The default, \code{FALSE}, returns only the score matrix.}
+
+\item{assay}{One exact assay name for \code{SummarizedExperiment} input.
+The default, \code{NULL}, selects the only assay. Multiple assays require a
+name. Leave this \code{NULL} for matrix input.}
 }
 \value{
 A base numeric matrix with scored gene sets in rows and samples in
@@ -77,6 +84,15 @@ score is \code{NA}, but the row remains in the result. Coverage uses the unique
 declared set size, not only the matched size. Zeros count as observations;
 \code{NA}, \code{NaN}, and unmatched identifiers do not. These filters do not rescale
 scores or correct bias from missing members.
+}
+
+\section{Experiment containers}{
+
+The selected assay uses the container's feature and sample names. Sparse
+assays stay sparse. Other assays and metadata remain unchanged. Delayed or
+disk-backed assays are not supported and are not silently materialized.
+The return type is the same as for matrix input; metadata are not copied
+into the score matrix or diagnostic list.
 }
 
 \section{Interpretation}{

@@ -25,7 +25,9 @@
 #' @param mat A base numeric or integer matrix without an extra class, or a
 #'   numeric dense or sparse [Matrix::Matrix] object. Features must be in rows
 #'   and samples in columns. Row names must be unique and non-empty. Values can
-#'   be non-negative finite numbers, `NA`, or `NaN`.
+#'   be non-negative finite numbers, `NA`, or `NaN`. A
+#'   [SummarizedExperiment::SummarizedExperiment] or subclass is also accepted
+#'   when its selected assay has one of these matrix types.
 #' @param gene_sets A non-empty named base list of character vectors. Set names
 #'   and member identifiers must be non-missing and non-empty. Duplicate members
 #'   within a set are used once, in their original order.
@@ -38,6 +40,9 @@
 #'   be an integer of at least two. The default is two.
 #' @param details Return scores and coverage diagnostics when `TRUE`.
 #'   The default, `FALSE`, returns only the score matrix.
+#' @param assay One exact assay name for `SummarizedExperiment` input.
+#'   The default, `NULL`, selects the only assay. Multiple assays require a
+#'   name. Leave this `NULL` for matrix input.
 #'
 #' @details
 #' Gene-set members are matched to matrix row names. `NA` and `NaN` values are
@@ -65,6 +70,13 @@
 #' declared set size, not only the matched size. Zeros count as observations;
 #' `NA`, `NaN`, and unmatched identifiers do not. These filters do not rescale
 #' scores or correct bias from missing members.
+#'
+#' @section Experiment containers:
+#' The selected assay uses the container's feature and sample names. Sparse
+#' assays stay sparse. Other assays and metadata remain unchanged. Delayed or
+#' disk-backed assays are not supported and are not silently materialized.
+#' The return type is the same as for matrix input; metadata are not copied
+#' into the score matrix or diagnostic list.
 #'
 #' @section Interpretation:
 #' The score is high when a set has both a large total signal and similar member
@@ -114,9 +126,11 @@ genefunnel <- function(
     BPPARAM = BiocParallel::bpparam(),
     min_coverage = 0,
     min_observed = 2L,
-    details = FALSE
+    details = FALSE,
+    assay = NULL
 ) {
     .validate_observation_policy(min_coverage, min_observed, details)
+    mat <- .score_input_matrix(mat, assay)
     .validate_score_matrix(mat)
     prepared <- .prepare_gene_sets(gene_sets, rownames(mat))
     .validate_bpparam(BPPARAM)

@@ -1728,6 +1728,30 @@ The dense and sparse implementations are required to produce the same named
 matrix. Sparse storage changes memory use and traversal, not the scientific
 calculation.
 
+# Experiment containers
+
+A `SummarizedExperiment` can supply a supported numeric assay directly. Select
+one exact assay name when the container has multiple assays:
+
+```{r experiment-input}
+experiment <- SummarizedExperiment::SummarizedExperiment(
+    assays = list(signal = pattern_sparse)
+)
+experiment_scores <- genefunnel(
+    experiment,
+    pattern_sets,
+    assay = "signal",
+    BPPARAM = serial
+)
+stopifnot(identical(experiment_scores, pattern_sparse_scores))
+```
+
+The only assay is selected when `assay` is omitted. Container row names define
+feature matching, and container column names define sample order. Sparse assays
+stay sparse. Delayed and disk-backed assays are not silently materialized.
+Other assays and metadata remain unchanged; the return type stays a matrix
+or, with `details = TRUE`, a diagnostic list.
+
 # Serial and parallel execution
 
 `BPPARAM` accepts any suitable `BiocParallelParam`. `SerialParam()` is useful

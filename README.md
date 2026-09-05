@@ -137,6 +137,30 @@ backend <- BiocParallel::SnowParam(workers = 2L, type = "SOCK")
 scores <- genefunnel(sparse_mat, gene_sets[keep], BPPARAM = backend)
 ```
 
+## Experiment containers
+
+Pass a `SummarizedExperiment` directly and select the assay to score:
+
+```r
+se <- SummarizedExperiment::SummarizedExperiment(assays = list(signal = mat))
+checked <- genefunnel(
+    se,
+    gene_sets[keep],
+    assay = "signal",
+    BPPARAM = BiocParallel::SerialParam(),
+    details = TRUE
+)
+```
+
+The only assay is selected when `assay` is omitted. Multiple assays require
+one exact, unambiguous name. Feature matching uses the container's row names;
+the output follows its sample names and order.
+
+The selected assay must be a supported numeric matrix. Sparse assays remain
+sparse; delayed and disk-backed assays are rejected rather than materialized.
+Other assays and metadata stay unchanged. The return type remains a score
+matrix or diagnostic list, not an experiment container.
+
 ## Input assumptions
 
 Matching is exact and case-sensitive. GeneFunnel does not normalize or impute

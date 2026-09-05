@@ -1,3 +1,12 @@
+# genefunnel 0.99.4
+
+- Accepts SummarizedExperiment containers and subclasses through explicit
+  assay selection. A single assay is selected automatically.
+- Preserves container names, sparse storage, coverage policies, and the
+  existing matrix or diagnostic-list return type. Input metadata are unchanged.
+- Rejects ambiguous assay names and unsupported assay storage without
+  materializing delayed data. Matrix users need no new runtime dependency.
+
 # genefunnel 0.99.3
 
 - Adds sample-level `min_coverage` and `min_observed` filters. Unsupported
