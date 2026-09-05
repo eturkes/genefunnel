@@ -44,6 +44,9 @@
 # Generated benchmark output
 /benchmark/results/
 
+# First-run example output
+/genefunnel-results/
+
 # Coverage and profiling output
 /coverage/
 *.Rprof

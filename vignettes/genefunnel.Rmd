@@ -142,17 +142,25 @@ source and issue tracker are on the
 
 # Installation
 
-After acceptance, install GeneFunnel from a Bioconductor package repository:
+Install the development package from GitHub. Source installation needs a C++17
+compiler. Install `ggplot2` for the figures in this walkthrough.
 
 ```{r installation, eval=FALSE}
-if (!requireNamespace("BiocManager", quietly = TRUE)) {
-    install.packages("BiocManager")
-}
-BiocManager::install("genefunnel")
+install.packages(c("BiocManager", "remotes", "ggplot2"))
+BiocManager::install("eturkes/genefunnel")
 ```
 
-During review, replace the package name with `"eturkes/genefunnel"` to install
-the development repository.
+For a small first result, run the installed example from a writable folder:
+
+```{r first-result, eval=FALSE}
+source(system.file("examples", "quickstart.R", package = "genefunnel",
+    mustWork = TRUE))
+```
+
+It saves a labelled comparison figure, scores, and coverage under
+`genefunnel-results/`. Re-running replaces those example files. The synthetic
+inputs explain why equal totals can receive scores of 12, 4, and 0.
+The examples below cover the calculation and real-data use in more detail.
 
 Load the installed package and choose a serial backend for the first examples.
 

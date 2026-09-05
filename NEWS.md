@@ -1,3 +1,11 @@
+# genefunnel 0.99.5
+
+- Adds an installed first-run example that saves scores, coverage, and a
+  labelled equal-total comparison figure without downloading data.
+- Adds a README figure generated from that example and tests its exports.
+- Moves installation, interpretation, and output locations before advanced
+  usage. The scoring API and calculation are unchanged.
+
 # genefunnel 0.99.4
 
 - Accepts SummarizedExperiment containers and subclasses through explicit

@@ -5,6 +5,7 @@
 ^\.checks$
 ^tools$
 ^data-raw$
+^genefunnel-results$
 ^.*\.Rcheck$
 ^.*\.BiocCheck$
 ^genefunnel_.*\.tar\.gz$
