@@ -21,14 +21,12 @@ Coverage is \code{NA} for an empty set. A set is scoreable when at least two
 unique members match.
 }
 \description{
-Compare the members of each gene set with the available feature names.
-Matching is exact and case-sensitive. Duplicate members are counted but used
-only once when coverage is calculated.
+Match gene-set members to available features exactly and case-sensitively.
+Diagnostics count duplicates; coverage uses each member once.
 }
 \details{
-This function uses the same matching rules as \code{\link[=genefunnel]{genefunnel()}}. It does not map
-identifiers or change case. An empty set is allowed, but its coverage is
-\code{NA} and it cannot be scored.
+Matching follows \code{\link[=genefunnel]{genefunnel()}} without identifier mapping or case changes.
+Empty sets are valid diagnostic inputs but cannot be scored.
 }
 \examples{
 sets <- list(

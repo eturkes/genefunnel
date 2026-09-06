@@ -103,9 +103,8 @@
 
 #' Gene-set coverage diagnostics
 #'
-#' Compare the members of each gene set with the available feature names.
-#' Matching is exact and case-sensitive. Duplicate members are counted but used
-#' only once when coverage is calculated.
+#' Match gene-set members to available features exactly and case-sensitively.
+#' Diagnostics count duplicates; coverage uses each member once.
 #'
 #' @param gene_sets A non-empty named base list of character vectors. Set names
 #'   and member identifiers must be non-missing and non-empty.
@@ -113,9 +112,8 @@
 #'   feature identifiers, usually `rownames(mat)`.
 #'
 #' @details
-#' This function uses the same matching rules as [genefunnel()]. It does not map
-#' identifiers or change case. An empty set is allowed, but its coverage is
-#' `NA` and it cannot be scored.
+#' Matching follows [genefunnel()] without identifier mapping or case changes.
+#' Empty sets are valid diagnostic inputs but cannot be scored.
 #'
 #' @return A data frame with one row per gene set and columns `gene_set`,
 #'   `declared_size` (unique declared members), `matched_size`,

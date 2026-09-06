@@ -53,9 +53,8 @@ matrices share dimensions. \code{set_coverage} contains all declared sets,
 including skipped sets, as returned by \code{\link[=gene_set_coverage]{gene_set_coverage()}}.
 }
 \description{
-Calculate one score for each gene set and sample in a non-negative
-feature-by-sample matrix. Unlike a plain sum, GeneFunnel gives lower scores
-when the observed members of a set disagree.
+Score each gene set and sample in a non-negative feature-by-sample matrix.
+Unlike a plain sum, GeneFunnel penalizes disagreement among observed members.
 }
 \details{
 Gene-set members are matched to matrix row names. \code{NA} and \code{NaN} values are
@@ -69,39 +68,33 @@ removed separately in each sample. Given the remaining values
 \bar{x}=\frac{1}{n}\sum_{i=1}^{n}x_i.
 }
 
-Both explicit and implicit sparse zeros count as observed values. A score is
-\code{NA_real_} when fewer than two members remain after missing values are
-removed.
+Explicit and implicit sparse zeros remain observed. Fewer than two
+observations produce \code{NA_real_}.
 }
 \section{Matching and coverage}{
 
-Matching is exact and case-sensitive. GeneFunnel does not convert identifiers
-or query annotation resources. Unmatched members are ignored. A set is
-scored when at least two unique members match. Use \code{\link[=gene_set_coverage]{gene_set_coverage()}} to
-inspect coverage and choose an appropriate threshold for your experiment.
-Each sample must also meet \code{min_observed} and \code{min_coverage}. Otherwise its
-score is \code{NA}, but the row remains in the result. Coverage uses the unique
-declared set size, not only the matched size. Zeros count as observations;
-\code{NA}, \code{NaN}, and unmatched identifiers do not. These filters do not rescale
-scores or correct bias from missing members.
+Matching is exact and case-sensitive, without identifier conversion or
+annotation lookup. Scoring ignores unmatched members and requires two unique
+matches. Use \code{\link[=gene_set_coverage]{gene_set_coverage()}} to inspect coverage before choosing
+thresholds. Cells below \code{min_observed} or \code{min_coverage} become \code{NA} without
+removing their rows. Coverage divides observations by the unique declared
+size, not matched size. Zeros count; \code{NA}, \code{NaN}, and unmatched members do not.
+Filters neither rescale scores nor correct missing-member bias.
 }
 
 \section{Experiment containers}{
 
 The selected assay uses the container's feature and sample names. Sparse
-assays stay sparse. Other assays and metadata remain unchanged. Delayed or
-disk-backed assays are not supported and are not silently materialized.
-The return type is the same as for matrix input; metadata are not copied
-into the score matrix or diagnostic list.
+assays stay sparse; delayed and disk-backed assays are rejected. Other assays
+and metadata remain unchanged. Results match the matrix-input return type,
+without copied metadata.
 }
 
 \section{Interpretation}{
 
-The score is high when a set has both a large total signal and similar member
-values. It therefore depends on measurement units, preprocessing, set size,
-and feature coverage. Compare scores across data sets only when these inputs
-are compatible. GeneFunnel does not normalize, impute, test, or interpret the
-data.
+Large totals and similar member values produce high scores. Units,
+preprocessing, set size, and coverage must be compatible for cross-dataset
+comparisons. GeneFunnel does not normalize, impute, test, or interpret data.
 }
 
 \examples{

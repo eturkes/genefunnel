@@ -1,21 +1,18 @@
 # GeneFunnel
 
 GeneFunnel scores predefined gene sets in each sample of a non-negative
-feature-by-sample matrix. The score starts with the total observed signal and
-reduces it when members of the set disagree. Dense and sparse matrices use the
-same scoring rules, and implicit sparse zeros count as observations.
+feature-by-sample matrix. It penalizes disagreement among members, distinguishing
+coherent signal from a few large values. Dense and sparse inputs follow the
+same rules; implicit zeros count as observations.
 
-Use it when you need to distinguish a coherent gene set from one driven by a few
-large values. The output is a gene-set-by-sample score matrix, with optional
-coverage diagnostics. It does not normalize data, test enrichment, or establish
-biological activity. A rank-based method addresses a different question when
-relative ordering matters more than measurement scale.
+The result is a gene-set-by-sample matrix with optional coverage diagnostics.
+Scores do not establish biological activity or enrichment. Use a rank-based
+method when relative ordering matters more than measurement scale.
 
 ## Installation
 
-The development package is not yet available from Bioconductor. Install it from
-GitHub in R. Source installation needs a C++17 compiler; the example figure also
-needs `ggplot2`.
+The development package is not yet in Bioconductor. Install from GitHub with a
+C++17 compiler available. The example figure also needs `ggplot2`.
 
 ```r
 install.packages(c("BiocManager", "remotes", "ggplot2"))
@@ -24,8 +21,8 @@ BiocManager::install("eturkes/genefunnel")
 
 ## First result
 
-Run this from a writable working folder after installation. It uses a built-in
-synthetic example, downloads no data, and saves the figure shown below.
+After installation, run this from a writable folder. The bundled synthetic
+example saves the figure below without downloading data.
 
 ```r
 source(system.file("examples", "quickstart.R", package = "genefunnel",
@@ -34,9 +31,9 @@ source(system.file("examples", "quickstart.R", package = "genefunnel",
 
 ![Three four-gene inputs each total 12. GeneFunnel scores the coherent, split, and concentrated patterns as 12, 4, and 0.](man/figures/quickstart.png)
 
-All three samples total 12. GeneFunnel returns **12, 4, and 0** as the signal
-becomes concentrated in fewer members. Zeros are observations, not missing
-values. The final score of zero does not prove biological inactivity.
+Each sample totals 12, but scores fall from **12 to 4 to 0** as signal
+concentrates in fewer members. Observed zeros are not missing values, and a
+zero score does not prove biological inactivity.
 
 The script prints a table and writes these files under `genefunnel-results/`:
 
@@ -47,15 +44,15 @@ The script prints a table and writes these files under `genefunnel-results/`:
 | `gene-set-coverage.csv` | Declared and matched set sizes |
 | `result.rds` | The full result, for `readRDS()` |
 
-Re-running replaces these example files. The script leaves `x`, `gene_sets`,
-`result`, `score_table`, and `score_plot` in your R session. Read the
-[example script](inst/examples/quickstart.R) to change the inputs or figure.
+Re-running replaces these files. The script leaves `x`, `gene_sets`, `result`,
+`score_table`, and `score_plot` in R. Edit the
+[example script](inst/examples/quickstart.R) to change inputs or figures.
 
 ## Score your data
 
-Replace `x` with your non-negative feature-by-sample matrix. Give its rows
-feature identifiers and its columns sample names. Supply `gene_sets` as a named
-list of character vectors, using the same identifiers.
+Replace `x` with a non-negative matrix whose rows name features and columns
+name samples. Supply `gene_sets` as a named list of character vectors with
+matching identifiers.
 
 ```r
 library(genefunnel)
@@ -69,14 +66,14 @@ result$scores
 result$coverage
 ```
 
-Inspect coverage alongside scores. Missing members can lower a score without
-showing a biological difference. Compare samples on a justified common input
-scale; GeneFunnel does not correct different measurement scales or set sizes.
+Inspect coverage: missing members can lower scores without a biological
+difference. Use a justified common input scale; GeneFunnel does not correct
+measurement scales or set sizes.
 
 ### Check coverage before scoring
 
-Use `gene_set_coverage()` to see which members are present before choosing a
-coverage threshold for your experiment.
+Use `gene_set_coverage()` to inspect matching before choosing a coverage
+threshold.
 
 ```r
 library(genefunnel)
@@ -110,14 +107,13 @@ genefunnel(
 #> partial         8        2
 ```
 
-For `sample_2`, GeneFunnel omits `C = NA` and scores the observed pair
-`c(1, 2)`. Zeros remain in the calculation. A score is `NA` when fewer than two
-members are observed in that sample.
+For `sample_2`, GeneFunnel omits `C = NA` and scores `c(1, 2)`. Zeros remain
+observed. Fewer than two observations produce `NA`.
 
 ### Enforce sample-level coverage
 
-Global matching does not detect missing observations within a sample. Apply
-sample-level thresholds when those gaps affect interpretation:
+Global matching misses sample-specific gaps. Apply sample-level thresholds
+when those gaps affect interpretation:
 
 ```r
 checked <- genefunnel(
@@ -134,13 +130,13 @@ checked$coverage
 checked$set_coverage
 ```
 
-Coverage divides the observed count by the **unique declared set size**.
-Unmatched members and missing cells reduce coverage; zeros count as observations.
-Cells below either threshold return `NA`, without removing their gene-set row.
-The thresholds do not rescale scores or correct missingness bias.
+Coverage is the observed count divided by the **unique declared set size**.
+Unmatched members and missing cells reduce it; zeros remain observed.
+Cells below either threshold become `NA` without removing their rows. These
+filters neither rescale scores nor correct missingness bias.
 
-The defaults are `min_coverage = 0`, `min_observed = 2L`, and `details = FALSE`.
-They preserve the original score-matrix API and numerical results.
+Defaults of `min_coverage = 0`, `min_observed = 2L`, and `details = FALSE`
+preserve the original score matrix and numerical results.
 
 ### Sparse matrices and parallel processing
 
@@ -167,29 +163,24 @@ checked <- genefunnel(
 )
 ```
 
-The only assay is selected when `assay` is omitted. Multiple assays require
-one exact, unambiguous name. Feature matching uses the container's row names;
-the output follows its sample names and order.
-
-The selected assay must be a supported numeric matrix. Sparse assays remain
-sparse; delayed and disk-backed assays are rejected rather than materialized.
-Other assays and metadata stay unchanged. The return type remains a score
-matrix or diagnostic list, not an experiment container.
+Omitting `assay` selects the only assay; multiple assays require an exact,
+unambiguous name. Container names define feature matching and sample order.
+The assay must be a supported numeric matrix. Sparse assays stay sparse;
+delayed and disk-backed assays are rejected. Other assays and metadata remain
+unchanged. The result is a score matrix or diagnostic list, not a container.
 
 ## Input assumptions
 
-Matching is exact and case-sensitive. GeneFunnel does not normalize or impute
-data, map identifiers, retrieve gene sets, run statistical tests, or interpret
-the result. Input values must be non-negative, and zero must have a meaningful
-interpretation. Adding a constant to make negative data positive changes the
-score and is not an appropriate workaround.
+Matching is exact and case-sensitive. GeneFunnel does not preprocess, impute,
+map identifiers, retrieve sets, test hypotheses, or interpret results.
+Values must be non-negative with a meaningful zero. Adding a constant to
+remove negative values changes the score and is unsuitable.
 
 ## Verification
 
-Tests compare the native implementations with an independent R calculation
-across dense and sparse inputs, missing values, partial coverage, numerical
-extremes, and serial or parallel execution. They verify the documented
-calculation, not biological performance.
+Tests compare native implementations with an independent R calculation across
+dense and sparse inputs, missingness, coverage, numerical extremes, and parallel
+backends. They verify calculations, not biological performance.
 
 From the repository root, run the same build and check used by CI:
 
@@ -198,10 +189,10 @@ Rscript tools/check-package.R
 Rscript tools/check-package.R --bioc
 ```
 
-The second command also runs BiocCheck. Install the package dependencies first.
-Logs remain under `.checks/`. The checks execute examples, tests, and vignettes.
-The workflow covers Linux, macOS, and Windows, plus an R-devel Linux job.
-Its configuration does not establish that every hosted platform has passed.
+Install dependencies first. The second command adds BiocCheck; logs remain
+under `.checks/`. Both run examples, tests, and vignettes. CI targets Linux,
+macOS, Windows, and Linux with R-devel; configured jobs are not evidence of
+hosted passes.
 
 ## Further reading
 
@@ -212,13 +203,12 @@ Its configuration does not establish that every hosted platform has passed.
   Both extracts ship with the package; the analyses are descriptive.
 - [Tests](tests/testthat) - reference calculations and implementation checks.
 
-For a rendered local vignette, install with `build_vignettes = TRUE` and its
-suggested dependencies, then run `vignette("genefunnel")`. The first-run script
-does not need a vignette build. Run `citation("genefunnel")` for citation details.
+To read the rendered vignette, install suggested dependencies and build with
+`build_vignettes = TRUE`, then run `vignette("genefunnel")`. The first-run
+script needs no vignette build. Use `citation("genefunnel")` for citation details.
 
-Regenerate the README figure from the example with
-`Rscript tools/render-quickstart.R`. The package tests run the same example and
-check its numerical results and exported files.
+Regenerate the figure with `Rscript tools/render-quickstart.R`. Tests run the
+same example and check its results and exports.
 
 ## License
 

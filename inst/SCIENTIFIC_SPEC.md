@@ -1,18 +1,18 @@
 
 # GeneFunnel scientific specification
 
-This document defines how GeneFunnel calculates and interprets scores. The
-method is described in Sections 4.3-4.12 and 5.1 of Emir Turkes' 2025
+This specification defines score calculation and interpretation. The method
+appears in Sections 4.3-4.12 and 5.1 of Emir Turkes' 2025
 University College London PhD thesis, *Development of Gene Set Enrichment and
 Imputation Methods for Transcriptomics and Proteomics: Application in the Study
 of Neurofibrillary Tangle-bearing Neurons in Alzheimer's Disease*.
 
 ## Scope
 
-GeneFunnel performs functional class scoring. It converts a non-negative
-feature-by-sample matrix into a numeric gene-set-by-sample matrix. It does not
-normalize or impute measurements, map identifiers, retrieve gene sets, perform
-differential testing, or provide biological interpretation.
+GeneFunnel converts a non-negative feature-by-sample matrix into a numeric
+gene-set-by-sample matrix through functional class scoring. It does not
+normalize, impute, map identifiers, retrieve sets, test differences, or
+interpret results biologically.
 
 `genefunnel(mat, gene_sets, BPPARAM, min_coverage, min_observed, details)` accepts:
 
@@ -21,13 +21,11 @@ differential testing, or provide biological interpretation.
 - an unclassed named list of unclassed character gene-set members; and
 - a `BiocParallelParam`, defaulting to the registered backend.
 
-The default result is a base numeric matrix. Retained gene sets and samples preserve
-their input order and names. Missing column names remain `NULL`. One sample and
-one gene set are valid.
+The default base numeric matrix preserves retained set and sample order and
+names. Missing column names stay `NULL`. Single samples and sets are valid.
 
-With `details = TRUE`, the result also contains per-sample observed counts,
-coverage fractions, and a global set-coverage table. Coverage filters extend the
-original workflow without changing its score equation.
+With `details = TRUE`, results include observed counts, sample coverage, and
+global set coverage. Coverage filters leave the score equation unchanged.
 
 ## Score calculation
 
@@ -54,83 +52,71 @@ and
 -\frac{n}{2(n-1)}\sum_{i=1}^{n}\left|x_i-\bar{x}\right|.
 \]
 
-The effective \(n\) is specific to a gene-set/sample cell after missing-value
-omission. It is neither the declared set size nor necessarily the globally
-matched set size.
+The effective \(n\) counts observations in one set/sample cell, not declared
+or globally matched members.
 
 ## Values and missingness
 
-Zero is observed information. Explicit dense zeros and implicit sparse zeros
-participate in the effective size, sum, mean, and deviation.
+Explicit and implicit sparse zeros contribute to the observed count, sum,
+mean, and deviation.
 
-`NA` and `NaN` are absent information. They are omitted per sample and reduce
-the effective size. Missingness in one sample has no effect on another sample.
+`NA` and `NaN` reduce the observed count in their sample only.
 
-Positive and negative infinity are invalid. Negative finite values are also
-invalid because the activity interpretation and score bounds require
-non-negative input. GeneFunnel rejects these values and never shifts,
-rescales, normalizes, or log-transforms input automatically.
+Infinities and negative values are rejected: interpretation and score bounds
+require non-negative input. GeneFunnel never shifts, rescales, normalizes, or
+log-transforms input automatically.
 
-Processed data are suitable only when zero remains meaningful and every
-observed value is non-negative. An arbitrary positive shift is not a valid
-workaround: adding \(c\) to every observed member increases the score by
-\(nc\).
+Processed data need meaningful zeros and non-negative observations. Arbitrary
+positive shifts are unsuitable: adding \(c\) to every observation adds \(nc\)
+to the score.
 
 Three cases remain distinct:
 
-- a matrix row that is absent is globally unmeasured and affects coverage;
-- an `NA`/`NaN` cell is unavailable only in that sample and affects its
-  effective size; and
-- a zero is measured inactivity and remains in the calculation.
+- an absent row reduces global coverage;
+- an `NA`/`NaN` cell reduces observations in one sample; and
+- a zero remains observed in the calculation.
 
 ## Coverage and identifiers
 
-GeneFunnel scores every set with at least two unique members matched globally
-to matrix row names. Unmatched declared members are ignored during scoring.
-Sets below the two-match minimum are omitted from the result in input order,
-with at most one aggregate warning per call. The scoring API has no fixed
-fractional threshold by default. Set `min_coverage` to enforce a fraction in each
-sample, using unique declared members as the denominator. Set `min_observed`
-to require more than two observations. A failed cell becomes `NA`; its row stays.
+Sets need two unique global matches to matrix row names. Scoring ignores
+unmatched members; sets below the minimum are omitted with at most one
+aggregate warning per call. Retained sets stay in input order.
 
-`gene_set_coverage(gene_sets, features)` applies the scorer's exact validation,
-deduplication, and matching rules. It returns:
+No fractional threshold applies by default. Set `min_coverage` to require a
+sample-level fraction of unique declared members, or `min_observed` for more
+than two observations. Failed cells become `NA`; their rows stay.
 
-- gene-set name;
-- unique declared size;
-- matched and unmatched sizes;
-- matched fraction of unique declared members;
-- duplicate-member count; and
-- whether at least two members are globally scoreable.
+`gene_set_coverage(gene_sets, features)` uses the scorer's validation,
+deduplication, and matching rules. It returns set names, unique declared sizes,
+matched and unmatched counts, matched fractions, duplicate counts, and whether
+at least two members match.
 
-Coverage is undefined (`NA`) for an empty declared set. Empty sets are valid
-diagnostic inputs but cannot be scored. Choose a coverage rule that fits the
-experiment. Examples include:
+Empty sets are valid diagnostic inputs with `NA` coverage, but cannot be scored.
+Choose experiment-appropriate thresholds, for example:
 
 - strict transcriptomic policy: `coverage == 1`; and
 - low-coverage proteomic policy: `coverage >= 0.5` and `matched_size >= 2`.
 
-Matrix row names are required, unique, non-missing, and non-empty. Gene-set
-names are required, unique, non-missing, and non-empty. Every member identifier
-must be a non-missing, non-empty string. GeneFunnel performs no case folding,
+Row names and set names must be unique, non-missing, and non-empty. Members
+must be non-missing, non-empty strings. Matching performs no case folding,
 synonym resolution, annotation lookup, or identifier conversion. Overlapping
-gene sets are valid and remain independent.
+sets remain independent.
 
 ## Worked values
 
 | Observed values | Score | Explanation |
 |---|---:|---|
 | `c(4, 4, 4)` | `12` | No deviation; score equals the sum. |
-| `c(0, 0, 0)` | `0` | All members are measured as inactive. |
+| `c(0, 0, 0)` | `0` | All observed values are zero. |
 | `c(4, 0)` | `0` | Maximally deviant two-member set. |
 | `c(4, 0, 0)` | `0` | Only one member is non-zero. |
 | `c(1, 2, NA)` | `2` | Omit `NA`; score the two observed values. |
 | `c(4, NA)` | `NA` | Fewer than two observed members remain. |
 | sparse implicit `c(4, 0)` | `0` | The implicit zero is observed. |
 
-For a declared set `c("A", "B", "C")` and matrix rows containing only `A`
-and `B`, GeneFunnel scores the available pair, reports coverage `2/3`, and
-leaves the acceptance threshold to the user.
+For declared members `c("A", "B", "C")` with only `A` and `B` present,
+GeneFunnel scores the pair and reports coverage `2/3`. The user sets acceptance
+thresholds.
 
 ## Properties of the score
 
@@ -148,35 +134,29 @@ For finite, observed, non-negative values:
 - dense and sparse representations agree; and
 - serial and parallel execution agree and preserve ordering.
 
-Numerical cleanup may turn a theoretically zero negative round-off result into
-exact zero only within a scale-aware tolerance. A materially negative or
-non-finite result is an internal error and must not be hidden.
+Numerical cleanup may set negative round-off to zero only within a scale-aware
+tolerance. Materially negative or non-finite results are internal errors and
+must not be hidden.
 
 ## Interpretation and limitations
 
-The score combines total observed activity with a scaled absolute-deviation
-penalty. Treating within-set variability as evidence against coherent activity
-is a scientific assumption, not a universal biological rule.
+The score penalizes absolute deviation from the mean. Treating variability as
+evidence against coherent activity is a scientific assumption, not a universal
+biological rule.
 
-The sum term retains input magnitude. Scores therefore retain effects of input
-units, library size, preprocessing, gene-set size, and feature coverage.
-Sample-wise independence does not make unrelated data sets automatically
-comparable. Cross-data-set comparison requires compatible units,
-preprocessing, identifiers, gene-set definitions, and coverage policies.
+The sum retains effects of units, library size, preprocessing, set size, and
+coverage. Independent scoring does not make unrelated datasets comparable.
+Comparisons need compatible units, preprocessing, identifiers, set definitions,
+and coverage policies.
 
-Gene-set database revisions can change scores, so analyses should record the
-exact collection and version. GeneFunnel does not guarantee that score
-distributions satisfy every downstream statistical model; users must validate
-the assumptions of their chosen analyses.
+Database revisions can change scores. Record the exact collection and version,
+and validate score distributions against downstream model assumptions.
 
-Raw non-negative measurements can be preferable where scientifically
-appropriate because prior filtering or transformation can remove zeros or
-alter magnitude. The package does not prescribe or enforce a pipeline position.
+Raw measurements may be preferable when filtering or transformation removes
+zeros or alters magnitude. The package prescribes no pipeline position.
 
 ## Dense, sparse, and parallel calculations
 
-Dense input follows a dense native path. Sparse input remains sparse and
-accounts analytically for implicit zeros. Work is split into bounded column
-chunks for BiocParallel execution. These storage and scheduling choices are
-implementation details: they must preserve the equation, missing-value rules,
-names, and ordering above.
+Dense input stays dense; sparse input stays sparse, accounting analytically
+for implicit zeros. BiocParallel processes bounded column chunks. Storage and
+scheduling must preserve the equation, missing-value rules, names, and order.

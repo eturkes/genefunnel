@@ -29,18 +29,18 @@ knitr::opts_chunk$set(
 )
 Sys.setenv(TZ = "UTC")
 pattern_heatmap_caption <- paste(
-    "Benchmark-style view of the controlled expression patterns. Tiles show",
-    "observed feature values; grey crossed cells are unavailable measurements."
+    "Controlled expression patterns. Tiles show observed values; grey crossed",
+    "cells mark unavailable measurements."
 )
 components_cap <- paste(
-    "Unscaled broad-program scores with their calculation shown beneath each",
-    "tile. The observed member count, total, mean, and complete deviation",
-    "penalty distinguish unavailable measurements from observed zeros."
+    "Unscaled broad-program scores with observed counts, totals, means, and",
+    "full deviation penalties beneath each tile. Missing measurements and",
+    "observed zeros contribute differently."
 )
 nested_cap <- paste(
-    "The ten-feature input becomes a three-set score matrix. Numbers show",
-    "scores and observed member counts (n). Grey NA tiles are unscoreable,",
-    "not zero. Both score heatmaps use the same unscaled colour range."
+    "Three-set scores from ten features, with observed member counts (n).",
+    "Grey NA tiles are unscoreable, not zero. Both heatmaps share an unscaled",
+    "colour range."
 )
 perturb_input_cap <- paste(
     "Original and modified feature values on one unscaled colour range.",
@@ -48,10 +48,9 @@ perturb_input_cap <- paste(
     "members increase together. Background features remain unchanged."
 )
 membership_cap <- paste(
-    "Bipartite view of the declared synthetic gene sets. Each edge is a",
-    "membership in perturbation_sets, not an inferred interaction. Gold nodes",
-    "and bold labels identify members shared by two sets. Background features",
-    "have no memberships and are omitted."
+    "Declared synthetic gene sets. Edges show membership in perturbation_sets,",
+    "not inferred interactions. Gold nodes and bold labels mark shared members.",
+    "Background features have no memberships and are omitted."
 )
 perturb_cap <- paste(
     "Observed totals and GeneFunnel scores before and after the controlled",
@@ -65,9 +64,8 @@ gse_gene_cap <- paste(
     "GeneFunnel uses individual control-scaled profiles, not either summary."
 )
 gse_score_cap <- paste(
-    "Individual six-gene GeneFunnel scores across Braak stages in GSE125583.",
-    "Diamonds and lines show stage medians. The display is descriptive and",
-    "does not fit a disease model."
+    "Individual six-gene scores across Braak stages in GSE125583. Diamonds and",
+    "lines show stage medians. This descriptive display fits no disease model."
 )
 gse60361_cap <- paste(
     "GeneFunnel score per gene versus the member total per gene across 47",
@@ -76,10 +74,9 @@ gse60361_cap <- paste(
     "Panels use nested 500- and 5,000-gene abundance sets."
 )
 class_heatmap_cap <- paste(
-    "Median retained fraction within each broad cell class. Each subtype",
-    "profile has equal weight, irrespective of its cell count. Labels report",
-    "the number of subtype profiles, not biological replicates. The colour",
-    "scale spans the full possible range from 0 to 100%."
+    "Median retained fraction by broad cell class. Subtype profiles have equal",
+    "weight regardless of cell count. Labels count subtype profiles, not",
+    "biological replicates. The colour scale spans 0 to 100%."
 )
 
 matrix_cells <- function(values) {
@@ -117,28 +114,21 @@ draw_heatmap_pair <- function(left, right) {
 # Introduction
 
 GeneFunnel turns a non-negative feature-by-sample matrix into a
-gene-set-by-sample score matrix. It preserves observed magnitude while
-penalizing absolute variation among the available members of each set. Every
-gene set and sample is calculated independently.
+gene-set-by-sample score matrix. Each score preserves observed magnitude and
+penalizes absolute variation among available members, independently of other
+sets and samples.
 
-Transcriptomic and proteomic assays commonly use Bioconductor's matrix,
-sparse-matrix, and parallel infrastructure. GeneFunnel fits that environment by
-accepting base and `Matrix` matrices and a `BiocParallelParam`, while returning
-a plain numeric matrix for downstream analysis. It is a scorer only: it does
-not normalize data, impute missing values, map identifiers, retrieve gene sets,
-or perform statistical testing.
+It accepts base and `Matrix` matrices, supports `BiocParallelParam` backends,
+and returns a numeric matrix. Preprocessing, identifier mapping, coverage
+decisions, and downstream analysis remain separate. GeneFunnel does not
+normalize, impute, retrieve gene sets, or test hypotheses.
 
-Within a larger pipeline, GeneFunnel can follow assay-specific preprocessing,
-identifier mapping, and coverage checks. Its output can then provide
-gene-set-level features for sample prioritization, visualization, clustering, or
-statistical models.
+Use scores for sample prioritization, visualization, clustering, or statistical
+models. The [method comparison](#state-of-the-art-comparison) explains when
+other summaries may suit the analysis better.
 
-For method selection, see the
-[comparison with state-of-the-art methods](#state-of-the-art-comparison).
-
-The package is in development and has not been accepted into Bioconductor. Its
-source and issue tracker are on the
-[GeneFunnel repository](https://github.com/eturkes/genefunnel).
+The development package is not yet in Bioconductor. Source and issues are in
+the [GeneFunnel repository](https://github.com/eturkes/genefunnel).
 
 # Installation
 
@@ -150,7 +140,7 @@ install.packages(c("BiocManager", "remotes", "ggplot2"))
 BiocManager::install("eturkes/genefunnel")
 ```
 
-For a small first result, run the installed example from a writable folder:
+Run the installed example from a writable folder:
 
 ```{r first-result, eval=FALSE}
 source(system.file("examples", "quickstart.R", package = "genefunnel",
@@ -158,9 +148,8 @@ source(system.file("examples", "quickstart.R", package = "genefunnel",
 ```
 
 It saves a labelled comparison figure, scores, and coverage under
-`genefunnel-results/`. Re-running replaces those example files. The synthetic
-inputs explain why equal totals can receive scores of 12, 4, and 0.
-The examples below cover the calculation and real-data use in more detail.
+`genefunnel-results/`, replacing previous example files. The synthetic inputs
+show why equal totals receive scores of 12, 4, and 0.
 
 Load the installed package and choose a serial backend for the first examples.
 
@@ -171,10 +160,9 @@ serial <- BiocParallel::SerialParam()
 
 # How the score is calculated
 
-For one declared gene set, GeneFunnel first deduplicates member identifiers and
-matches them exactly and case-sensitively to matrix row names. Within sample
-$j$, it omits matched values that are `NA` or `NaN`. If the remaining observed
-values are $x_1,\ldots,x_n$ and $n \ge 2$, the score is
+GeneFunnel deduplicates set members and matches them exactly and
+case-sensitively to matrix row names. Within sample $j$, it omits `NA` and
+`NaN`. For the remaining values $x_1,\ldots,x_n$, with $n \ge 2$:
 
 $$
 \bar{x}=\frac{1}{n}\sum_{i=1}^{n}x_i
@@ -188,20 +176,15 @@ $$
 -\frac{n}{2(n-1)}\sum_{i=1}^{n}|x_i-\bar{x}|.
 $$
 
-The cell is `NA_real_` when fewer than two observed members remain. Zero is an
-observed value, including an implicit sparse zero, so it participates in $n$,
-the sum, the mean, and the deviation. Infinities and negative values are
-invalid.
-
-The controlled panel below follows the exploratory logic used to motivate the
-method. It holds total signal constant while changing within-set dispersion, and
-it distinguishes observed zeros from unavailable measurements.
+Fewer than two observed members produce `NA_real_`. Zeros, including implicit
+sparse zeros, contribute to $n$, the sum, the mean, and the deviation.
+Negative values and infinities are invalid.
 
 # Controlled expression patterns
 
 Ten features form two five-member modules and one broader program. The six
-samples represent deliberately different expression patterns rather than
-biological replicates.
+samples vary total signal, dispersion, and missingness. They are designed
+patterns, not biological replicates.
 
 ```{r controlled-patterns}
 pattern_assay <- rbind(
@@ -303,8 +286,8 @@ ggplot2::ggplot(
     )
 ```
 
-The following diagnostics expose the calculation for the broad program. The
-scaled deviation is the complete penalty subtracted from the observed total.
+These diagnostics show the broad-program calculation. The scaled deviation is
+the full penalty subtracted from the observed total.
 
 ```{r controlled-pattern-diagnostics}
 pattern_diagnostics <- t(vapply(
@@ -398,18 +381,15 @@ ggplot2::ggplot(
     ggplot2::theme(axis.text.x = ggplot2::element_text(size = 9))
 ```
 
-The coherent and dispersed samples each total 400. The coherent sample has only
-small feature-to-feature differences, so its score remains close to 400. The
-dispersed sample contains the same total in a mixture of high values and zeros;
-its larger deviation penalty reduces the score to 165.6.
+The coherent and dispersed samples both total 400. Small differences leave the
+coherent score near 400; high values mixed with zeros reduce the dispersed score
+to 165.6.
 
-The uniformly high sample has no deviation and therefore scores its full total
-of 800. The partial-observation sample contains five observed values of 80 and
-five `NA` values. GeneFunnel omits the unavailable values, uses an effective
-set size of five, and scores the observed total of 400. In contrast, the zeros
-in the half-active and single-driver samples remain observed evidence. Half
-activation receives partial credit, while one non-zero feature among nine zeros
-gives the maximally dispersed score of zero.
+The uniformly high sample has no deviation and scores its full total of 800.
+Five observed values of 80 and five `NA` values score 400, using only the five
+observations. By contrast, observed zeros remain in the calculation. Half
+activation receives partial credit; one non-zero feature among nine zeros
+scores zero.
 
 # A narrower set can explain partial activity
 
@@ -477,21 +457,17 @@ stopifnot(
 )
 ```
 
-Module A scores its full total, module B scores zero, and the broader program is
-penalized because only half of its members are active. This mirrors a useful
-interpretive property of the method: a specific active module can explain a
-partial signal better than an encompassing set. The sets should still be
-predeclared. The example is not a reason to search adaptively for whichever
-subset gives the largest score.
+Module A scores its full total, module B scores zero, and the broader program
+receives a penalty. A narrower active module can explain this partial signal,
+but sets should be predeclared rather than selected to maximize scores.
 
 # Controlled gene-set perturbations
 
-A second experiment separates two changes that can produce a higher score. It
-starts from one synthetic sample and makes a modified copy. For the six-member
-assembly set, the modified values are all set to their original mean. Its total
-stays fixed while its within-set variation disappears. For the five-member
-receptor set, every value increases by 40 while its variation stays unchanged.
-Three background features are not members of either primary set.
+A modified copy of one synthetic sample separates two reasons for a higher
+score. Setting six assembly members to their original mean removes variation
+without changing their total. Adding 40 to each of five receptor members
+increases magnitude without changing variation. Three background features
+belong to neither primary set.
 
 ```{r controlled-perturbations}
 assembly_members <- paste0("assembly_", seq_len(6L))
@@ -674,11 +650,10 @@ ggplot2::ggplot(
     )
 ```
 
-The assembly score rises from 210 to 300 without any change in its total. The
-change is entirely due to greater coherence. The receptor score rises by 200
-because its total rises by 200 and its deviation penalty remains 3.75. The
-overlapping response also changes because it shares members with both modified
-sets, but every set is still calculated independently.
+The assembly score rises from 210 to 300 solely through greater coherence.
+The receptor total and score both rise by 200; its penalty stays at 3.75.
+The overlapping response changes through shared members, although each set is
+calculated independently.
 
 ```{r perturbation-membership-network, echo=FALSE, fig.height=4.8, fig.cap=membership_cap}
 membership_edges <- do.call(rbind, lapply(names(perturbation_sets), function(set) {
@@ -731,38 +706,33 @@ stopifnot(
 )
 ```
 
-This controlled design reflects two questions that appear in practical
-analyses: did the members move together, and did their combined magnitude
-change? GeneFunnel can register either effect in its sample-wise score. A
-subsequent model is still required to estimate uncertainty or test differences
-between biological groups.
+GeneFunnel registers changes in both coherence and magnitude. Estimating
+uncertainty or testing biological group differences still requires a downstream
+model.
 
 # Real-data case study: presynaptic expression across Braak stages
 
-The independent
+The
 [GSE125583](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE125583)
-cohort accompanies
-[Srinivasan et al. (2020)](https://doi.org/10.1016/j.celrep.2020.107843). It
-contains processed bulk RNA-seq from fusiform gyrus tissue of 70 neurologically
-normal controls and 219 autopsy-confirmed Alzheimer's disease subjects. GEO
-records diagnosis, age, sex, and Braak stage; 287 of the 289 subjects have a
-reported stage.
+cohort from [Srinivasan et al. (2020)](https://doi.org/10.1016/j.celrep.2020.107843)
+contains fusiform-gyrus bulk RNA-seq from 70 neurologically normal controls and
+219 autopsy-confirmed Alzheimer's disease subjects. Metadata include diagnosis,
+age, sex, and Braak stage; 287 subjects have a recorded stage.
 
-The per-sample processed tables contain size-factor-adjusted RPKM (`nRPKM`) and
-raw counts. This vignette ships nRPKM values for all subjects and six genes:
-`SYN1`, `SYN2`, `SYP`, `SNAP25`, `STX1A`, and `VAMP2`. The
-`data-raw/build-gse125583-example.R` script regenerates the compact fixture from
-checksum-verified GEO archives.
+Source tables contain raw counts and size-factor-adjusted RPKM (`nRPKM`).
+The bundled fixture includes nRPKM for all subjects and six genes: `SYN1`,
+`SYN2`, `SYP`, `SNAP25`, `STX1A`, and `VAMP2`.
+`data-raw/build-gse125583-example.R` regenerates it from checksum-verified GEO
+archives.
 
-The synapsins and synaptophysin represent synaptic-vesicle organization, while
-`SNAP25`, `STX1A`, and `VAMP2` form core presynaptic fusion machinery. The panel
-was fixed for this vignette before inspecting its cohort-level association. It
-is an illustrative panel, not a validated Alzheimer's disease signature or a
-complete pathway.
+Synapsins and synaptophysin represent synaptic-vesicle organization; `SNAP25`,
+`STX1A`, and `VAMP2` form core presynaptic fusion machinery. The panel was fixed
+before inspecting cohort associations. It is neither a complete pathway nor a
+validated Alzheimer's disease signature.
 
-Each gene is divided by its median nRPKM among the 70 control subjects before
-scoring. This places the six positive trajectories on a common, non-negative
-relative scale. GeneFunnel does not perform that preprocessing itself.
+Before scoring, each gene is divided by its median nRPKM among the 70 controls
+to give a common non-negative relative scale. This preprocessing is external
+to GeneFunnel.
 
 ```{r gse125583-pipeline}
 gse125583_path <- system.file(
@@ -919,14 +889,13 @@ stopifnot(
 )
 ```
 
-The unscaled panel preserves abundance differences between genes. The companion
-panel maps each gene's stage-median range to -1 through 1. It reveals direction
-but removes between-gene magnitude information. A constant row would map to
-zero. These display values never enter the scorer.
+The unscaled panel preserves between-gene abundance differences. Row scaling
+maps stage-median ranges to -1 through 1, showing direction but removing those
+differences; constant rows map to zero. These display values never enter the
+scorer.
 
-Each column summarizes different subjects, not repeated measurements of the
-same people. The following figure retains individual scores and diagnosis
-labels so that stage medians do not conceal subject-level variation.
+Columns represent different subjects, not repeated measurements. The next
+figure shows individual scores and diagnoses alongside stage medians.
 
 ```{r gse-score-figure, echo=FALSE, fig.height=4.4, fig.cap=gse_score_cap}
 gse125583_score_plot <- data.frame(
@@ -1048,40 +1017,35 @@ stopifnot(
 Across the 287 subjects with a recorded stage, the GeneFunnel score has a
 Spearman correlation of -0.409 with Braak stage; the plain six-gene total has a
 correlation of -0.393. The stage-median score decreases from 6.39 at stage I to
-1.93 at stage VI, although adjacent stages are not strictly monotonic.
-GeneFunnel's contribution is the sample-specific disagreement penalty, not a
-claim that this compact panel has a materially stronger pathology association
-than its sum.
+1.93 at stage VI, though adjacent stages are not strictly monotonic. These
+values do not establish a materially stronger pathology association than the
+sum.
 
-The result is descriptive. Braak stage and diagnosis are closely related in
-this autopsy cohort, and the calculation does not adjust for age, sex, technical
-variation, or tissue cell composition. It also does not fit or test an
-association. A full analysis should predeclare a complete gene set and
-preprocessing plan, assess coverage, and use an appropriate downstream model.
-The six-gene panel is an inspectable scoring example, not a biomarker.
+This descriptive calculation neither fits an association model nor adjusts for
+age, sex, technical variation, or tissue composition. Braak stage and diagnosis
+are also closely related in this cohort. A full analysis needs predeclared gene
+sets and preprocessing, coverage checks, and a suitable downstream model. This
+panel is a scoring example, not a biomarker.
 
 # Real-data scale study: mouse brain cell types
 
-The presynaptic case study makes every member inspectable, but its six-gene
-panel does not demonstrate scoring at larger set sizes. The
+The larger-set example uses
 [GSE60361](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE60361)
-experiment from
-[Zeisel et al. (2015)](https://doi.org/10.1126/science.aaa1934) profiled 3,005
-single cells from juvenile mouse somatosensory cortex and CA1 hippocampus.
+from [Zeisel et al. (2015)](https://doi.org/10.1126/science.aaa1934).
+The study profiled 3,005 single cells from juvenile mouse somatosensory cortex
+and CA1 hippocampus.
 
-The compact fixture contains all 19,972 endogenous genes aggregated into 47
-named cell-subtype profiles. These profiles represent 2,816 cells in seven
-broad classes. Aggregation reduces single-cell sparsity and makes each column a
-pseudobulk profile. The fixture-generation script retrieves the versioned
+The fixture aggregates all 19,972 endogenous genes into 47 named subtype
+pseudobulk profiles, representing 2,816 cells in seven broad classes.
+Aggregation reduces single-cell sparsity. The builder retrieves the versioned
 `zeisel-brain-2015` resource through `scRNAseq::ZeiselBrainData()`.
 
 Counts are converted to counts per million (CPM). The seven broad-class
-profiles define an equal-class abundance reference. Genes with a positive
-median CPM across those profiles are ranked by that median, with gene name as a
-deterministic tie-breaker. The top 5,000 genes form the larger panel, and the
-top 500 form the nested smaller panel. Each subtype CPM is divided by the
-corresponding broad-class median before scoring. These are abundance-defined
-scale panels, not pathways or cell-type signatures.
+profiles define an equal-class reference. Genes with positive median CPM are
+ranked by that median, breaking ties by gene name. The top 500 and 5,000 genes
+form nested panels. Each subtype CPM is divided by its gene's broad-class
+median before scoring. These abundance-defined panels are not pathways or
+cell-type signatures.
 
 ```{r gse60361-scale-pipeline}
 gse60361_path <- system.file(
@@ -1153,10 +1117,9 @@ gse60361_totals <- t(vapply(
 ))
 ```
 
-Absolute GeneFunnel scores are not directly comparable across panel sizes
-because the formula includes the member sum. Dividing the total and score by
-panel size supports this display without changing the calculation. The
-retained fraction is the score divided by the observed total.
+The sum term makes absolute scores incomparable across panel sizes. This
+display divides totals and scores by panel size without changing the scorer.
+The retained fraction is the score divided by the observed total.
 
 ```{r gse60361-scale-summary, echo=FALSE}
 gse60361_class_order <- c(
@@ -1334,8 +1297,7 @@ classes, the median retained fraction ranges from
 `r sprintf("%.1f", 100 * gse60361_500_high$retained_fraction)`% for
 `r gse60361_500_high$class_label`.
 
-With the nested panel expanded tenfold, the 5,000-gene panel has a median total
-per gene of
+The 5,000-gene panel has a median total per gene of
 `r sprintf("%.3f", gse60361_5000_summary$median_total)` and a median score per
 gene of `r sprintf("%.3f", gse60361_5000_summary$median_score)`. Its median
 retained fraction is
@@ -1516,22 +1478,18 @@ stopifnot(
 )
 ```
 
-Every point lies below the identity line because the deviation penalty is
-non-negative. In this abundance-defined display, neuronal subtype profiles tend
-to retain a larger share of their totals than glial profiles. That pattern is
-descriptive and depends on the panel construction and scaling reference. It is
-not a cell-type enrichment test. Pseudobulk aggregation also removes
-within-subtype cell variation. The example demonstrates the score mechanics at
-500 and 5,000 genes rather than validated biological programs.
+Every point lies below the identity line because the penalty is non-negative.
+Neuronal profiles tend to retain more of their totals than glial profiles, but
+this descriptive pattern depends on panel construction and scaling. It is not
+an enrichment test. Aggregation also removes within-subtype variation. The
+example demonstrates larger-set scoring, not validated biological programs.
 
 # Comparison with state-of-the-art methods {#state-of-the-art-comparison}
 
-GeneFunnel belongs to the field of sample-wise gene-set scoring. Relevant
-comparators include established reference methods and recent advances in
-large-scale scoring. They do not all estimate the same quantity. A
-[benchmark of 18 scoring methods][scoring-benchmark] evaluates stability,
-data integration, and downstream prediction separately. Its results support
-task-specific selection rather than one ranking for every application.
+Sample-wise scoring methods estimate different quantities. A
+[benchmark of 18 methods][scoring-benchmark] evaluates stability, integration,
+and prediction separately, supporting task-specific selection rather than a
+universal ranking.
 
 ## What each method measures
 
@@ -1546,10 +1504,9 @@ task-specific selection rather than one ranking for every application.
 | [**AUCell**][aucell-paper] | Area under a gene-set recovery curve near the top of each cell's expression ranking. | Scores the concentration of members among highly ranked genes. Rank-window choices differ from GeneFunnel's use of every available member value. |
 | [**decoupleR: ULM, MLM, and consensus**][decoupler-paper] | Linear-model and ensemble activity estimates using prior target relationships, including signed or weighted interactions. | Appropriate comparators for regulator activity. GeneFunnel accepts unweighted membership, not regulatory signs, interaction weights, or network structure. |
 
-The table distinguishes algorithms from packages. The `GSVA` package also
-implements ssGSEA and other transformations; `decoupleR` is a framework with
-several estimators. PLAID includes approximations of other scoring methods, but
-those are distinct from its core mean-based score
+Packages can contain several algorithms: `GSVA` includes ssGSEA, and `decoupleR`
+offers multiple estimators. PLAID's approximations of other methods are distinct
+from its core mean-based score
 ([GSVA documentation][gsva-guide]; [PLAID paper][plaid-paper]).
 
 ## How the worked examples distinguish the methods
@@ -1562,51 +1519,42 @@ $$
 =\bar{x}-\frac{1}{2(n-1)}\sum_{i=1}^{n}|x_i-\bar{x}|.
 $$
 
-This isolates its difference from a mean-based score. In the controlled panel,
-`coherent` and `same_total_dispersed` have the same member count and total.
-Their unnormalized member means therefore agree, while GeneFunnel penalizes
-the dispersed pattern more. This is an algebraic comparison with PLAID's core
-aggregation, not a run of the PLAID package or its score normalization.
+In the controlled panel, `coherent` and `same_total_dispersed` have equal counts,
+totals, and unnormalized means. GeneFunnel penalizes the dispersed pattern more.
+This algebraic comparison does not run PLAID or its score normalization.
 
-Magnitude and relative enrichment answer different questions. Multiplying a
-sample's non-negative values by a positive constant multiplies GeneFunnel by
-that constant. It leaves within-sample ranks unchanged. Rank-based singscore
-and unsmoothed UCell therefore discard that scale change when their gene
-universe and scoring settings remain fixed
+Multiplying sample values by a positive constant scales GeneFunnel but leaves
+within-sample ranks unchanged. With a fixed gene universe and settings,
+singscore and unsmoothed UCell discard that scale change
 ([singscore][singscore-paper]; [UCell v2][ucell-paper]). Preserving scale is
 useful only when it represents biology rather than technical variation.
 
-The six-gene presynaptic case study and the mouse pseudobulk example demonstrate
-GeneFunnel's calculations; they do not validate it against these alternatives.
-A rank-based comparison of the six-gene panel would need a suitable background
-gene universe, not just the selected members. Likewise, agreement among member
-values within a sample is not evidence of co-expression across samples or
-causal regulator activity.
+The real-data examples demonstrate calculations, not performance against these
+alternatives. A rank-based comparison needs a suitable background gene
+universe, not just six selected members. Within-sample agreement does not imply
+across-sample co-expression or causal regulator activity.
 
 ## Choosing a method and interpreting the evidence
 
-Use GeneFunnel when total signal and agreement among measured members are the
-intended summary. Compare it with PLAID or an unpenalized mean to assess whether
-the deviation penalty adds useful information. Prefer a rank-based comparator
-when within-sample relative expression is the target. For signed regulatory
-responses, compare a footprint estimator such as decoupleR's linear models
-rather than treating all pathway members as equally directed evidence.
+Use GeneFunnel to summarize total signal and member agreement. Compare with
+PLAID or an unpenalized mean to assess the penalty's value. For relative
+expression, use rank-based comparators; for signed regulatory responses,
+consider footprint estimators such as decoupleR's linear models.
 
-Published benchmarks establish performance only for their tested data,
-implementations, and endpoints. PLAID evaluates runtime, memory, and score
-concordance; the broader scoring benchmark also evaluates downstream behavior
+Benchmarks apply to their tested data, implementations, and endpoints. PLAID
+evaluates runtime, memory, and score concordance; the broader benchmark also
+evaluates downstream behavior
 ([PLAID][plaid-paper]; [18-method benchmark][scoring-benchmark]). Neither
-establishes GeneFunnel's superiority. This vignette contains methodological
-comparisons, not a head-to-head SOTA performance benchmark.
+establishes GeneFunnel's superiority. This is a methodological comparison, not
+a head-to-head performance benchmark.
 
-A performance comparison must use matched gene identifiers, gene sets,
-coverage rules, and documented method-appropriate preprocessing. Record package
-versions, normalization, rank limits, seeds, and parallel settings. Assess
-independent biological endpoints, sensitivity to missing members, and runtime
-and peak memory on the same hardware. For prediction, keep preprocessing and
-method selection inside training folds. Score correlation alone does not
-establish biological accuracy, and unequal score scales cannot be compared as
-though a larger number meant better performance.
+A performance study needs matched identifiers, sets, coverage rules, and
+documented method-appropriate preprocessing. Record versions, normalization,
+rank limits, seeds, and parallel settings. Assess independent biological
+endpoints and missing-member sensitivity; measure runtime and peak memory on
+the same hardware. For prediction, keep preprocessing and method selection
+inside training folds. Neither score correlation nor larger values on different
+scales establish biological accuracy.
 
 [scoring-benchmark]: https://doi.org/10.1093/bib/bbaf684
 [plaid-paper]: https://doi.org/10.1093/bioinformatics/btaf621
@@ -1619,9 +1567,8 @@ though a larger number meant better performance.
 
 # Check coverage before scoring
 
-A declared member absent from the matrix changes global assay coverage. It is
-different from a missing cell, which affects only one sample, and from an
-observed zero. `gene_set_coverage()` exposes these facts before scoring.
+An absent row reduces global coverage; a missing cell affects one sample;
+zero remains observed. Use `gene_set_coverage()` to inspect global matching.
 
 ```{r coverage}
 catalogue <- list(
@@ -1646,9 +1593,9 @@ knitr::kable(
 )
 ```
 
-GeneFunnel can score a set whenever at least two unique members match. Its default
-does not impose a coverage fraction because suitable thresholds depend on the
-experiment. A transcriptomic analysis might require complete coverage:
+Scoring requires at least two unique matches. Fractional coverage thresholds
+depend on the experiment; none is imposed by default. A transcriptomic analysis
+might require complete coverage:
 
 ```{r strict-coverage}
 strict <- !is.na(coverage$coverage) & coverage$coverage == 1
@@ -1732,9 +1679,8 @@ isTRUE(all.equal(
 ))
 ```
 
-The dense and sparse implementations are required to produce the same named
-matrix. Sparse storage changes memory use and traversal, not the scientific
-calculation.
+Dense and sparse implementations must return the same named matrix. Storage
+changes memory use and traversal, not the calculation.
 
 # Experiment containers
 
@@ -1754,10 +1700,9 @@ experiment_scores <- genefunnel(
 stopifnot(identical(experiment_scores, pattern_sparse_scores))
 ```
 
-The only assay is selected when `assay` is omitted. Container row names define
-feature matching, and container column names define sample order. Sparse assays
-stay sparse. Delayed and disk-backed assays are not silently materialized.
-Other assays and metadata remain unchanged; the return type stays a matrix
+Omitting `assay` selects the only assay. Container names define feature matching
+and sample order. Sparse assays stay sparse; delayed and disk-backed assays are
+rejected. Other assays and metadata remain unchanged. The result is a matrix
 or, with `details = TRUE`, a diagnostic list.
 
 # Serial and parallel execution
@@ -1780,39 +1725,33 @@ parallel_scores <- tryCatch(
 identical(parallel_scores, pattern_scores)
 ```
 
-Process startup and data transfer can outweigh parallel work on small inputs.
-Benchmark the intended workload rather than assuming that more workers are
-faster.
+Startup and data transfer can outweigh parallel gains on small inputs.
+Benchmark the intended workload before adding workers.
 
 # Identifiers and preprocessing
 
 Matrix row names and gene-set names must be unique, non-missing, and non-empty.
-Member matching is exact, with no case conversion, synonym resolution, or
-annotation lookup. Duplicated members within one set are counted in coverage
-diagnostics and deduplicated for scoring. Overlapping sets remain valid and do
-not influence one another.
+Matching is exact, without case conversion, synonym resolution, or annotation
+lookup. Diagnostics count duplicate members; scoring uses each once.
+Overlapping sets remain independent.
 
-GeneFunnel requires non-negative input with a meaningful zero. It applies no
-automatic preprocessing. An arbitrary positive shift is unsuitable because
-adding a constant $c$ to all $n$ observed members adds $nc$ to the score. Raw
-non-negative measurements can be preferable when scientifically appropriate,
-but the package does not prescribe a universal pipeline position.
+Input must be non-negative with a meaningful zero. Arbitrary positive shifts
+are unsuitable: adding $c$ to all $n$ observed members adds $nc$ to the score.
+Raw measurements may be appropriate, but GeneFunnel prescribes no universal
+preprocessing or pipeline position.
 
 # Interpretation and limitations
 
-The absolute-deviation penalty treats within-set variability as evidence
-against coherent activity. That is a scientific assumption rather than a
-universal property of biological pathways.
+The penalty treats within-set variability as evidence against coherent
+activity. This is a scientific assumption, not a universal pathway property.
 
-The sum term preserves magnitude and therefore also preserves effects of input
-units, library size, preprocessing, set size, and feature coverage. Independent
-sample scoring does not make scores from unrelated data sets automatically
-comparable. Such comparisons require compatible units, preprocessing,
-identifiers, gene-set definitions, versions, and coverage policies.
+The sum preserves effects of units, library size, preprocessing, set size, and
+coverage. Independent scoring does not make unrelated datasets comparable.
+Comparisons require compatible units, preprocessing, identifiers, set
+definitions, versions, and coverage policies.
 
-Gene-set database revisions can change scores. The package does not guarantee
-that the resulting distribution meets the assumptions of every downstream
-statistical method. Validate those assumptions for the intended analysis.
+Database revisions can change scores. Validate score distributions against the
+assumptions of the intended downstream model.
 
 The full scoring specification is installed as `SCIENTIFIC_SPEC.md`:
 
@@ -1823,8 +1762,6 @@ basename(specification)
 ```
 
 # Citation
-
-Use the package citation below.
 
 ```{r citation}
 citation("genefunnel")[1L]

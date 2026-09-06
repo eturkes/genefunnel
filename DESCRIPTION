@@ -6,12 +6,10 @@ Authors@R:
         role = c("aut", "cre", "cph"),
         comment = c(ORCID = "0000-0002-7447-1476"))
 Description: Calculates sample-wise gene-set activity scores from non-negative
-    feature-by-sample matrices. The score combines the total observed signal
-    with a penalty for disagreement among members of the set. Patterns with the
-    same total can therefore receive different scores. Dense and sparse
-    matrices, partial feature coverage, sample-specific missing values, and
-    parallel backends are supported. The package does not normalize data, map
-    identifiers, or run downstream statistical tests.
+    feature-by-sample matrices. A disagreement penalty distinguishes patterns
+    with equal totals. The package supports dense and sparse matrices, partial
+    coverage, sample-specific missingness, and parallel backends. It does not
+    normalize data, map identifiers, or run statistical tests.
 License: GPL (>= 3)
 URL: https://github.com/eturkes/genefunnel
 BugReports: https://github.com/eturkes/genefunnel/issues
