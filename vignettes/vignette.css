@@ -3,6 +3,13 @@
     display: none;
 }
 
+/* Keep figure descriptions inside BiocStyle's prose right margin. */
+@media screen and (min-width: 992px) {
+    .figure > p.caption {
+        padding-right: 150px;
+    }
+}
+
 /* Match BiocStyle's desktop text column. */
 .horizontal-scroll {
     box-sizing: border-box;
