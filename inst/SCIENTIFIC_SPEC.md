@@ -138,6 +138,28 @@ Numerical cleanup may set negative round-off to zero only within a scale-aware
 tolerance. Materially negative or non-finite results are internal errors and
 must not be hidden.
 
+## Relation to inequality measures
+
+For positive total \(S=\sum_i x_i\), define the Pietra (Hoover) index
+\(H=\sum_i|x_i-\bar{x}|/(2S)\). Then
+\(\operatorname{GeneFunnel}=S[1-nH/(n-1)]\). The all-zero case returns zero
+without evaluating this ratio. This is a finite-size Pietra-penalized total,
+not a new inequality index or the pairwise-difference Gini coefficient.
+
+For fixed observed size, the score is coordinatewise nondecreasing and concave.
+It can become insensitive to further increases in one dominant member.
+For example, \(\operatorname{GeneFunnel}(1,1,M)=3\) for every \(M\ge1\).
+These properties do not extend to changing the observed member count.
+
+Within-sample equality is not cross-sample correlation or coexpression.
+Equal values need not imply pathway activation. Unequal expected gene
+abundances can produce a penalty even when all genes respond together.
+
+Pietra definition: Porro F, Zenga M. *Decompositions by sources and by
+subpopulations of the Pietra index: two applications to professional football
+teams in Italy*. AStA Advances in Statistical Analysis 107:73–100.
+<https://doi.org/10.1007/s10182-021-00397-6>.
+
 ## Interpretation and limitations
 
 The score penalizes absolute deviation from the mean. Treating variability as

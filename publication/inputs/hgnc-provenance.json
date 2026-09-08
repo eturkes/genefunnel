@@ -1,0 +1,19 @@
+{
+  "article_doi": "10.1073/pnas.0407008101",
+  "table_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC524211/",
+  "selection": "Entire Table 1 GR-activated section; no target-study expression selection",
+  "hgnc_source": "https://storage.googleapis.com/public-download-files/hgnc/tsv/tsv/hgnc_complete_set.txt",
+  "hgnc_sha256": "6f43d6ff43aa9fdfa5fb2f20a20a7cace66e6e02e2a0dcf19d9b726e2e248d20",
+  "hgnc_bytes": 16903161,
+  "hgnc_http_last_modified": "Fri, 04 Sep 2026 15:22:27 GMT",
+  "declared_genes": 50,
+  "mapped_genes": 50,
+  "ambiguous_genes": 0,
+  "original_sha256": "0287afe1f05e6eff343d61f51f06c2fd8f8433466eaf6f07d62d0fcdfad74dd9",
+  "mapping_sha256": "481ddd3d72f5dbca23b6fc0761df690119274b800bbd11f16bc14a4584979e54",
+  "source_caveats": [
+    "Table repeats GenBank AA775091 for GILZ and S100P; map the gene labels, not accessions",
+    "MT-1I maps to approved pseudogene MT1IP; retain in declared coverage",
+    "Discovery used A549 with cycloheximide; transfer to primary airway smooth muscle is context dependent"
+  ]
+}

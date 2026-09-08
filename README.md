@@ -1,13 +1,22 @@
 # GeneFunnel
 
 GeneFunnel scores predefined gene sets in each sample of a non-negative
-feature-by-sample matrix. It penalizes disagreement among members, distinguishing
-coherent signal from a few large values. Dense and sparse inputs follow the
+feature-by-sample matrix. Its Pietra-based penalty distinguishes equal member
+values from abundance concentrated in a few members. Dense and sparse inputs follow the
 same rules; implicit zeros count as observations.
 
 The result is a gene-set-by-sample matrix with optional coverage diagnostics.
 Scores do not establish biological activity or enrichment. Use a rank-based
 method when relative ordering matters more than measurement scale.
+
+## Article and reproducible evidence
+
+The [article source](publication/article.Rmd), [HTML article](publication/article.html),
+and [editable DOCX](publication/article.docx) describe the score and its evaluation.
+The evidence includes independent perturbation data, public cohort analyses,
+canonical scoring comparators, simulation ablations, and missingness stress.
+It identifies limitations rather than claiming universal superiority.
+Use the [publication reproduction guide](publication/README.md) to regenerate the results.
 
 ## Installation
 

@@ -1,0 +1,23 @@
+# Regression: a baseline orphan and stale cached copy must not earn replay credit.
+source("publication/replay.R")
+work <- tempfile("replay-regression-", tmpdir = ".checks")
+dir.create(work)
+tryCatch({
+    reference <- file.path(work, "reference")
+    stale <- file.path(work, "replay")
+    dir.create(file.path(reference, "results"), recursive = TRUE)
+    dir.create(file.path(stale, "results"), recursive = TRUE)
+    writeLines("actual-result", file.path(reference, "results", "valid.csv"))
+    writeLines("orphan-result", file.path(reference, "results", "orphan.csv"))
+    writeLines("orphan-result", file.path(stale, "results", "orphan.csv"))
+    fresh <- new_replay_directory(work)
+    stopifnot(fresh != stale, length(list.files(fresh, all.files = FALSE)) == 0L)
+    dir.create(file.path(fresh, "results"))
+    file.copy(file.path(reference, "results", "valid.csv"), file.path(fresh, "results", "valid.csv"))
+    result <- compare_replay(reference, fresh)
+    stopifnot(result$replay_identical[basename(result$file) == "valid.csv"],
+        !result$replay_identical[basename(result$file) == "orphan.csv"])
+    unlink(file.path(reference, "results", "orphan.csv"))
+    stopifnot(all(compare_replay(reference, fresh)$replay_identical))
+    message("Replay regression: stale orphan rejected; valid result accepted.")
+}, finally = unlink(work, recursive = TRUE))

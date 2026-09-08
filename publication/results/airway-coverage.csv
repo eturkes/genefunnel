@@ -1,0 +1,51 @@
+"original_label","genbank_accession","symbol","hgnc_id","entrez_id","ensembl_gene_id","hgnc_name","matching_field","matching_value","mapping_policy","present_in_assay","in_scoring_universe"
+"CCL20","AI285199","CCL20","HGNC:10619",6364,"ENSG00000115009","C-C motif chemokine ligand 20","symbol","CCL20","exact_field_match",TRUE,TRUE
+"GADD45B","AI184305","GADD45B","HGNC:4096",4616,"ENSG00000099860","growth arrest and DNA damage inducible beta","symbol","GADD45B","exact_field_match",TRUE,TRUE
+"AKAP13","T50096","AKAP13","HGNC:371",11214,"ENSG00000170776","A-kinase anchoring protein 13","symbol","AKAP13","exact_field_match",TRUE,TRUE
+"ANGPTL4","T54298","ANGPTL4","HGNC:16039",51129,"ENSG00000167772","angiopoietin like 4","symbol","ANGPTL4","exact_field_match",TRUE,TRUE
+"ENaCa","AA459197","SCNN1A","HGNC:10599",6337,"ENSG00000111319","sodium channel epithelial 1 subunit alpha","alias_symbol","ENaCalpha","explicit_typography_expansion",TRUE,TRUE
+"ABHD2","AA676225","ABHD2","HGNC:18717",11057,"ENSG00000140526","abhydrolase domain containing 2, acylglycerol lipase","symbol","ABHD2","exact_field_match",TRUE,TRUE
+"GILZ","AA775091","TSC22D3","HGNC:3051",1831,"ENSG00000157514","TSC22 domain family member 3","alias_symbol","GILZ","exact_field_match",TRUE,TRUE
+"HIAP1","AA001536","BIRC3","HGNC:591",330,"ENSG00000023445","baculoviral IAP repeat containing 3","alias_symbol","hiap-1","explicit_typography_expansion",TRUE,TRUE
+"ANKRD1","AA488072","ANKRD1","HGNC:15819",27063,"ENSG00000148677","ankyrin repeat domain 1","symbol","ANKRD1","exact_field_match",TRUE,TRUE
+"B3GNT5","AA043551","B3GNT5","HGNC:15684",84002,"ENSG00000176597","UDP-GlcNAc:betaGal beta-1,3-N-acetylglucosaminyltransferase 5","symbol","B3GNT5","exact_field_match",TRUE,TRUE
+"MT-1I","N80129","MT1IP","HGNC:7401",644314,"ENSG00000275691","metallothionein 1I, pseudogene","prev_symbol","MT1I","explicit_typography_expansion",FALSE,FALSE
+"CTEN","AA443948","TNS4","HGNC:24352",84951,"ENSG00000131746","tensin 4","alias_symbol","CTEN","exact_field_match",TRUE,TRUE
+"FLAP","T49652","ALOX5AP","HGNC:436",241,"ENSG00000132965","arachidonate 5-lipoxygenase activating protein","alias_symbol","FLAP","exact_field_match",TRUE,TRUE
+"Kip2/p57","AI676118","CDKN1C","HGNC:1786",1028,"ENSG00000129757","cyclin dependent kinase inhibitor 1C","alias_symbol","KIP2|P57","explicit_typography_expansion",TRUE,TRUE
+"CDC42EP3","AA708976","CDC42EP3","HGNC:16943",10602,"ENSG00000163171","CDC42 effector protein 3","symbol","CDC42EP3","exact_field_match",TRUE,TRUE
+"EKI2","H77535","ETNK2","HGNC:25575",55224,"ENSG00000143845","ethanolamine kinase 2","alias_symbol","EKI2","exact_field_match",TRUE,TRUE
+"SLC19A2","AI468752","SLC19A2","HGNC:10938",10560,"ENSG00000117479","solute carrier family 19 member 2","symbol","SLC19A2","exact_field_match",TRUE,TRUE
+"FLJ11127","T98201","OTULINL","HGNC:25629",54491,"ENSG00000145569","OTU deubiquitinase with linear linkage specificity like","alias_symbol","FLJ11127","exact_field_match",TRUE,TRUE
+"THBD","AA256378","THBD","HGNC:11784",7056,"ENSG00000178726","thrombomodulin","symbol","THBD","exact_field_match",TRUE,TRUE
+"MFGE8","AA448941","MFGE8","HGNC:7036",4240,"ENSG00000140545","milk fat globule EGF and factor V/VIII domain containing","symbol","MFGE8","exact_field_match",TRUE,TRUE
+"CPEB4","N47682","CPEB4","HGNC:21747",80315,"ENSG00000113742","cytoplasmic polyadenylation element binding protein 4","symbol","CPEB4","exact_field_match",TRUE,TRUE
+"MGAM","AA894763","MGAM","HGNC:7043",8972,"ENSG00000257335","maltase-glucoamylase","symbol","MGAM","exact_field_match",TRUE,TRUE
+"SLC26A2","AA704222","SLC26A2","HGNC:10994",1836,"ENSG00000155850","solute carrier family 26 member 2","symbol","SLC26A2","exact_field_match",TRUE,TRUE
+"FLJ20371","AA682445","FLVCR2","HGNC:20105",55640,"ENSG00000119686","FLVCR choline and putative heme transporter 2","alias_symbol","FLJ20371","exact_field_match",TRUE,TRUE
+"S100P","AA775091","S100P","HGNC:10504",6286,"ENSG00000163993","S100 calcium binding protein P","symbol","S100P","exact_field_match",TRUE,TRUE
+"DNER","H28681","DNER","HGNC:24456",92737,"ENSG00000187957","delta/notch like EGF repeat containing","symbol","DNER","exact_field_match",TRUE,TRUE
+"Stomatin","R62868","STOM","HGNC:3383",2040,"ENSG00000148175","stomatin","name","stomatin","explicit_typography_expansion",TRUE,TRUE
+"GPR115","AA126828","ADGRF4","HGNC:19011",221393,"ENSG00000153294","adhesion G protein-coupled receptor F4","prev_symbol","GPR115","exact_field_match",TRUE,TRUE
+"SLUG","H57309","SNAI2","HGNC:11094",6591,"ENSG00000019549","snail family transcriptional repressor 2","prev_symbol","SLUG","exact_field_match",TRUE,TRUE
+"EHM2","H94262","EPB41L4B","HGNC:19818",54566,"ENSG00000095203","erythrocyte membrane protein band 4.1 like 4B","alias_symbol","EHM2","exact_field_match",TRUE,TRUE
+"GPR153","AA777493","GPR153","HGNC:23618",387509,"ENSG00000158292","G protein-coupled receptor 153","symbol","GPR153","exact_field_match",TRUE,TRUE
+"hSPRY1","AA055440","SPRY1","HGNC:11269",10252,"ENSG00000164056","sprouty RTK signaling antagonist 1","alias_symbol","hSPRY1","exact_field_match",TRUE,TRUE
+"ET-2","AI140863","EDN2","HGNC:3177",1907,"ENSG00000127129","endothelin 2","alias_symbol","ET2","explicit_typography_expansion",TRUE,TRUE
+"LOC144100","R44496","PLEKHA7","HGNC:27049",144100,"ENSG00000166689","pleckstrin homology domain containing A7","entrez_id","144100","explicit_typography_expansion",TRUE,TRUE
+"TNFAIP3","AA476272","TNFAIP3","HGNC:11896",7128,"ENSG00000118503","TNF alpha induced protein 3","symbol","TNFAIP3","exact_field_match",TRUE,TRUE
+"FKBP5","W86653","FKBP5","HGNC:3721",2289,"ENSG00000096060","FKBP prolyl isomerase 5","symbol","FKBP5","exact_field_match",TRUE,TRUE
+"LRRC8","AA043409","LRRC8A","HGNC:19027",56262,"ENSG00000136802","leucine rich repeat containing 8 VRAC subunit A","prev_symbol","LRRC8","exact_field_match",TRUE,TRUE
+"FGD4","AI222351","FGD4","HGNC:19125",121512,"ENSG00000139132","FYVE, RhoGEF and PH domain containing 4","symbol","FGD4","exact_field_match",TRUE,TRUE
+"MCJ","AI005521","DNAJC15","HGNC:20325",29103,"ENSG00000120675","DnaJ heat shock protein family (Hsp40) member C15","alias_symbol","MCJ","exact_field_match",TRUE,TRUE
+"IHPK3","N52903","IP6K3","HGNC:17269",117283,"ENSG00000161896","inositol hexakisphosphate kinase 3","prev_symbol","IHPK3","exact_field_match",TRUE,TRUE
+"PPG/Serglycin","AA278759","SRGN","HGNC:9361",5552,"ENSG00000122862","serglycin","alias_symbol","PPG","explicit_typography_expansion",TRUE,TRUE
+"IRS2","AA134862","IRS2","HGNC:6126",8660,"ENSG00000185950","insulin receptor substrate 2","symbol","IRS2","exact_field_match",TRUE,TRUE
+"SDPR","R09729","CAVIN2","HGNC:10690",8436,"ENSG00000168497","caveolae associated protein 2","prev_symbol","SDPR","exact_field_match",TRUE,TRUE
+"POU5F1","AA996055","POU5F1","HGNC:9221",5460,"ENSG00000204531","POU class 5 homeobox 1","symbol","POU5F1","exact_field_match",TRUE,TRUE
+"SPINK5L3","AA461492","SPINK13","HGNC:27200",153218,"ENSG00000214510","serine peptidase inhibitor Kazal type 13","alias_symbol","SPINK5L3","exact_field_match",TRUE,TRUE
+"PPP1R14C","R43270","PPP1R14C","HGNC:14952",81706,"ENSG00000198729","protein phosphatase 1 regulatory inhibitor subunit 14C","symbol","PPP1R14C","exact_field_match",TRUE,TRUE
+"TMG4","R53734","PRRG4","HGNC:30799",79056,"ENSG00000135378","proline rich and Gla domain 4","alias_symbol","TMG4","exact_field_match",TRUE,TRUE
+"RGS2","AI675670","RGS2","HGNC:9998",5997,"ENSG00000116741","regulator of G protein signaling 2","symbol","RGS2","exact_field_match",TRUE,TRUE
+"SEC14L1","AI366724","SEC14L1","HGNC:10698",6397,"ENSG00000129657","SEC14 like lipid binding 1","symbol","SEC14L1","exact_field_match",TRUE,TRUE
+"TGFBR3","N26658","TGFBR3","HGNC:11774",7049,"ENSG00000069702","transforming growth factor beta receptor 3","symbol","TGFBR3","exact_field_match",TRUE,TRUE

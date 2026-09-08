@@ -19,5 +19,6 @@ bibentry(
     ),
     author = person("Emir", "Turkes"),
     school = "University College London",
-    year = "2025"
+    year = "2025",
+    url = "https://discovery.ucl.ac.uk/id/eprint/10215006/"
 )
