@@ -9,15 +9,6 @@ The result is a gene-set-by-sample matrix with optional coverage diagnostics.
 Scores do not establish biological activity or enrichment. Use a rank-based
 method when relative ordering matters more than measurement scale.
 
-## Article and reproducible evidence
-
-The [article source](publication/article.Rmd), [HTML article](publication/article.html),
-and [editable DOCX](publication/article.docx) describe the score and its evaluation.
-The evidence includes independent perturbation data, public cohort analyses,
-canonical scoring comparators, simulation ablations, and missingness stress.
-It identifies limitations rather than claiming universal superiority.
-Use the [publication reproduction guide](publication/README.md) to regenerate the results.
-
 ## Installation
 
 The development package is not yet in Bioconductor. Install from GitHub with a
@@ -191,17 +182,16 @@ Tests compare native implementations with an independent R calculation across
 dense and sparse inputs, missingness, coverage, numerical extremes, and parallel
 backends. They verify calculations, not biological performance.
 
-From the repository root, run the same build and check used by CI:
+Install the suggested dependencies, then build and check from the repository root:
 
 ```sh
-Rscript tools/check-package.R
-Rscript tools/check-package.R --bioc
+R CMD build .
+R CMD check --no-manual genefunnel_0.99.5.tar.gz
+Rscript -e 'BiocCheck::BiocCheck("genefunnel_0.99.5.tar.gz", `new-package` = TRUE)'
 ```
 
-Install dependencies first. The second command adds BiocCheck; logs remain
-under `.checks/`. Both run examples, tests, and vignettes. CI targets Linux,
-macOS, Windows, and Linux with R-devel; configured jobs are not evidence of
-hosted passes.
+The build and check run examples, tests, and vignettes. Install `BiocCheck`
+before the final command. Use the archive name for the version you build.
 
 ## Further reading
 
@@ -216,8 +206,7 @@ To read the rendered vignette, install suggested dependencies and build with
 `build_vignettes = TRUE`, then run `vignette("genefunnel")`. The first-run
 script needs no vignette build. Use `citation("genefunnel")` for citation details.
 
-Regenerate the figure with `Rscript tools/render-quickstart.R`. Tests run the
-same example and check its results and exports.
+Tests run the first-result example and check its results and exports.
 
 ## License
 

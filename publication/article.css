@@ -1,9 +1,0 @@
-body { font-family: Georgia, "Times New Roman", serif; color: #18353c; font-size: 17px; line-height: 1.55; }
-h1, h2, h3, h4 { font-family: "DejaVu Sans", sans-serif; color: #006e72; line-height: 1.2; }
-.main-container { max-width: 1180px; }
-a { color: #007f82; }
-.table { font-family: "DejaVu Sans", sans-serif; font-size: 0.78em; }
-.table th { border-bottom: 2px solid #007f82; }
-pre, code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.88em; }
-caption { color: #435b63; text-align: left; }
-@media print { body { font-size: 10pt; } .main-container { max-width: none; } #TOC { display: none; } table, img { break-inside: avoid; } }

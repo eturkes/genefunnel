@@ -11,7 +11,6 @@
 *.Rproj
 
 # Package build and check output
-/.checks/
 /*.tar.gz
 /*.Rcheck/
 /*.BiocCheck/
@@ -40,9 +39,6 @@
 /src/*.so
 /src/*.dSYM/
 /src/symbols.rds
-
-# Generated benchmark output
-/benchmark/results/
 
 # First-run example output
 /genefunnel-results/
