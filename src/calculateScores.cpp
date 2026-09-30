@@ -68,6 +68,16 @@ void stop_non_finite_result(const int gene_set, const int column) {
   );
 }
 
+long double bounded_mean(
+  const long double sum_values,
+  const std::size_t observed_size,
+  const long double maximum
+) {
+  // Rounded accumulation can put the estimated mean above every observation.
+  // An exact mean cannot exceed the maximum, which must stay out of the below set.
+  return std::min(sum_values / observed_size, maximum);
+}
+
 double finalize_score(
   const std::size_t observed_size,
   const long double sum_values,
@@ -153,7 +163,8 @@ double score_with_scaled_sum(
     normalized_sum += static_cast<long double>(value) / maximum;
   }
 
-  const long double normalized_mean = normalized_sum / observed_size;
+  const long double normalized_mean =
+    bounded_mean(normalized_sum, observed_size, 1.0L);
   std::size_t below_mean_count =
     observed_size - positive_values.size();
   long double below_mean_sum = 0.0L;
@@ -244,8 +255,10 @@ NumericMatrix calculate_dense_scores(
       }
 
       long double sum_values = 0.0L;
+      long double maximum = 0.0L;
       for (const double value : observed) {
         sum_values += static_cast<long double>(value);
+        maximum = std::max(maximum, static_cast<long double>(value));
       }
       if (!std::isfinite(sum_values)) {
         std::vector<double> positive_values;
@@ -264,7 +277,8 @@ NumericMatrix calculate_dense_scores(
         continue;
       }
 
-      const long double mean_values = sum_values / observed_size;
+      const long double mean_values =
+        bounded_mean(sum_values, observed_size, maximum);
       // On platforms where long double equals double, a positive subnormal
       // mean can round to zero. Exact zeros remain below that mathematical
       // mean; positive observed values do not.
@@ -393,6 +407,7 @@ NumericMatrix calculate_sparse_scores(
       std::size_t observed_size = gene_set_size;
       std::size_t positive_count = 0;
       long double sum_values = 0.0L;
+      long double maximum = 0.0L;
       for (const SparseEntry& entry : entries) {
         if (std::isnan(entry.value)) {
           --observed_size;
@@ -409,6 +424,7 @@ NumericMatrix calculate_sparse_scores(
         if (entry.value > 0.0) {
           ++positive_count;
           sum_values += static_cast<long double>(entry.value);
+          maximum = std::max(maximum, static_cast<long double>(entry.value));
         }
       }
 
@@ -435,7 +451,8 @@ NumericMatrix calculate_sparse_scores(
         continue;
       }
 
-      const long double mean_values = sum_values / observed_size;
+      const long double mean_values =
+        bounded_mean(sum_values, observed_size, maximum);
       // A positive mathematical mean can underflow when long double has the
       // same range as double. Implicit and stored zeros are still below it.
       const bool positive_mean = sum_values > 0.0L;
